@@ -30,6 +30,9 @@ export interface Program {
   iconUrl: string | null; // real logo (remote); falls back to icon
   winget: string | null; // winget package id, or null to use the fallback
   npm?: string; // global npm package, for CLIs not in winget (e.g. Claude/Codex)
+  // user-selectable versions (PHP, Java, Python…); picking one overrides `winget`
+  // on install. The first entry should match the default `winget` above.
+  versions?: { label: string; winget: string }[];
   // extra winget-id prefixes that also count as "this is installed" — for
   // packages whose id is version-pinned (e.g. Python.Python.3.13 but any
   // Python.Python.* should count). Optional; defaults to none.

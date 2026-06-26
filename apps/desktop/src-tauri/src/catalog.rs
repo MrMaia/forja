@@ -15,6 +15,12 @@ pub struct ProgramIcon {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProgramVersion {
+    pub label: String,
+    pub winget: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Program {
     pub id: String,
     pub name: String,
@@ -26,6 +32,8 @@ pub struct Program {
     pub winget: Option<String>,
     #[serde(default)]
     pub npm: Option<String>,
+    #[serde(default)]
+    pub versions: Vec<ProgramVersion>,
     #[serde(default)]
     pub detect: Vec<String>,
     #[serde(default)]

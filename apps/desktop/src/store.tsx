@@ -85,6 +85,8 @@ interface ForjaContextValue {
   startInstall: (programs: Program[]) => void;
   startUpgrade: (program: Program, wingetId: string) => void;
   upgradeAll: () => void; // upgrade every installed program with a pending update
+  versionChoice: Record<string, string>; // programId -> chosen winget id
+  setVersion: (programId: string, winget: string) => void;
 }
 
 const ForjaContext = createContext<ForjaContextValue | null>(null);
@@ -106,6 +108,12 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
   const errTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [checking, setChecking] = useState(false);
+  const [versionChoice, setVersionChoice] = useState<Record<string, string>>({});
+  const setVersion = useCallback(
+    (programId: string, winget: string) =>
+      setVersionChoice((prev) => ({ ...prev, [programId]: winget })),
+    []
+  );
 
   const updateSetting = useCallback(
     <K extends keyof Settings>(key: K, value: Settings[K]) => {
@@ -228,12 +236,12 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     installPrograms(
       programs.map((p) => ({
         id: p.id,
-        winget: p.winget,
+        winget: versionChoice[p.id] ?? p.winget, // honor the chosen version
         npm: p.npm,
         fallbackUrl: p.fallbackUrl,
       }))
     ).catch((e) => console.error("Falha na instalação:", e));
-  }, []);
+  }, [versionChoice]);
 
   // Upgrade routes through the same global queue/events as install, so it shows
   // in the "Instalações" tab and survives navigating away. Appends to the queue.
@@ -339,6 +347,8 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     startInstall,
     startUpgrade,
     upgradeAll,
+    versionChoice,
+    setVersion,
   };
 
   return <ForjaContext.Provider value={value}>{children}</ForjaContext.Provider>;

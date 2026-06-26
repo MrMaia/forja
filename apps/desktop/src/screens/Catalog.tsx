@@ -253,7 +253,8 @@ function ProgramCard({
   info?: InstalledInfo;
 }) {
   // progress comes from the global install queue (shared with the Instalações tab)
-  const { installRows, startUpgrade, pathOf, addToPath, isErrorDismissed } = useForja();
+  const { installRows, startUpgrade, pathOf, addToPath, isErrorDismissed, versionChoice, setVersion } =
+    useForja();
   const row = installRows[program.id];
   const status = row?.status;
   const busy =
@@ -334,6 +335,25 @@ function ProgramCard({
         <div className="mt-1 text-[12px] leading-[1.45] text-[#998f83]">
           {program.description}
         </div>
+
+        {/* version picker (PHP, Java, Python…) — only when selectable */}
+        {selectable && program.versions && program.versions.length > 0 && (
+          <select
+            value={versionChoice[program.id] ?? program.winget ?? ""}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              e.stopPropagation();
+              setVersion(program.id, e.target.value);
+            }}
+            className="mt-2 rounded-[7px] border border-white/10 bg-[#211b16] px-2 py-1 text-[11.5px] text-forge-text outline-none focus:border-amber-glow/40"
+          >
+            {program.versions.map((v) => (
+              <option key={v.winget} value={v.winget}>
+                versão {v.label}
+              </option>
+            ))}
+          </select>
+        )}
 
         {/* install / upgrade state (driven by the global queue) */}
         {busy ? (

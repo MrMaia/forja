@@ -36,6 +36,7 @@
     "exe": ["node.exe"],
     "installDirs": ["%ProgramFiles%\\nodejs"],
     "pathTool": true,
+    "versions": [{"label":"LTS","winget":"OpenJS.NodeJS.LTS"},{"label":"Atual","winget":"OpenJS.NodeJS"}],
     "fallbackUrl": "https://nodejs.org/en/download",
     "postInstall": []
   },
@@ -51,6 +52,7 @@
     "exe": ["python.exe"],
     "installDirs": ["%LocalAppData%\\Programs\\Python\\*", "%ProgramFiles%\\Python\\*"],
     "pathTool": true,
+    "versions": [{"label":"3.13","winget":"Python.Python.3.13"},{"label":"3.12","winget":"Python.Python.3.12"},{"label":"3.11","winget":"Python.Python.3.11"}],
     "fallbackUrl": "https://www.python.org/downloads/windows/",
     "postInstall": []
   },
@@ -936,6 +938,7 @@
     "exe": ["dotnet.exe"],
     "installDirs": ["%ProgramFiles%\\dotnet"],
     "pathTool": true,
+    "versions": [{"label":"8 (LTS)","winget":"Microsoft.DotNet.SDK.8"},{"label":"9","winget":"Microsoft.DotNet.SDK.9"}],
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -948,6 +951,7 @@
     "iconUrl": "/icons/java-temurin.svg",
     "winget": "EclipseAdoptium.Temurin.21.JDK",
     "pathTool": true,
+    "versions": [{"label":"21 (LTS)","winget":"EclipseAdoptium.Temurin.21.JDK"},{"label":"17 (LTS)","winget":"EclipseAdoptium.Temurin.17.JDK"},{"label":"11 (LTS)","winget":"EclipseAdoptium.Temurin.11.JDK"},{"label":"8","winget":"EclipseAdoptium.Temurin.8.JDK"}],
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -1390,6 +1394,7 @@
     "iconUrl": "/icons/php.svg",
     "winget": "PHP.PHP.8.4",
     "detect": ["PHP.PHP"],
+    "versions": [{"label":"8.4","winget":"PHP.PHP.8.4"},{"label":"8.3","winget":"PHP.PHP.8.3"},{"label":"8.2","winget":"PHP.PHP.8.2"},{"label":"8.1","winget":"PHP.PHP.8.1"}],
     "fallbackUrl": "https://windows.php.net/download/",
     "postInstall": []
   },
