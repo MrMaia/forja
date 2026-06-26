@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useForja } from "../store";
 import { TitleBar } from "../components/ui";
-import { checkForjaUpdate, openExternal, type ForjaUpdate } from "../tauri";
+import { checkForjaUpdate, installUpdate, openExternal, type ForjaUpdate } from "../tauri";
 
-const APP_VERSION = "0.1.0";
+const APP_VERSION = "0.1.2";
 
 export default function Settings() {
   const {
@@ -17,6 +17,18 @@ export default function Settings() {
   } = useForja();
   const [update, setUpdate] = useState<ForjaUpdate | null>(null);
   const [checking, setChecking] = useState(false);
+  const [updating, setUpdating] = useState(false);
+
+  const runUpdate = async () => {
+    if (!update) return;
+    setUpdating(true);
+    try {
+      if (update.installUrl) await installUpdate(update.installUrl);
+      else await openExternal(update.url);
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   const check = async () => {
     setChecking(true);
@@ -59,10 +71,11 @@ export default function Settings() {
           <Row label={`Forja v${APP_VERSION}`} desc={updateStatus()}>
             {update?.hasUpdate ? (
               <button
-                onClick={() => openExternal(update.url)}
-                className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20"
+                onClick={runUpdate}
+                disabled={updating}
+                className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20 disabled:opacity-50"
               >
-                Baixar
+                {updating ? "baixando…" : "Baixar e instalar"}
               </button>
             ) : (
               <button

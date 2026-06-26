@@ -90,65 +90,24 @@ export default function Catalog() {
     <div className="flex h-full flex-col bg-forge-bg">
       <TitleBar section="Catálogo" />
       <div className="flex min-h-0 flex-1">
-        {/* sidebar */}
-        <aside className="flex w-[236px] flex-shrink-0 flex-col border-r border-white/5 bg-forge-inset px-3.5 py-[18px]">
+        {/* sidebar — primary navigation */}
+        <aside className="flex w-[228px] flex-shrink-0 flex-col gap-0.5 border-r border-white/5 bg-forge-inset px-3.5 py-[18px]">
           <div className="mb-3 px-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-forge-faint">
-            Categorias
+            Navegação
           </div>
-          <div className="flex flex-col gap-0.5">
-            {CATEGORIES.map((cat) => {
-              const isActive = !q && cat === active;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    setQuery("");
-                    setActive(cat);
-                  }}
-                  className={
-                    "relative flex items-center gap-[11px] rounded-[9px] px-[11px] py-[9px] text-left transition-colors " +
-                    (isActive
-                      ? "bg-amber-glow/10 text-amber-light"
-                      : "text-forge-muted hover:bg-white/[0.04]")
-                  }
-                >
-                  {isActive && (
-                    <span className="absolute bottom-[9px] left-0 top-[9px] w-[3px] rounded-[2px] bg-amber-glow" />
-                  )}
-                  <span
-                    className="h-2 w-2 rounded-[2px]"
-                    style={{ background: DOT[cat] }}
-                  />
-                  <span className={"flex-1 text-[13px] " + (isActive ? "font-semibold" : "")}>
-                    {cat}
-                  </span>
-                  <span
-                    className={
-                      "font-mono text-[11px] " +
-                      (isActive
-                        ? "rounded-full bg-amber-glow/20 px-[7px] py-px text-amber-soft"
-                        : "text-forge-faint")
-                    }
-                  >
-                    {counts.get(cat) ?? 0}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <div className="mt-auto flex flex-col gap-0.5 border-t border-white/[0.06] pt-3">
-            <SidebarLink label="Início" onClick={() => go("onboarding")} />
-            <SidebarLink
-              label="Instalações"
-              onClick={() => go("install")}
-              badge={installing ? "•" : undefined}
-            />
-            <SidebarLink label="Perfis prontos" onClick={() => go("presets")} />
-            <SidebarLink label="Exportar / Importar" onClick={() => go("profiles")} />
-            <SidebarLink label="Drivers de rede" onClick={() => go("drivers")} />
-            <SidebarLink label="Ajustes do Windows" onClick={() => go("tweaks")} />
-            <SidebarLink label="Configurações" onClick={() => go("settings")} />
-          </div>
+          <SidebarLink label="Início" onClick={() => go("onboarding")} />
+          <SidebarLink label="Catálogo" active onClick={() => {}} />
+          <SidebarLink
+            label="Instalações"
+            onClick={() => go("install")}
+            badge={installing ? "•" : undefined}
+          />
+          <SidebarLink label="Perfis prontos" onClick={() => go("presets")} />
+          <SidebarLink label="Exportar / Importar" onClick={() => go("profiles")} />
+          <div className="my-2 border-t border-white/[0.06]" />
+          <SidebarLink label="Drivers de rede" onClick={() => go("drivers")} />
+          <SidebarLink label="Ajustes do Windows" onClick={() => go("tweaks")} />
+          <SidebarLink label="Configurações" onClick={() => go("settings")} />
         </aside>
 
         {/* main */}
@@ -166,6 +125,34 @@ export default function Catalog() {
                 className="w-full bg-transparent text-[13.5px] text-forge-text outline-none placeholder:text-forge-faint"
               />
             </div>
+          </div>
+
+          {/* category filter chips */}
+          <div className="flex flex-shrink-0 items-center gap-2 overflow-x-auto border-b border-white/5 px-6 py-[11px]">
+            {CATEGORIES.map((cat) => {
+              const isActive = !q && cat === active;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setQuery("");
+                    setActive(cat);
+                  }}
+                  className={
+                    "flex flex-shrink-0 items-center gap-2 rounded-full border px-3 py-[6px] text-[12.5px] transition-colors " +
+                    (isActive
+                      ? "border-amber-glow/45 bg-amber-glow/[0.12] text-amber-light"
+                      : "border-white/[0.08] text-forge-muted hover:border-white/[0.18] hover:text-forge-text")
+                  }
+                >
+                  <span className="h-2 w-2 rounded-[2px]" style={{ background: DOT[cat] }} />
+                  <span className={isActive ? "font-semibold" : ""}>{cat}</span>
+                  <span className="font-mono text-[10.5px] text-forge-faint">
+                    {counts.get(cat) ?? 0}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex-1 overflow-y-auto px-6 py-5">
@@ -254,8 +241,16 @@ function ProgramCard({
   info?: InstalledInfo;
 }) {
   // progress comes from the global install queue (shared with the Instalações tab)
-  const { installRows, startUpgrade, pathOf, addToPath, isErrorDismissed, versionChoice, setVersion } =
-    useForja();
+  const {
+    installRows,
+    startUpgrade,
+    startUninstall,
+    pathOf,
+    addToPath,
+    isErrorDismissed,
+    versionChoice,
+    setVersion,
+  } = useForja();
   const row = installRows[program.id];
   const status = row?.status;
   const busy =
@@ -297,6 +292,12 @@ function ProgramCard({
     // not the catalog install id (dbeaver.dbeaver) — they often differ.
     const target = info?.wingetId ?? program.winget;
     if (target) startUpgrade(program, target);
+  };
+
+  const doUninstall = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const target = info?.wingetId ?? program.winget;
+    if (target) startUninstall(program, target);
   };
 
   return (
@@ -412,9 +413,19 @@ function ProgramCard({
             </button>
           </div>
         ) : current ? (
-          <div className="mt-2.5 flex items-center gap-1.5 text-[11.5px] font-medium text-status-done">
-            <span className="text-[12px]">✓</span> instalado
-            {info?.installed && ` · v${info.installed}`}
+          <div className="mt-2.5 flex items-center justify-between gap-2">
+            <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-status-done">
+              <span className="text-[12px]">✓</span> instalado
+              {info?.installed && ` · v${info.installed}`}
+            </span>
+            {info?.wingetId && (
+              <button
+                onClick={doUninstall}
+                className="flex-shrink-0 rounded-[7px] border border-white/12 px-2.5 py-1 text-[11.5px] font-medium text-forge-muted transition-colors hover:border-status-error/50 hover:text-status-error"
+              >
+                Desinstalar
+              </button>
+            )}
           </div>
         ) : null}
 
@@ -446,21 +457,29 @@ function SidebarLink({
   onClick,
   badge,
   count,
+  active = false,
 }: {
   label: string;
   onClick: () => void;
   badge?: string;
   count?: number;
+  active?: boolean;
 }) {
   return (
     <button
       onClick={onClick}
-      className="group flex items-center gap-[11px] rounded-[9px] px-[11px] py-2 text-[12.5px] text-[#8e857a] transition-colors hover:bg-white/[0.04] hover:text-[#bcb2a5]"
+      className={
+        "group flex items-center gap-[11px] rounded-[9px] px-[11px] py-2 text-[12.5px] transition-colors " +
+        (active
+          ? "bg-amber-glow/10 font-semibold text-amber-light"
+          : "text-[#8e857a] hover:bg-white/[0.04] hover:text-[#bcb2a5]")
+      }
     >
       <span
         className={
           "h-[5px] w-[5px] rounded-full transition-colors group-hover:bg-amber-glow " +
-          (badge ? "animate-pulse bg-amber-glow" : "bg-forge-faint")
+          (badge || active ? "bg-amber-glow" : "bg-forge-faint") +
+          (badge ? " animate-pulse" : "")
         }
       />
       <span className="flex-1 text-left">{label}</span>

@@ -53,6 +53,18 @@
             "-g",
             { "validator": "^[@A-Za-z0-9._/-]+$" }
           ]
+        },
+        {
+          "name": "winget-uninstall",
+          "cmd": "winget",
+          "args": [
+            "uninstall",
+            "--id",
+            { "validator": "^[A-Za-z0-9.\\-_+]+$" },
+            "-e",
+            "--silent",
+            "--accept-source-agreements"
+          ]
         }
       ]
     },
@@ -124,6 +136,16 @@
             "-NonInteractive",
             "-Command",
             "Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue"
+          ]
+        },
+        {
+          "name": "install-update",
+          "cmd": "powershell",
+          "args": [
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            "$ProgressPreference='SilentlyContinue'; $u=$env:FORJA_UPDATE_URL; $o=Join-Path $env:TEMP 'Forja-update-setup.exe'; Invoke-WebRequest -Uri $u -OutFile $o; Start-Process -FilePath $o"
           ]
         }
       ]

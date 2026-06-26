@@ -12,7 +12,7 @@ export interface InstallItem {
   winget: string | null;
   npm?: string | null; // global npm package for CLIs not in winget
   fallbackUrl: string | null;
-  action?: "install" | "upgrade";
+  action?: "install" | "upgrade" | "uninstall";
 }
 
 export interface InstalledInfo {
@@ -232,6 +232,7 @@ export interface ForjaUpdate {
   latest: string | null; // null = couldn't determine / no releases yet
   hasUpdate: boolean;
   url: string; // releases page
+  installUrl: string | null; // direct .exe asset, for one-click update
 }
 
 // naive semver compare: returns >0 if a is newer than b
@@ -252,18 +253,33 @@ export async function checkForjaUpdate(current: string): Promise<ForjaUpdate> {
       "https://api.github.com/repos/MrMaia/forja/releases/latest",
       { headers: { Accept: "application/vnd.github+json" } }
     );
-    if (!res.ok) return { current, latest: null, hasUpdate: false, url: releasesUrl };
+    if (!res.ok)
+      return { current, latest: null, hasUpdate: false, url: releasesUrl, installUrl: null };
     const data = await res.json();
     const latest = String(data.tag_name ?? "").replace(/^v/, "");
+    const exe = (data.assets ?? []).find((a: { name?: string }) =>
+      String(a.name ?? "").toLowerCase().endsWith(".exe")
+    );
     return {
       current,
       latest: latest || null,
       hasUpdate: !!latest && cmpVersions(latest, current) > 0,
       url: data.html_url ?? releasesUrl,
+      installUrl: exe?.browser_download_url ?? null,
     };
   } catch {
-    return { current, latest: null, hasUpdate: false, url: releasesUrl };
+    return { current, latest: null, hasUpdate: false, url: releasesUrl, installUrl: null };
   }
+}
+
+/** Download the release installer and launch it (one-click update). */
+export async function installUpdate(url: string): Promise<void> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("install_update", { url });
+    return;
+  }
+  window.open(url, "_blank", "noopener");
 }
 
 /** Open an external URL in the OS browser (used for fallback / driver deep-links). */

@@ -1,7 +1,7 @@
 {
   "name": "forja-monorepo",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "scripts": {
     "dev": "pnpm --filter @forja/desktop dev",
     "build": "pnpm --filter @forja/desktop build",

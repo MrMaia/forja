@@ -154,21 +154,36 @@ async fn install_one(app: &AppHandle, item: &InstallItem) {
     // winget is the default engine; CLIs absent from winget (Claude/Codex) install
     // globally via npm; anything else falls back to a deep-link (skipped).
     let cmd = if let Some(winget_id) = item.winget.clone() {
-        // "install" by default; "upgrade" updates an already-installed package.
-        let sub = if item.action.as_deref() == Some("upgrade") {
-            "upgrade"
-        } else {
-            "install"
-        };
-        app.shell().command("winget").args([
-            sub,
-            "--id",
-            &winget_id,
-            "-e",
-            "--silent",
-            "--accept-package-agreements",
-            "--accept-source-agreements",
-        ])
+        // install (default) | upgrade | uninstall — each has its own arg set,
+        // matching the entries allowlisted in capabilities/default.json.
+        match item.action.as_deref() {
+            Some("uninstall") => app.shell().command("winget").args([
+                "uninstall",
+                "--id",
+                &winget_id,
+                "-e",
+                "--silent",
+                "--accept-source-agreements",
+            ]),
+            Some("upgrade") => app.shell().command("winget").args([
+                "upgrade",
+                "--id",
+                &winget_id,
+                "-e",
+                "--silent",
+                "--accept-package-agreements",
+                "--accept-source-agreements",
+            ]),
+            _ => app.shell().command("winget").args([
+                "install",
+                "--id",
+                &winget_id,
+                "-e",
+                "--silent",
+                "--accept-package-agreements",
+                "--accept-source-agreements",
+            ]),
+        }
     } else if let Some(pkg) = item.npm.clone() {
         // npm is npm.cmd on Windows — go through cmd so it resolves
         app.shell().command("cmd").args(["/c", "npm", "install", "-g", &pkg])

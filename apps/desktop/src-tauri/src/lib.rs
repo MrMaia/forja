@@ -4,6 +4,7 @@ mod hardware;
 mod install;
 mod pathtools;
 mod tweaks;
+mod updater;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -24,6 +25,7 @@ pub fn run() {
             tweaks::apply_user_tweak,
             tweaks::apply_admin_tweaks,
             tweaks::restart_explorer,
+            updater::install_update,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Forja");

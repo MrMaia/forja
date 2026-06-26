@@ -103,14 +103,15 @@ apps/desktop/
 
 Próximas funcionalidades planejadas:
 
-- [ ] **Auto-update completo** — hoje a Forja avisa que há versão nova; baixar e
-      atualizar sozinha é o próximo passo.
-- [ ] **Instalação real de itens fora do winget** — drivers e apps com instalador
+- [ ] **Suporte a Linux e macOS** (quando possível) — hoje o foco é Windows.
+- [ ] **Instalar drivers de rede automaticamente** — hoje a Forja detecta o
+      hardware e indica o driver oficial; o próximo passo é instalar sozinha.
+- [ ] **Instalação real de itens fora do winget** — apps/drivers com instalador
       próprio (download oficial + elevação UAC), em vez de só abrir o site.
+- [ ] **Mais ajustes do Windows** (e ajustes de Linux/macOS no futuro).
 - [ ] **`postInstall`** — rodar comandos após instalar (ex.: `corepack enable`,
       extensões do VS Code, configs).
 - [ ] **Tamanhos de download reais** + checagem de espaço em disco.
-- [ ] **Desinstalar** programas pela Forja.
 - [ ] **Internacionalização (EN)** e **landing page** do projeto.
 
 <br/>

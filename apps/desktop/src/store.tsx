@@ -85,6 +85,7 @@ interface ForjaContextValue {
   installing: boolean;
   startInstall: (programs: Program[]) => void;
   startUpgrade: (program: Program, wingetId: string) => void;
+  startUninstall: (program: Program, wingetId: string) => void;
   upgradeAll: () => void; // upgrade every installed program with a pending update
   versionChoice: Record<string, string>; // programId -> chosen winget id
   setVersion: (programId: string, winget: string) => void;
@@ -257,6 +258,18 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     ]).catch((e) => console.error("Falha ao atualizar:", e));
   }, []);
 
+  // uninstall via the same global queue/events as install/upgrade
+  const startUninstall = useCallback((program: Program, wingetId: string) => {
+    setInstallQueue((prev) =>
+      prev.some((p) => p.id === program.id) ? prev : [...prev, program]
+    );
+    setInstallRows((prev) => ({ ...prev, [program.id]: { status: "queued" } }));
+    setInstalling(true);
+    installPrograms([
+      { id: program.id, winget: wingetId, fallbackUrl: program.fallbackUrl, action: "uninstall" },
+    ]).catch((e) => console.error("Falha ao desinstalar:", e));
+  }, []);
+
   // upgrade every installed program that has a pending update, in one go
   const upgradeAll = useCallback(() => {
     catalog
@@ -347,6 +360,7 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     installing,
     startInstall,
     startUpgrade,
+    startUninstall,
     upgradeAll,
     versionChoice,
     setVersion,
