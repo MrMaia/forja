@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { ForjaProfile } from "@forja/catalog";
 import { useForja } from "../store";
-import { TitleBar, Diamond, AmberButton, BackLink } from "../components/ui";
+import { TitleBar, Diamond, AmberButton } from "../components/ui";
 import {
   buildProfile,
   exportProfile,
@@ -45,7 +45,7 @@ export default function Profiles() {
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
-      <TitleBar section="Perfis" />
+      <TitleBar section="Perfis" onBack={() => go("catalog")} />
       <div className="flex min-h-0 flex-1 flex-col px-9 py-[30px]">
         {/* banner */}
         <div
@@ -190,10 +190,6 @@ export default function Profiles() {
               ))}
             </div>
           </div>
-        </div>
-
-        <div className="mt-5">
-          <BackLink onClick={() => go("catalog")}>Voltar ao catálogo</BackLink>
         </div>
       </div>
     </div>

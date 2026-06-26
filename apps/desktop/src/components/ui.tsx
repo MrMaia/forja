@@ -26,16 +26,29 @@ export function Diamond({ size = 13, glow = true }: { size?: number; glow?: bool
 }
 
 // 44px window chrome: brand + optional section label + faux window controls.
-export function TitleBar({ section }: { section?: string }) {
+// `onBack`, when set, shows a back arrow at the top-left (where users expect it).
+export function TitleBar({ section, onBack }: { section?: string; onBack?: () => void }) {
   return (
     <div
       data-tauri-drag-region
       className="flex h-11 flex-shrink-0 items-center justify-between border-b border-white/5 bg-forge-chrome px-3.5"
     >
-      <div className="pointer-events-none flex items-center gap-2.5">
-        <Diamond />
-        <span className="text-[13px] font-semibold tracking-wide">Forja</span>
-        {section && <span className="ml-1.5 text-xs text-forge-dim">{section}</span>}
+      <div className="flex items-center gap-2.5">
+        {onBack && (
+          <button
+            onClick={onBack}
+            aria-label="Voltar"
+            title="Voltar"
+            className="-ml-1 flex h-7 w-7 items-center justify-center rounded-[7px] text-forge-muted transition-colors hover:bg-white/10 hover:text-forge-text"
+          >
+            <Chevron dir="left" size={16} />
+          </button>
+        )}
+        <div className="pointer-events-none flex items-center gap-2.5">
+          <Diamond />
+          <span className="text-[13px] font-semibold tracking-wide">Forja</span>
+          {section && <span className="ml-1.5 text-xs text-forge-dim">{section}</span>}
+        </div>
       </div>
       <div className="flex items-center gap-1.5">
         <WindowButton label="Minimizar" onClick={() => windowAction("minimize")}>

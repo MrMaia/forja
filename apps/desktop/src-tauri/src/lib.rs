@@ -1,6 +1,7 @@
 mod catalog;
 mod detect;
 mod install;
+mod pathtools;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -14,6 +15,8 @@ pub fn run() {
             catalog::get_presets,
             install::install_programs,
             detect::check_installed,
+            pathtools::check_path_tools,
+            pathtools::add_to_user_path,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Forja");

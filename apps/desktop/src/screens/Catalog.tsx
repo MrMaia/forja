@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import type { Program } from "@forja/catalog";
 import { useForja } from "../store";
 import { TitleBar, AppIcon, AmberButton, Chevron } from "../components/ui";
-import { type InstalledInfo } from "../tauri";
+import { openExternal, type InstalledInfo } from "../tauri";
 
 const CATEGORIES = [
   "Essenciais",
@@ -13,6 +13,7 @@ const CATEGORIES = [
   "Desenvolvimento",
   "Games",
   "Drivers",
+  "Segurança",
 ] as const;
 
 const DOT: Record<string, string> = {
@@ -24,6 +25,7 @@ const DOT: Record<string, string> = {
   Desenvolvimento: "#f5933f",
   Games: "#8a5b6a",
   Drivers: "#7d7368",
+  Segurança: "#5b8a7d",
 };
 
 export default function Catalog() {
@@ -62,8 +64,10 @@ export default function Catalog() {
   const heading = q ? `Resultados para "${query}"` : active;
 
   const selectAllVisible = () => {
-    const allSelected = visible.every((p) => selected.has(p.id));
-    visible.forEach((p) => {
+    // only programs that aren't already installed can be selected
+    const selectable = visible.filter((p) => !installedOf(p.id)?.installed);
+    const allSelected = selectable.every((p) => selected.has(p.id));
+    selectable.forEach((p) => {
       if (allSelected === selected.has(p.id)) toggle(p.id);
     });
   };
@@ -166,7 +170,7 @@ export default function Catalog() {
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-3 gap-3.5">
+            <div className="grid grid-cols-3 items-start gap-3.5">
               {visible.map((p) => (
                 <ProgramCard
                   key={p.id}
@@ -215,7 +219,7 @@ export default function Catalog() {
               go("install");
             }}
           >
-            Instalar selecionados <span className="text-[15px]">→</span>
+            Instalar selecionados
           </AmberButton>
         </div>
       </div>
@@ -235,14 +239,35 @@ function ProgramCard({
   info?: InstalledInfo;
 }) {
   // progress comes from the global install queue (shared with the Instalações tab)
-  const { installRows, startUpgrade } = useForja();
+  const { installRows, startUpgrade, pathOf, addToPath } = useForja();
   const row = installRows[program.id];
   const status = row?.status;
   const busy =
     status === "queued" || status === "downloading" || status === "installing";
   const failed = status === "error";
+  // installed = detected by winget OR by executable (covers installs winget misses)
+  const pinfo = pathOf(program.id);
+  const installed = !!info?.installed || !!pinfo?.installed;
   const outdated = !!info?.installed && !!info?.available && !busy;
-  const current = !!info?.installed && !info?.available && !busy && !failed;
+  const current = installed && !info?.available && !busy && !failed;
+  // dev tool present but not on PATH → offer to add it
+  const offPath = !!pinfo?.installed && !pinfo.onPath && !!pinfo.pathDir;
+
+  const [pathState, setPathState] = useState<"idle" | "adding" | "error">("idle");
+  const doAddPath = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!pinfo?.pathDir) return;
+    setPathState("adding");
+    try {
+      await addToPath(program.id, pinfo.pathDir);
+      setPathState("idle");
+    } catch {
+      setPathState("error");
+    }
+  };
+  // installed programs can't be (re)selected — only updated. So no checkbox, and
+  // the card isn't a selection toggle anymore.
+  const selectable = !installed && !busy;
 
   const doUpgrade = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -254,28 +279,37 @@ function ProgramCard({
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      onClick={onToggle}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onToggle()}
+      role={selectable ? "button" : undefined}
+      tabIndex={selectable ? 0 : undefined}
+      onClick={selectable ? onToggle : undefined}
+      onKeyDown={
+        selectable
+          ? (e) => (e.key === "Enter" || e.key === " ") && onToggle()
+          : undefined
+      }
       className={
-        "flex cursor-pointer select-none items-start gap-3 rounded-[12px] border p-[15px] text-left transition-colors " +
+        "flex items-start gap-3 rounded-[12px] border p-[15px] text-left transition-colors " +
+        (selectable ? "cursor-pointer select-none " : "") +
         (selected
           ? "border-amber-glow/[0.55] bg-amber-glow/[0.09]"
-          : "border-white/[0.06] bg-[#1a1613] hover:border-white/[0.14]")
+          : installed
+            ? "border-white/[0.05] bg-[#161311]"
+            : "border-white/[0.06] bg-[#1a1613] hover:border-white/[0.14]")
       }
     >
       <AppIcon program={program} font={16} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           <span className="text-[14px] font-semibold">{program.name}</span>
-          {selected ? (
-            <span className="flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-amber-from to-amber-to text-[12px] font-bold text-[#1a1109]">
-              ✓
-            </span>
-          ) : (
-            <span className="h-[22px] w-[22px] flex-shrink-0 rounded-full border-[1.5px] border-white/[0.18]" />
-          )}
+          {/* checkbox only for selectable (not-installed) programs */}
+          {selectable &&
+            (selected ? (
+              <span className="flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-amber-from to-amber-to text-[12px] font-bold text-[#1a1109]">
+                ✓
+              </span>
+            ) : (
+              <span className="h-[22px] w-[22px] flex-shrink-0 rounded-full border-[1.5px] border-white/[0.18]" />
+            ))}
         </div>
         <div className="mt-1 text-[12px] leading-[1.45] text-[#998f83]">
           {program.description}
@@ -295,21 +329,39 @@ function ProgramCard({
                 : "na fila…"}
           </div>
         ) : failed ? (
-          <div className="mt-2.5 flex items-center justify-between gap-2">
-            <span className="text-[11px] font-medium text-status-error">
-              falha ao atualizar
-            </span>
-            <button
-              onClick={doUpgrade}
-              className="rounded-[7px] border border-white/15 px-2.5 py-1 text-[11.5px] font-medium text-forge-muted transition-colors hover:text-forge-text"
+          <div className="mt-2.5">
+            <div
+              className="text-[11px] font-medium leading-[1.4] text-status-error"
+              title={row?.line}
             >
-              Tentar de novo
-            </button>
+              {row?.line ?? "falha ao atualizar"}
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                onClick={doUpgrade}
+                className="rounded-[7px] border border-white/15 px-2.5 py-1 text-[11.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text"
+              >
+                Tentar de novo
+              </button>
+              {program.fallbackUrl && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openExternal(program.fallbackUrl!);
+                  }}
+                  className="rounded-[7px] border border-white/15 px-2.5 py-1 text-[11.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text"
+                >
+                  Abrir site oficial
+                </button>
+              )}
+            </div>
           </div>
         ) : outdated ? (
           <div className="mt-2.5 flex items-center justify-between gap-2">
-            <span className="font-mono text-[11px] text-amber-soft">
-              {info!.installed} → {info!.available}
+            <span className="flex items-center gap-1 font-mono text-[11px] text-amber-soft">
+              {info!.installed}
+              <Chevron dir="right" size={11} />
+              {info!.available}
             </span>
             <button
               onClick={doUpgrade}
@@ -320,9 +372,29 @@ function ProgramCard({
           </div>
         ) : current ? (
           <div className="mt-2.5 flex items-center gap-1.5 text-[11.5px] font-medium text-status-done">
-            <span className="text-[12px]">✓</span> instalado · v{info!.installed}
+            <span className="text-[12px]">✓</span> instalado
+            {info?.installed && ` · v${info.installed}`}
           </div>
         ) : null}
+
+        {/* dev tool installed but not on PATH → one-click add to user PATH */}
+        {offPath && (
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span
+              className="truncate text-[11px] font-medium text-amber-soft"
+              title={pathState === "error" ? "falha ao adicionar" : pinfo!.pathDir!}
+            >
+              {pathState === "error" ? "falha — tente de novo" : "⚠ fora do PATH"}
+            </span>
+            <button
+              onClick={doAddPath}
+              disabled={pathState === "adding"}
+              className="flex-shrink-0 rounded-[7px] border border-amber-glow/40 bg-amber-glow/[0.12] px-2.5 py-1 text-[11.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20 disabled:opacity-50"
+            >
+              {pathState === "adding" ? "adicionando…" : "Adicionar ao PATH"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

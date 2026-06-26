@@ -25,6 +25,46 @@ export interface DetectSpec {
   id: string; // program id (key echoed back)
   exact: string | null; // winget id
   prefixes: string[]; // extra id prefixes that count as installed
+  names: string[]; // display names that count as installed (non-winget installs)
+}
+
+export interface PathSpec {
+  id: string;
+  exe: string[];
+  installDirs: string[];
+}
+
+export interface PathToolInfo {
+  id: string;
+  installed: boolean;
+  onPath: boolean;
+  pathDir: string | null; // dir to add to PATH when onPath is false
+}
+
+/** Detect dev tools by executable presence and whether they're on PATH. */
+export async function checkPathTools(specs: PathSpec[]): Promise<PathToolInfo[]> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return invoke<PathToolInfo[]>("check_path_tools", { specs });
+  }
+  // Browser demo: pretend Python is installed but off PATH (to show the button),
+  // and Git installed and on PATH.
+  return specs.map(({ id }) => {
+    if (id === "python")
+      return { id, installed: true, onPath: false, pathDir: "C:\\Users\\demo\\Python313" };
+    if (id === "git") return { id, installed: true, onPath: true, pathDir: null };
+    return { id, installed: false, onPath: false, pathDir: null };
+  });
+}
+
+/** Append a directory to the current user's PATH (idempotent). */
+export async function addToUserPath(dir: string): Promise<void> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("add_to_user_path", { dir });
+    return;
+  }
+  await delay(400); // browser mock: no-op
 }
 
 /** Detect installed version / pending upgrade for a set of programs. */

@@ -13,15 +13,19 @@ import {
   getCatalog,
   getPresets,
   checkInstalled,
+  checkPathTools,
+  addToUserPath,
   installPrograms,
   onInstallProgress,
   type InstalledInfo,
+  type PathToolInfo,
 } from "./tauri";
 
 export interface InstallRow {
   status: InstallStatus;
   line?: string;
   percent?: number;
+  startedAt?: number; // ms epoch when the item first went active (for the timer)
 }
 
 const TERMINAL: InstallStatus[] = ["done", "error", "skipped"];
@@ -47,6 +51,8 @@ interface ForjaContextValue {
   byId: (id: string) => Program | undefined;
   selectedPrograms: () => Program[];
   installedOf: (id: string) => InstalledInfo | undefined;
+  pathOf: (id: string) => PathToolInfo | undefined;
+  addToPath: (programId: string, dir: string) => Promise<void>;
   refreshInstalled: () => void;
   // install progress (global, so the "Instalações" tab can show it any time)
   installQueue: Program[];
@@ -65,6 +71,7 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [installed, setInstalled] = useState<Map<string, InstalledInfo>>(new Map());
+  const [pathInfo, setPathInfo] = useState<Map<string, PathToolInfo>>(new Map());
   const [installQueue, setInstallQueue] = useState<Program[]>([]);
   const [installRows, setInstallRows] = useState<Record<string, InstallRow>>({});
   const [installing, setInstalling] = useState(false);
@@ -84,25 +91,51 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let unlisten: (() => void) | undefined;
     onInstallProgress((p) => {
-      setInstallRows((prev) => ({
-        ...prev,
-        [p.id]: { status: p.status, line: p.line, percent: p.percent },
-      }));
+      setInstallRows((prev) => {
+        const old = prev[p.id];
+        const active = p.status === "downloading" || p.status === "installing";
+        // stamp the start the first time it goes active; keep it afterwards so the
+        // finished row can show how long it took.
+        const startedAt = old?.startedAt ?? (active ? Date.now() : undefined);
+        return {
+          ...prev,
+          [p.id]: { status: p.status, line: p.line, percent: p.percent, startedAt },
+        };
+      });
     }).then((u) => (unlisten = u));
     return () => unlisten?.();
   }, []);
 
-  // Query winget for install state of every program that has a winget id.
+  // Query winget for install state of every program that has a winget id, and
+  // probe dev tools by executable (PATH state) in parallel.
   async function loadInstalled(programs: Program[]) {
     const specs = programs
       .filter((p) => p.winget)
-      .map((p) => ({ id: p.id, exact: p.winget, prefixes: p.detect ?? [] }));
-    if (specs.length === 0) return;
-    try {
-      const infos = await checkInstalled(specs);
-      setInstalled(new Map(infos.map((info) => [info.id, info] as const)));
-    } catch (e) {
-      console.error("Falha ao detectar instalados:", e);
+      .map((p) => ({
+        id: p.id,
+        exact: p.winget,
+        prefixes: p.detect ?? [],
+        names: [p.name],
+      }));
+    const pathSpecs = programs
+      .filter((p) => p.exe && p.exe.length > 0)
+      .map((p) => ({ id: p.id, exe: p.exe!, installDirs: p.installDirs ?? [] }));
+
+    if (specs.length > 0) {
+      try {
+        const infos = await checkInstalled(specs);
+        setInstalled(new Map(infos.map((info) => [info.id, info] as const)));
+      } catch (e) {
+        console.error("Falha ao detectar instalados:", e);
+      }
+    }
+    if (pathSpecs.length > 0) {
+      try {
+        const infos = await checkPathTools(pathSpecs);
+        setPathInfo(new Map(infos.map((info) => [info.id, info] as const)));
+      } catch (e) {
+        console.error("Falha ao detectar ferramentas no PATH:", e);
+      }
     }
   }
 
@@ -155,6 +188,18 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     return m;
   }, [catalog]);
 
+  // Add a tool's dir to the user PATH, then mark it on-path locally so the
+  // button disappears without a full re-detect. Throws on failure (UI shows it).
+  const addToPath = useCallback(async (programId: string, dir: string) => {
+    await addToUserPath(dir);
+    setPathInfo((prev) => {
+      const next = new Map(prev);
+      const cur = next.get(programId);
+      if (cur) next.set(programId, { ...cur, onPath: true, pathDir: null });
+      return next;
+    });
+  }, []);
+
   const toggle = useCallback((id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -184,6 +229,8 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     selectedPrograms: () =>
       [...selected].map((id) => index.get(id)).filter(Boolean) as Program[],
     installedOf: (id) => installed.get(id),
+    pathOf: (id) => pathInfo.get(id),
+    addToPath,
     refreshInstalled: () => void loadInstalled(catalog),
     installQueue,
     installRows,

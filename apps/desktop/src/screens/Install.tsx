@@ -1,9 +1,17 @@
+import { useEffect, useState } from "react";
 import type { InstallStatus, Program } from "@forja/catalog";
 import { useForja, type InstallRow } from "../store";
-import { TitleBar, AppIcon, BackLink, Chevron } from "../components/ui";
+import { TitleBar, AppIcon } from "../components/ui";
 import { openExternal } from "../tauri";
 
 const TERMINAL: InstallStatus[] = ["done", "error", "skipped"];
+
+// "1m 23s" / "12s" from a start timestamp.
+function elapsed(startedAt?: number, now = Date.now()): string {
+  if (!startedAt) return "";
+  const s = Math.max(0, Math.floor((now - startedAt) / 1000));
+  return s >= 60 ? `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s` : `${s}s`;
+}
 
 // Smooth per-item contribution to the overall bar.
 function itemPct(row?: InstallRow): number {
@@ -17,6 +25,14 @@ function itemPct(row?: InstallRow): number {
 export default function Install() {
   const { installQueue: programs, installRows: rows, installing, go } = useForja();
 
+  // tick once a second while something is installing, so the per-item timers move
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!installing) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [installing]);
+
   const total = programs.length;
   const done = programs.filter((p) => rows[p.id]?.status === "done").length;
   const errors = programs.filter((p) => rows[p.id]?.status === "error").length;
@@ -29,12 +45,11 @@ export default function Install() {
   if (total === 0) {
     return (
       <div className="flex h-full flex-col bg-forge-bg">
-        <TitleBar section="Instalações" />
+        <TitleBar section="Instalações" onBack={() => go("catalog")} />
         <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
           <p className="font-mono text-sm text-forge-faint">
             nenhuma instalação em andamento
           </p>
-          <BackLink onClick={() => go("catalog")}>Ir para o catálogo</BackLink>
         </div>
       </div>
     );
@@ -42,7 +57,7 @@ export default function Install() {
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
-      <TitleBar section={finished ? "Concluído" : "Instalando"} />
+      <TitleBar section={finished ? "Concluído" : "Instalando"} onBack={() => go("catalog")} />
 
       {/* overall progress */}
       <div className="flex-shrink-0 border-b border-white/5 px-8 pb-[22px] pt-7">
@@ -73,38 +88,34 @@ export default function Install() {
       {/* queue */}
       <div className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-6 py-3.5">
         {programs.map((p) => (
-          <QueueRow key={p.id} program={p} row={rows[p.id]} />
+          <QueueRow key={p.id} program={p} row={rows[p.id]} now={now} />
         ))}
       </div>
 
       {/* footer */}
-      <div className="flex h-[68px] flex-shrink-0 items-center justify-between border-t border-white/[0.06] bg-forge-deep px-6">
+      <div className="flex h-[68px] flex-shrink-0 items-center border-t border-white/[0.06] bg-forge-deep px-6">
         <Legend />
-        {finished ? (
-          <button
-            onClick={() => go("catalog")}
-            className="group flex items-center gap-2 rounded-[10px] bg-gradient-to-b from-amber-from to-amber-to px-6 py-2.5 text-[13.5px] font-semibold text-[#1a1109] transition-transform hover:-translate-y-px"
-          >
-            <span className="transition-transform duration-150 group-hover:-translate-x-0.5">
-              <Chevron dir="left" />
-            </span>
-            Voltar ao catálogo
-          </button>
-        ) : (
-          <BackLink onClick={() => go("catalog")}>Voltar ao catálogo</BackLink>
-        )}
       </div>
     </div>
   );
 }
 
-function QueueRow({ program, row }: { program: Program; row?: InstallRow }) {
+function QueueRow({
+  program,
+  row,
+  now,
+}: {
+  program: Program;
+  row?: InstallRow;
+  now: number;
+}) {
   const status = row?.status ?? "queued";
   const downloading = status === "downloading";
   const installingNow = status === "installing";
   const active = downloading || installingNow;
-  // determinate width while downloading; indeterminate full bar while installing
-  const barPct = downloading ? Math.round(row?.percent ?? 0) : 100;
+  const failed = status === "error";
+  const barPct = downloading ? Math.round(row?.percent ?? 0) : 0;
+  const time = elapsed(row?.startedAt, now);
 
   return (
     <div
@@ -118,20 +129,38 @@ function QueueRow({ program, row }: { program: Program; row?: InstallRow }) {
         <div className="flex items-center justify-between gap-2">
           <span className="text-[14px] font-medium">{program.name}</span>
           {active && (
-            <span className="font-mono text-[11.5px] text-amber-soft">
+            <span className="flex-shrink-0 font-mono text-[11.5px] text-amber-soft">
               {downloading ? `baixando · ${barPct}%` : "instalando"}
+              {time && <span className="ml-1.5 text-forge-faint">· {time}</span>}
             </span>
           )}
         </div>
         {active && (
           <div className="mt-2 h-[4px] overflow-hidden rounded-[3px] bg-white/[0.08]">
-            <div
-              className={
-                "h-full rounded-[3px] bg-amber-glow transition-[width] duration-200 " +
-                (installingNow ? "opacity-60" : "")
-              }
-              style={{ width: `${barPct}%` }}
-            />
+            {downloading ? (
+              <div
+                className="h-full rounded-[3px] bg-amber-glow transition-[width] duration-200"
+                style={{ width: `${barPct}%` }}
+              />
+            ) : (
+              // installing: winget gives no %, so sweep an indeterminate highlight
+              <div
+                className="h-full w-2/5 rounded-[3px] bg-amber-glow/80"
+                style={{ animation: "forjaIndeterminate 1.3s ease-in-out infinite" }}
+              />
+            )}
+          </div>
+        )}
+        {/* live winget line while active; the failure reason when it errors */}
+        {(active || failed) && row?.line && (
+          <div
+            className={
+              "mt-1.5 truncate font-mono text-[10.5px] " +
+              (failed ? "text-status-error/90" : "text-forge-faint")
+            }
+            title={row.line}
+          >
+            {row.line}
           </div>
         )}
       </div>
@@ -171,7 +200,7 @@ function StatusBadge({
         onClick={() => fallbackUrl && openExternal(fallbackUrl)}
         className="text-[12.5px] font-medium text-amber-light hover:underline"
       >
-        Abrir site oficial →
+        Abrir site oficial
       </button>
     );
   if (status === "downloading" || status === "installing")

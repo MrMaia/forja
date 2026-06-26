@@ -52,6 +52,18 @@
           "name": "winget-list",
           "cmd": "winget",
           "args": ["list", "--accept-source-agreements"]
+        },
+        {
+          "name": "set-user-path",
+          "cmd": "powershell",
+          "args": [
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            "$d=$env:FORJA_PATH_DIR; if($d){ $p=[Environment]::GetEnvironmentVariable('Path','User'); if(-not $p){$p=''}; if(($p -split ';') -notcontains $d){ [Environment]::SetEnvironmentVariable('Path', ($p.TrimEnd(';')+';'+$d), 'User') } }"
+          ]
         }
       ]
     }

@@ -19,7 +19,7 @@ export default function Presets() {
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
-      <TitleBar section="Perfis prontos" />
+      <TitleBar section="Perfis prontos" onBack={() => go("catalog")} />
       <div className="flex min-h-0 flex-1 flex-col px-9 py-[34px]">
         <div className="mb-[26px] flex items-end justify-between">
           <div>
@@ -35,7 +35,7 @@ export default function Presets() {
             onClick={() => go("catalog")}
             className="text-[13px] font-medium text-amber-light hover:underline"
           >
-            ou monte do zero →
+            ou monte do zero
           </button>
         </div>
 

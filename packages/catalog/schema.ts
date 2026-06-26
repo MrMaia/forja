@@ -10,7 +10,8 @@ export type Category =
   | "Produtividade"
   | "Desenvolvimento"
   | "Games"
-  | "Drivers";
+  | "Drivers"
+  | "Segurança";
 
 // 2-letter monogram tile, matching the prototype (no real logo assets).
 export interface ProgramIcon {
@@ -31,6 +32,13 @@ export interface Program {
   // packages whose id is version-pinned (e.g. Python.Python.3.13 but any
   // Python.Python.* should count). Optional; defaults to none.
   detect?: string[];
+  // dev/CLI tools only: executable basenames used to detect the program by its
+  // binary (covers installs winget misses) and to power the "add to PATH" flow.
+  exe?: string[]; // e.g. ["git.exe"], ["python.exe","python3.exe"]
+  // candidate dirs where `exe` lives when installed, with %ENV% vars; a trailing
+  // "\\*" segment means "search each immediate subdirectory" (e.g. Python's
+  // version folders). Used to locate the dir to add to PATH.
+  installDirs?: string[];
   fallbackUrl: string | null; // official installer / deep-link when winget is null
   postInstall: string[]; // commands to run after install (reserved; not run in v1)
 }

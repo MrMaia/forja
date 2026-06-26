@@ -26,6 +26,10 @@ pub struct Program {
     pub winget: Option<String>,
     #[serde(default)]
     pub detect: Vec<String>,
+    #[serde(default)]
+    pub exe: Vec<String>,
+    #[serde(rename = "installDirs", default)]
+    pub install_dirs: Vec<String>,
     #[serde(rename = "fallbackUrl")]
     pub fallback_url: Option<String>,
     #[serde(rename = "postInstall", default)]
