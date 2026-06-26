@@ -1325,5 +1325,128 @@
     "winget": "Malwarebytes.Malwarebytes",
     "fallbackUrl": null,
     "postInstall": []
+  },
+  {
+    "id": "qbittorrent",
+    "name": "qBittorrent",
+    "category": "Essenciais",
+    "description": "Cliente de torrent leve e sem anúncios.",
+    "icon": { "label": "qB", "bg": "#3a352e", "fg": "#e6ddcf" },
+    "iconUrl": "/icons/qbittorrent.svg",
+    "winget": "qBittorrent.qBittorrent",
+    "fallbackUrl": "https://www.qbittorrent.org/download",
+    "postInstall": []
+  },
+  {
+    "id": "onedrive",
+    "name": "OneDrive",
+    "category": "Produtividade",
+    "description": "Armazenamento e sincronização da Microsoft.",
+    "icon": { "label": "OD", "bg": "#2f4a3a", "fg": "#cfe6d8" },
+    "iconUrl": null,
+    "winget": "Microsoft.OneDrive",
+    "fallbackUrl": null,
+    "postInstall": []
+  },
+  {
+    "id": "evernote",
+    "name": "Evernote",
+    "category": "Produtividade",
+    "description": "Notas e organização.",
+    "icon": { "label": "En", "bg": "#2f4a3a", "fg": "#cfe6d8" },
+    "iconUrl": "/icons/evernote.svg",
+    "winget": "9WZDNCRFJ3MB",
+    "fallbackUrl": "https://evernote.com/download",
+    "postInstall": []
+  },
+  {
+    "id": "google-earth",
+    "name": "Google Earth Pro",
+    "category": "Produtividade",
+    "description": "Mapas e globo em 3D.",
+    "icon": { "label": "GE", "bg": "#2f4a3a", "fg": "#cfe6d8" },
+    "iconUrl": "/icons/google-earth.svg",
+    "winget": "Google.EarthPro",
+    "fallbackUrl": null,
+    "postInstall": []
+  },
+  {
+    "id": "filezilla",
+    "name": "FileZilla",
+    "category": "Desenvolvimento",
+    "description": "Cliente FTP/SFTP.",
+    "icon": { "label": "FZ", "bg": "#2d4257", "fg": "#dfe7ef" },
+    "iconUrl": "/icons/filezilla.svg",
+    "winget": null,
+    "fallbackUrl": "https://filezilla-project.org/download.php",
+    "postInstall": []
+  },
+  {
+    "id": "eclipse",
+    "name": "Eclipse IDE",
+    "category": "Desenvolvimento",
+    "description": "IDE para Java (e outras linguagens).",
+    "icon": { "label": "Ec", "bg": "#2d4257", "fg": "#dfe7ef" },
+    "iconUrl": "/icons/eclipse.svg",
+    "winget": "EclipseFoundation.Eclipse.Java",
+    "fallbackUrl": "https://www.eclipse.org/downloads/",
+    "postInstall": []
+  },
+  {
+    "id": "php",
+    "name": "PHP",
+    "category": "Desenvolvimento",
+    "description": "Linguagem PHP (8.4).",
+    "icon": { "label": "PH", "bg": "#2d4257", "fg": "#dfe7ef" },
+    "iconUrl": "/icons/php.svg",
+    "winget": "PHP.PHP.8.4",
+    "detect": ["PHP.PHP"],
+    "fallbackUrl": "https://windows.php.net/download/",
+    "postInstall": []
+  },
+  {
+    "id": "vcredist",
+    "name": "Visual C++ Redistributable",
+    "category": "Desenvolvimento",
+    "description": "Bibliotecas Visual C++ (x64) exigidas por muitos programas e jogos.",
+    "icon": { "label": "VC", "bg": "#2d4257", "fg": "#dfe7ef" },
+    "iconUrl": null,
+    "winget": "Microsoft.VCRedist.2015+.x64",
+    "fallbackUrl": "https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist",
+    "postInstall": []
+  },
+  {
+    "id": "dotnet-runtime",
+    "name": ".NET Desktop Runtime 8",
+    "category": "Desenvolvimento",
+    "description": "Runtime do .NET 8 exigido por vários aplicativos.",
+    "icon": { "label": "NR", "bg": "#2d4257", "fg": "#dfe7ef" },
+    "iconUrl": "/icons/dotnet-sdk.svg",
+    "winget": "Microsoft.DotNet.DesktopRuntime.8",
+    "detect": ["Microsoft.DotNet.DesktopRuntime"],
+    "fallbackUrl": "https://dotnet.microsoft.com/download",
+    "postInstall": []
+  },
+  {
+    "id": "kaspersky",
+    "name": "Kaspersky",
+    "category": "Segurança",
+    "description": "Antivírus. (Fora do winget — abre o site oficial.)",
+    "icon": { "label": "Ka", "bg": "#2e4a45", "fg": "#cfe6e0" },
+    "iconUrl": "/icons/kaspersky.svg",
+    "winget": null,
+    "fallbackUrl": "https://www.kaspersky.com.br/downloads",
+    "postInstall": []
+  },
+  {
+    "id": "amd-adrenalin",
+    "name": "AMD Software: Adrenalin",
+    "category": "Drivers",
+    "description": "Drivers e ajustes para placas AMD. (Fora do winget — abre o site oficial.)",
+    "icon": { "label": "AM", "bg": "#3a3a2e", "fg": "#e6e6cf" },
+    "iconUrl": "/icons/amd-adrenalin.svg",
+    "winget": null,
+    "fallbackUrl": "https://www.amd.com/en/support/download/drivers.html",
+    "postInstall": []
   }
 ]

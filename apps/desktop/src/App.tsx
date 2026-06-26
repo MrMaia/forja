@@ -1,9 +1,11 @@
 import { useForja } from "./store";
 import Onboarding from "./screens/Onboarding";
+import Home from "./screens/Home";
 import Catalog from "./screens/Catalog";
 import Presets from "./screens/Presets";
 import Install from "./screens/Install";
 import Profiles from "./screens/Profiles";
+import Settings from "./screens/Settings";
 
 export default function App() {
   const { screen, loading } = useForja();
@@ -19,6 +21,8 @@ export default function App() {
   switch (screen) {
     case "onboarding":
       return <Onboarding />;
+    case "home":
+      return <Home />;
     case "catalog":
       return <Catalog />;
     case "presets":
@@ -27,5 +31,7 @@ export default function App() {
       return <Install />;
     case "profiles":
       return <Profiles />;
+    case "settings":
+      return <Settings />;
   }
 }

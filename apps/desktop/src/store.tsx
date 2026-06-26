@@ -32,10 +32,28 @@ const TERMINAL: InstallStatus[] = ["done", "error", "skipped"];
 
 export type Screen =
   | "onboarding"
+  | "home"
   | "catalog"
   | "presets"
   | "install"
-  | "profiles";
+  | "profiles"
+  | "settings";
+
+export interface Settings {
+  autoUpdateCheck: boolean; // check for app updates when Forja opens
+  hideInstalled: boolean; // hide already-installed programs in the catalog
+}
+
+const SETTINGS_KEY = "forja.settings";
+const DEFAULT_SETTINGS: Settings = { autoUpdateCheck: true, hideInstalled: false };
+
+function loadSettings(): Settings {
+  try {
+    return { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "{}") };
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
+}
 
 interface ForjaContextValue {
   screen: Screen;
@@ -55,6 +73,11 @@ interface ForjaContextValue {
   isErrorDismissed: (id: string) => boolean;
   addToPath: (programId: string, dir: string) => Promise<void>;
   refreshInstalled: () => void;
+  checking: boolean; // a manual "check for updates" is running
+  updatesCount: number; // installed programs with a pending upgrade
+  programsWithUpdates: () => Program[];
+  settings: Settings;
+  updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
   // install progress (global, so the "Instalações" tab can show it any time)
   installQueue: Program[];
   installRows: Record<string, InstallRow>;
@@ -80,6 +103,23 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
   // it survives navigating away and back; the Instalações tab still shows the log)
   const [dismissedErrors, setDismissedErrors] = useState<Set<string>>(new Set());
   const errTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const [settings, setSettings] = useState<Settings>(loadSettings);
+  const [checking, setChecking] = useState(false);
+
+  const updateSetting = useCallback(
+    <K extends keyof Settings>(key: K, value: Settings[K]) => {
+      setSettings((prev) => {
+        const next = { ...prev, [key]: value };
+        try {
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
+        } catch {
+          /* ignore quota/private-mode errors */
+        }
+        return next;
+      });
+    },
+    []
+  );
 
   useEffect(() => {
     Promise.all([getCatalog(), getPresets()])
@@ -164,6 +204,16 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
       } catch (e) {
         console.error("Falha ao detectar ferramentas no PATH:", e);
       }
+    }
+  }
+
+  // manual "check for updates": re-run detection with a visible spinner
+  async function checkForUpdates() {
+    setChecking(true);
+    try {
+      await loadInstalled(catalog);
+    } finally {
+      setChecking(false);
     }
   }
 
@@ -260,7 +310,13 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     pathOf: (id) => pathInfo.get(id),
     isErrorDismissed: (id) => dismissedErrors.has(id),
     addToPath,
-    refreshInstalled: () => void loadInstalled(catalog),
+    refreshInstalled: () => void checkForUpdates(),
+    checking,
+    updatesCount: [...installed.values()].filter((i) => i.available).length,
+    programsWithUpdates: () =>
+      catalog.filter((p) => installed.get(p.id)?.available),
+    settings,
+    updateSetting,
     installQueue,
     installRows,
     installing,

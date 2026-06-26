@@ -36,9 +36,12 @@ export default function Catalog() {
     clear,
     go,
     installedOf,
+    pathOf,
     selectedPrograms,
     startInstall,
     installing,
+    settings,
+    updatesCount,
   } = useForja();
   const [active, setActive] = useState<string>("Desenvolvimento");
   const [query, setQuery] = useState("");
@@ -50,7 +53,7 @@ export default function Catalog() {
   }, [catalog]);
 
   const q = query.trim().toLowerCase();
-  const visible = useMemo(() => {
+  const baseList = useMemo(() => {
     if (q) {
       return catalog.filter(
         (p) =>
@@ -60,6 +63,13 @@ export default function Catalog() {
     }
     return catalog.filter((p) => p.category === active);
   }, [catalog, active, q]);
+
+  // optional "hide installed" — computed each render so it reacts to detection
+  const isInstalled = (id: string) =>
+    !!installedOf(id)?.installed || !!pathOf(id)?.installed;
+  const visible = settings.hideInstalled
+    ? baseList.filter((p) => !isInstalled(p.id))
+    : baseList;
 
   const heading = q ? `Resultados para "${query}"` : active;
 
@@ -127,12 +137,18 @@ export default function Catalog() {
           </div>
           <div className="mt-auto flex flex-col gap-0.5 border-t border-white/[0.06] pt-3">
             <SidebarLink
+              label="Início"
+              onClick={() => go("home")}
+              count={updatesCount}
+            />
+            <SidebarLink
               label="Instalações"
               onClick={() => go("install")}
               badge={installing ? "•" : undefined}
             />
             <SidebarLink label="Perfis prontos" onClick={() => go("presets")} />
             <SidebarLink label="Exportar / Importar" onClick={() => go("profiles")} />
+            <SidebarLink label="Configurações" onClick={() => go("settings")} />
           </div>
         </aside>
 
@@ -410,10 +426,12 @@ function SidebarLink({
   label,
   onClick,
   badge,
+  count,
 }: {
   label: string;
   onClick: () => void;
   badge?: string;
+  count?: number;
 }) {
   return (
     <button
@@ -427,9 +445,15 @@ function SidebarLink({
         }
       />
       <span className="flex-1 text-left">{label}</span>
-      <span className="text-forge-dim transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-amber-light">
-        <Chevron dir="right" size={13} />
-      </span>
+      {count && count > 0 ? (
+        <span className="rounded-full bg-amber-glow/20 px-[7px] py-px font-mono text-[10.5px] font-semibold text-amber-soft">
+          {count}
+        </span>
+      ) : (
+        <span className="text-forge-dim transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-amber-light">
+          <Chevron dir="right" size={13} />
+        </span>
+      )}
     </button>
   );
 }
