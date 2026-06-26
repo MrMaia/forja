@@ -1,70 +1,121 @@
-# Forja — _Do zero ao pronto._
+<div align="center">
 
-App desktop (Windows-first) que automatiza a configuração de um PC recém-formatado:
-você escolhe os programas, a Forja baixa da fonte oficial e instala em silêncio via
-**winget**, mostrando progresso em tempo real. O diferencial: salvar a seleção como
-um arquivo **`.forja`** portátil e reimportar na próxima formatação com um clique.
+<img src="apps/desktop/src-tauri/icons/icon.png" width="104" alt="Forja" />
 
-Stack: **Tauri v2** (Rust) + **React + TypeScript + Vite + TailwindCSS**, em um
-monorepo pnpm. Empacotamento NSIS.
+# Forja
 
-## Recursos
+### _Do zero ao pronto._
 
-- **Catálogo manifest-driven** com categorias, busca e seleção múltipla.
-- **Perfis prontos** por persona (Dev, Gamer, Office, Streamer, Estudante).
-- **Instalação silenciosa via winget** com progresso em tempo real — fila,
-  barra de download (`baixando · %`) e status por item.
-- **Aba Instalações** global: o progresso sobrevive à navegação entre telas.
-- **Detecção do que já está instalado** + versão, com botão **Atualizar** quando
-  há versão nova (casa o id real do winget, que costuma diferir do id de
-  instalação — ex.: `Google.Chrome` ↔ `Google.Chrome.EXE`).
-- **Exportar / Importar** a seleção como arquivo `.forja` portátil.
-- **Ícones e fontes empacotados** (funcionam offline, num PC recém-formatado);
-  ícone ausente cai para um monograma.
+Formatou o PC? A **Forja** monta e instala seu ambiente inteiro de uma vez só.
+Você escolhe os programas, ela baixa direto da **fonte oficial** e instala tudo
+**em silêncio** — e ainda salva sua seleção num arquivo portátil pra repetir na
+próxima formatação com um clique.
 
-## Rodando
+<br/>
 
-**Pré-requisitos**
-- [Node 18+](https://nodejs.org) e [pnpm 9+](https://pnpm.io) (`npm i -g pnpm`)
-- [Rust](https://rustup.rs) + pré-requisitos do Tauri no Windows
-  ([WebView2 + MSVC Build Tools](https://tauri.app/start/prerequisites/))
-- `winget` (já vem no Windows 10/11 atualizado)
+[![Windows 10/11](https://img.shields.io/badge/Windows-10%20%2F%2011-0a7bbd?logo=windows&logoColor=white)](https://github.com/MrMaia/forja/releases/latest)
+[![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://tauri.app)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![Rust](https://img.shields.io/badge/Rust-000?logo=rust&logoColor=white)](https://www.rust-lang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-f5933f)](LICENSE)
+
+[**⬇️ Baixar a última versão**](https://github.com/MrMaia/forja/releases/latest)
+
+<br/>
+
+<img src="docs/assets/onboarding.png" width="820" alt="Tela inicial da Forja" />
+
+</div>
+
+<br/>
+
+## ✨ O que ela faz
+
+- 🗂️ **Catálogo com 120+ programas** — categorias, busca e seleção múltipla, dos
+  essenciais aos de desenvolvimento, games, drivers e segurança.
+- ⚡ **Instalação silenciosa via winget** — fila com progresso em tempo real,
+  cronômetro e o motivo real do erro quando algo falha (lendo o log do instalador).
+- 🧩 **Perfis prontos** por persona (Dev, Gamer, Office, Streamer, Estudante,
+  Essencial) — comece com um pacote e ajuste o que quiser.
+- 💾 **Exportar / Importar `.forja`** — salve sua seleção num arquivo portátil e
+  reimporte na próxima formatação.
+- 🔍 **Detecção do que já está instalado** (winget **e** por executável, pegando
+  até o que foi instalado fora do winget) com botão **Atualizar** quando há versão nova.
+- 🧰 **Seleção de versão** para linguagens (PHP, Java, Python, .NET, Node).
+- 🖥️ **Adicionar ao PATH** com um clique para ferramentas de linha de comando.
+- 🌐 **Drivers de rede** — detecta seu hardware **offline** e aponta o driver
+  oficial certo (essencial num PC recém-formatado, sem internet).
+- 🪛 **Ajustes do Windows** — tema escuro, extensões de arquivo, barra de tarefas,
+  telemetria, plano de energia e mais (reversíveis).
+- 📦 **Ícones e fontes empacotados** — funciona offline; ícone ausente vira monograma.
+
+<br/>
+
+## 🚀 Começando
+
+### Usar (recomendado)
+
+1. Baixe o **[`Forja_x64-setup.exe`](https://github.com/MrMaia/forja/releases/latest)**
+   na página de releases.
+2. Instale e abra. Pronto.
+
+> O Windows pode mostrar um aviso do SmartScreen por ser um app novo e ainda não
+> assinado — clique em **Mais informações → Executar assim mesmo**.
+
+### Rodar a partir do código
+
+**Pré-requisitos:** [Node 18+](https://nodejs.org) e [pnpm 9+](https://pnpm.io),
+[Rust](https://rustup.rs) + [pré-requisitos do Tauri](https://tauri.app/start/prerequisites/)
+(WebView2 + MSVC Build Tools).
 
 ```bash
 pnpm install
 pnpm tauri dev      # app desktop completo (Rust + React)
+pnpm tauri build    # gera o instalador NSIS
 ```
 
-Para mexer só na UI sem a toolchain Rust, dá pra rodar no navegador — o catálogo é
-carregado do JSON e a instalação é simulada:
+Só quer mexer na interface, sem a toolchain Rust? A instalação é simulada no
+navegador:
 
 ```bash
 pnpm dev            # http://localhost:1420
 ```
 
-Build do instalador:
+<br/>
 
-```bash
-pnpm tauri build    # gera o .exe NSIS em apps/desktop/src-tauri/target/release/bundle
+## 🛠️ Stack
+
+**Tauri v2** (Rust) · **React + TypeScript + Vite + TailwindCSS** · monorepo pnpm ·
+empacotamento NSIS · instalação via **winget** (e **npm** para CLIs fora do winget).
+
 ```
-
-## Estrutura
-
-```
-packages/catalog/      dados puros e reutilizáveis (sem React/Rust)
-  schema.ts            tipos do manifest + perfil (fonte da verdade dos tipos)
-  catalog.json         catálogo seed
-  presets.json         perfis prontos (Dev, Gamer, Office, Streamer, Estudante)
-
+packages/catalog/      dados puros e reutilizáveis (schema, catálogo, perfis)
 apps/desktop/
-  src/                 React: 5 telas (Onboarding, Catálogo, Perfis, Instalação, Export/Import)
-  src-tauri/
-    src/catalog.rs     structs serde + validação do manifest (get_catalog / get_presets)
-    src/install.rs     spawn do winget + eventos de progresso (install_programs)
-    capabilities/      allowlist do shell para o comando winget
+  src/                 React: telas (Onboarding, Catálogo, Perfis, Instalação,
+                       Exportar/Importar, Drivers, Ajustes do Windows, Configurações)
+  src-tauri/src/       Rust: catálogo, detecção (winget + exe), instalação,
+                       PATH, hardware de rede e tweaks do Windows
 ```
 
-## Como adicionar um item ao catálogo
+<br/>
+
+## 🗺️ Roadmap
+
+Próximas funcionalidades planejadas:
+
+- [ ] **Auto-update completo** — hoje a Forja avisa que há versão nova; baixar e
+      atualizar sozinha é o próximo passo.
+- [ ] **Instalação real de itens fora do winget** — drivers e apps com instalador
+      próprio (download oficial + elevação UAC), em vez de só abrir o site.
+- [ ] **`postInstall`** — rodar comandos após instalar (ex.: `corepack enable`,
+      extensões do VS Code, configs).
+- [ ] **Tamanhos de download reais** + checagem de espaço em disco.
+- [ ] **Desinstalar** programas pela Forja.
+- [ ] **Internacionalização (EN)** e **landing page** do projeto.
+
+<br/>
+
+## 📦 Adicionar um programa ao catálogo
 
 Edite **`packages/catalog/catalog.json`** e acrescente um objeto:
 
@@ -74,31 +125,24 @@ Edite **`packages/catalog/catalog.json`** e acrescente um objeto:
   "name": "Obsidian",
   "category": "Produtividade",
   "description": "Notas em markdown com grafo de conhecimento.",
-  "icon": { "label": "Ob", "bg": "#3a3540", "fg": "#ddd6e4" },
+  "icon": { "label": "Ob", "bg": "#2f4a3a", "fg": "#cfe6d8" },
+  "iconUrl": null,
   "winget": "Obsidian.Obsidian",
   "fallbackUrl": "https://obsidian.md/download",
   "postInstall": []
 }
 ```
 
-- `id` — kebab-case, estável: é o que os perfis `.forja` guardam.
-- `category` — uma de: Essenciais, Navegadores, Comunicação, Mídia, Produtividade,
-  Desenvolvimento, Games, Drivers.
-- `icon` — monograma de 2 letras + cores (o protótipo não usa logos reais).
-- `winget` — id do pacote (`winget search <nome>` para descobrir). Use `null` para
-  itens fora do winget; aí a Forja oferece o deep-link da `fallbackUrl`.
-
-Para incluí-lo num perfil pronto, adicione o `id` em `packages/catalog/presets.json`.
 A validação serde roda nos testes do Rust:
 
 ```bash
 cd apps/desktop/src-tauri && cargo test
 ```
 
-## Deixado para depois (stubs/TODO marcados no código)
+<br/>
 
-- **Drivers / itens sem winget**: hoje só marcam `skipped` e abrem o site oficial.
-  Instalação real + elevação UAC (`elevated-command`) fica numa próxima versão —
-  ver `install.rs::install_one`.
-- **macOS / Linux**: o foco da v1 é Windows.
-- **postInstall**: o campo existe no schema mas ainda não é executado.
+## 📄 Licença
+
+[MIT](LICENSE) © Allan Maia
+
+<div align="center"><sub>Forja · do zero ao pronto.</sub></div>

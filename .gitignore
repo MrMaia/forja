@@ -15,3 +15,6 @@ Thumbs.db
 
 # user profiles exported by the app
 *.forja
+
+# Playwright MCP scratch
+.playwright-mcp/
