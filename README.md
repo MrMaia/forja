@@ -19,7 +19,8 @@ monorepo pnpm. Empacotamento NSIS.
   há versão nova (casa o id real do winget, que costuma diferir do id de
   instalação — ex.: `Google.Chrome` ↔ `Google.Chrome.EXE`).
 - **Exportar / Importar** a seleção como arquivo `.forja` portátil.
-- **Ícones reais** dos apps (CDN), com fallback para monograma offline.
+- **Ícones e fontes empacotados** (funcionam offline, num PC recém-formatado);
+  ícone ausente cai para um monograma.
 
 ## Rodando
 

@@ -5,7 +5,7 @@
     "category": "Desenvolvimento",
     "description": "Editor de código leve e extensível.",
     "icon": { "label": "VS", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/visual-studio-code.svg",
+    "iconUrl": "/icons/vscode.svg",
     "winget": "Microsoft.VisualStudioCode",
     "fallbackUrl": "https://code.visualstudio.com/download",
     "postInstall": []
@@ -16,7 +16,7 @@
     "category": "Desenvolvimento",
     "description": "Controle de versão distribuído.",
     "icon": { "label": "Gi", "bg": "#5a3a2e", "fg": "#f0d3c2" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/git.svg",
+    "iconUrl": "/icons/git.svg",
     "winget": "Git.Git",
     "fallbackUrl": "https://git-scm.com/download/win",
     "postInstall": []
@@ -27,7 +27,7 @@
     "category": "Desenvolvimento",
     "description": "Runtime JavaScript + npm (LTS).",
     "icon": { "label": "No", "bg": "#2f4a35", "fg": "#cfe6d4" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/nodejs.svg",
+    "iconUrl": "/icons/nodejs.svg",
     "winget": "OpenJS.NodeJS.LTS",
     "detect": ["OpenJS.NodeJS"],
     "fallbackUrl": "https://nodejs.org/en/download",
@@ -39,7 +39,7 @@
     "category": "Desenvolvimento",
     "description": "Linguagem + pip.",
     "icon": { "label": "Py", "bg": "#3c4a5a", "fg": "#d6e0ec" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/python.svg",
+    "iconUrl": "/icons/python.svg",
     "winget": "Python.Python.3.13",
     "detect": ["Python.Python"],
     "fallbackUrl": "https://www.python.org/downloads/windows/",
@@ -51,7 +51,7 @@
     "category": "Desenvolvimento",
     "description": "Containers e ambientes isolados.",
     "icon": { "label": "Do", "bg": "#2e4660", "fg": "#d3e1f0" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/docker.svg",
+    "iconUrl": "/icons/docker.svg",
     "winget": "Docker.DockerDesktop",
     "fallbackUrl": "https://www.docker.com/products/docker-desktop/",
     "postInstall": []
@@ -62,7 +62,7 @@
     "category": "Desenvolvimento",
     "description": "Teste e documentação de APIs.",
     "icon": { "label": "Po", "bg": "#5a3e2c", "fg": "#f2d8c0" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/postman.svg",
+    "iconUrl": "/icons/postman.svg",
     "winget": "Postman.Postman",
     "fallbackUrl": "https://www.postman.com/downloads/",
     "postInstall": []
@@ -73,7 +73,7 @@
     "category": "Desenvolvimento",
     "description": "Terminal moderno com abas.",
     "icon": { "label": ">_", "bg": "#2e3640", "fg": "#d3d8de" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/terminal.svg",
+    "iconUrl": "/icons/windows-terminal.svg",
     "winget": "Microsoft.WindowsTerminal",
     "fallbackUrl": "https://aka.ms/terminal",
     "postInstall": []
@@ -84,7 +84,7 @@
     "category": "Desenvolvimento",
     "description": "Git com interface visual.",
     "icon": { "label": "GH", "bg": "#353038", "fg": "#ddd6e4" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/github.svg",
+    "iconUrl": "/icons/github-desktop.svg",
     "winget": "GitHub.GitHubDesktop",
     "fallbackUrl": "https://desktop.github.com/",
     "postInstall": []
@@ -95,7 +95,7 @@
     "category": "Desenvolvimento",
     "description": "Cliente universal de banco de dados.",
     "icon": { "label": "DB", "bg": "#324a4a", "fg": "#cfe5e5" },
-    "iconUrl": "https://api.iconify.design/devicon/dbeaver.svg",
+    "iconUrl": "/icons/dbeaver.svg",
     "winget": "DBeaver.DBeaver.Community",
     "fallbackUrl": "https://dbeaver.io/download/",
     "postInstall": []
@@ -106,7 +106,7 @@
     "category": "Navegadores",
     "description": "Navegador do Google.",
     "icon": { "label": "Ch", "bg": "#2e4660", "fg": "#d3e1f0" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/google-chrome.svg",
+    "iconUrl": "/icons/chrome.svg",
     "winget": "Google.Chrome",
     "fallbackUrl": "https://www.google.com/chrome/",
     "postInstall": []
@@ -117,7 +117,7 @@
     "category": "Navegadores",
     "description": "Navegador focado em privacidade.",
     "icon": { "label": "Br", "bg": "#5a3a2e", "fg": "#f0d3c2" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/brave.svg",
+    "iconUrl": "/icons/brave.svg",
     "winget": "Brave.Brave",
     "fallbackUrl": "https://brave.com/download/",
     "postInstall": []
@@ -128,7 +128,7 @@
     "category": "Navegadores",
     "description": "Navegador da Mozilla.",
     "icon": { "label": "Fi", "bg": "#5a3e2c", "fg": "#f2d8c0" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/firefox.svg",
+    "iconUrl": "/icons/firefox.svg",
     "winget": "Mozilla.Firefox",
     "fallbackUrl": "https://www.mozilla.org/firefox/new/",
     "postInstall": []
@@ -139,7 +139,7 @@
     "category": "Comunicação",
     "description": "Voz, vídeo e chat para comunidades.",
     "icon": { "label": "Di", "bg": "#3a3540", "fg": "#ddd6e4" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/discord.svg",
+    "iconUrl": "/icons/discord.svg",
     "winget": "Discord.Discord",
     "fallbackUrl": "https://discord.com/download",
     "postInstall": []
@@ -150,7 +150,7 @@
     "category": "Mídia",
     "description": "Streaming de música.",
     "icon": { "label": "Sp", "bg": "#2f4a35", "fg": "#cfe6d4" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/spotify.svg",
+    "iconUrl": "/icons/spotify.svg",
     "winget": "Spotify.Spotify",
     "fallbackUrl": "https://www.spotify.com/download/windows/",
     "postInstall": []
@@ -161,7 +161,7 @@
     "category": "Mídia",
     "description": "Reprodutor de mídia universal.",
     "icon": { "label": "VL", "bg": "#5a3e2c", "fg": "#f2d8c0" },
-    "iconUrl": "https://cdn.simpleicons.org/vlcmediaplayer",
+    "iconUrl": "/icons/vlc.svg",
     "winget": "VideoLAN.VLC",
     "fallbackUrl": "https://www.videolan.org/vlc/",
     "postInstall": []
@@ -172,7 +172,7 @@
     "category": "Mídia",
     "description": "Captura e transmissão de tela.",
     "icon": { "label": "OB", "bg": "#3a3540", "fg": "#ddd6e4" },
-    "iconUrl": "https://cdn.simpleicons.org/obsstudio/white",
+    "iconUrl": "/icons/obs.svg",
     "winget": "OBSProject.OBSStudio",
     "fallbackUrl": "https://obsproject.com/download",
     "postInstall": []
@@ -183,7 +183,7 @@
     "category": "Games",
     "description": "Loja e launcher de jogos.",
     "icon": { "label": "St", "bg": "#2e3640", "fg": "#d3d8de" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/steam.svg",
+    "iconUrl": "/icons/steam.svg",
     "winget": "Valve.Steam",
     "fallbackUrl": "https://store.steampowered.com/about/",
     "postInstall": []
@@ -194,7 +194,7 @@
     "category": "Games",
     "description": "Launcher da Epic Games.",
     "icon": { "label": "Ep", "bg": "#5a3a2e", "fg": "#f0d3c2" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/epic-games.svg",
+    "iconUrl": "/icons/epic-games.svg",
     "winget": "EpicGames.EpicGamesLauncher",
     "fallbackUrl": "https://store.epicgames.com/download",
     "postInstall": []
@@ -205,7 +205,7 @@
     "category": "Essenciais",
     "description": "Compactador de arquivos.",
     "icon": { "label": "7z", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/7zip.svg",
+    "iconUrl": "/icons/7zip.svg",
     "winget": "7zip.7zip",
     "fallbackUrl": "https://www.7-zip.org/download.html",
     "postInstall": []
@@ -227,7 +227,7 @@
     "category": "Produtividade",
     "description": "Suíte de escritório livre.",
     "icon": { "label": "LO", "bg": "#6a8a5b", "fg": "#d7e6cf" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/libreoffice.svg",
+    "iconUrl": "/icons/libreoffice.svg",
     "winget": "TheDocumentFoundation.LibreOffice",
     "fallbackUrl": "https://www.libreoffice.org/download/download-libreoffice/",
     "postInstall": []
@@ -238,7 +238,7 @@
     "category": "Drivers",
     "description": "Drivers e ajustes para placas NVIDIA. (Detecção/deep-link — instalação real fica para depois.)",
     "icon": { "label": "NV", "bg": "#2f4a35", "fg": "#cfe6d4" },
-    "iconUrl": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/nvidia.svg",
+    "iconUrl": "/icons/nvidia-app.svg",
     "winget": null,
     "fallbackUrl": "https://www.nvidia.com/pt-br/software/nvidia-app/",
     "postInstall": []

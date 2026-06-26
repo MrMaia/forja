@@ -8,9 +8,9 @@ importa. Este documento descreve o modelo de ameaça e as decisões.
 - **Instala/atualiza via winget**, a partir das fontes oficiais. Não hospeda
   nem redistribui instaladores.
 - **Sem telemetria.** Não coleta nem envia dados de uso.
-- **Rede usada:** apenas (1) o próprio `winget` (downloads das fontes oficiais),
-  (2) ícones dos apps via CDN (`jsdelivr`, `iconify`, `simpleicons`) e (3) fontes
-  do Google Fonts. Nenhum servidor da Forja.
+- **Rede usada:** apenas o próprio `winget` (downloads das fontes oficiais).
+  Ícones e fontes são **empacotados localmente** (funcionam offline num PC
+  recém-formatado). Nenhum servidor da Forja, nenhum CDN em runtime.
 
 ## Execução de comandos
 
@@ -34,8 +34,8 @@ importa. Este documento descreve o modelo de ameaça e as decisões.
 
 - **CSP**: hoje `csp: null` em [tauri.conf.json](apps/desktop/src-tauri/tauri.conf.json).
   Superfície de XSS é baixa (a UI não renderiza HTML de terceiros; o import é
-  JSON), mas antes do release público recomenda-se uma CSP com allowlist:
-  `default-src 'self'; img-src 'self' https://cdn.jsdelivr.net https://api.iconify.design https://cdn.simpleicons.org data:; font-src https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`.
+  JSON). Como ícones e fontes agora são locais, a CSP pode ser bem estrita:
+  `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'`.
 - **Fallback/elevação (UAC)**: o caminho de instalação fora do winget
   (download do `fallbackUrl` + elevação) está **stub** e não roda. Quando for
   implementado, validar hash/assinatura do instalador antes de elevar.
