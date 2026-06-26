@@ -139,6 +139,45 @@ export async function onInstallProgress(
   return () => mockListeners.delete(cb);
 }
 
+export interface ForjaUpdate {
+  current: string;
+  latest: string | null; // null = couldn't determine / no releases yet
+  hasUpdate: boolean;
+  url: string; // releases page
+}
+
+// naive semver compare: returns >0 if a is newer than b
+function cmpVersions(a: string, b: string): number {
+  const pa = a.split(".").map((n) => parseInt(n, 10) || 0);
+  const pb = b.split(".").map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    if ((pa[i] ?? 0) !== (pb[i] ?? 0)) return (pa[i] ?? 0) - (pb[i] ?? 0);
+  }
+  return 0;
+}
+
+/** Check GitHub Releases for a newer Forja version. */
+export async function checkForjaUpdate(current: string): Promise<ForjaUpdate> {
+  const releasesUrl = "https://github.com/MrMaia/forja/releases";
+  try {
+    const res = await fetch(
+      "https://api.github.com/repos/MrMaia/forja/releases/latest",
+      { headers: { Accept: "application/vnd.github+json" } }
+    );
+    if (!res.ok) return { current, latest: null, hasUpdate: false, url: releasesUrl };
+    const data = await res.json();
+    const latest = String(data.tag_name ?? "").replace(/^v/, "");
+    return {
+      current,
+      latest: latest || null,
+      hasUpdate: !!latest && cmpVersions(latest, current) > 0,
+      url: data.html_url ?? releasesUrl,
+    };
+  } catch {
+    return { current, latest: null, hasUpdate: false, url: releasesUrl };
+  }
+}
+
 /** Open an external URL in the OS browser (used for fallback / driver deep-links). */
 export async function openExternal(url: string): Promise<void> {
   if (isTauri) {

@@ -11,6 +11,7 @@ const CATEGORIES = [
   "Mídia",
   "Produtividade",
   "Desenvolvimento",
+  "Linguagens",
   "Games",
   "Drivers",
   "Segurança",
@@ -23,6 +24,7 @@ const DOT: Record<string, string> = {
   Mídia: "#8a6a5b",
   Produtividade: "#6a8a5b",
   Desenvolvimento: "#f5933f",
+  Linguagens: "#6a7d8a",
   Games: "#8a5b6a",
   Drivers: "#7d7368",
   Segurança: "#5b8a7d",
@@ -41,7 +43,6 @@ export default function Catalog() {
     startInstall,
     installing,
     settings,
-    updatesCount,
   } = useForja();
   const [active, setActive] = useState<string>("Desenvolvimento");
   const [query, setQuery] = useState("");
@@ -136,11 +137,7 @@ export default function Catalog() {
             })}
           </div>
           <div className="mt-auto flex flex-col gap-0.5 border-t border-white/[0.06] pt-3">
-            <SidebarLink
-              label="Início"
-              onClick={() => go("home")}
-              count={updatesCount}
-            />
+            <SidebarLink label="Início" onClick={() => go("onboarding")} />
             <SidebarLink
               label="Instalações"
               onClick={() => go("install")}

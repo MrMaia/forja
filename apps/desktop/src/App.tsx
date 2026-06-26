@@ -1,6 +1,5 @@
 import { useForja } from "./store";
 import Onboarding from "./screens/Onboarding";
-import Home from "./screens/Home";
 import Catalog from "./screens/Catalog";
 import Presets from "./screens/Presets";
 import Install from "./screens/Install";
@@ -21,8 +20,6 @@ export default function App() {
   switch (screen) {
     case "onboarding":
       return <Onboarding />;
-    case "home":
-      return <Home />;
     case "catalog":
       return <Catalog />;
     case "presets":

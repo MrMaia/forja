@@ -1,42 +1,70 @@
+import { useEffect, useState } from "react";
 import { useForja } from "../store";
 import { TitleBar } from "../components/ui";
+import { checkForjaUpdate, openExternal, type ForjaUpdate } from "../tauri";
 
 const APP_VERSION = "0.1.0";
 
 export default function Settings() {
-  const { settings, updateSetting, updatesCount, checking, refreshInstalled, go } =
-    useForja();
+  const { settings, updateSetting, go } = useForja();
+  const [update, setUpdate] = useState<ForjaUpdate | null>(null);
+  const [checking, setChecking] = useState(false);
+
+  const check = async () => {
+    setChecking(true);
+    try {
+      setUpdate(await checkForjaUpdate(APP_VERSION));
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  // auto-check Forja's own version on open, if enabled
+  useEffect(() => {
+    if (settings.autoUpdateCheck) void check();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const updateStatus = () => {
+    if (checking) return "verificando…";
+    if (!update) return "Toque em “Verificar agora”.";
+    if (update.hasUpdate) return `Nova versão ${update.latest} disponível!`;
+    if (update.latest) return `Você está na versão mais recente.`;
+    return "Não foi possível verificar agora (sem internet ou sem versão publicada).";
+  };
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
-      <TitleBar section="Configurações" onBack={() => go("home")} />
+      <TitleBar section="Configurações" onBack={() => go("catalog")} />
       <div className="flex-1 overflow-y-auto px-9 py-8">
         <h1 className="m-0 mb-7 text-[24px] font-bold tracking-[-0.02em]">
           Configurações
         </h1>
 
-        <Section title="Atualizações">
+        <Section title="Atualizações da Forja">
           <Toggle
-            label="Verificar atualizações ao abrir o app"
-            desc="Avisa na tela inicial quando há programas com versão nova."
+            label="Verificar atualizações ao abrir"
+            desc="Checa se há uma versão nova da Forja quando o app inicia."
             checked={settings.autoUpdateCheck}
             onChange={(v) => updateSetting("autoUpdateCheck", v)}
           />
-          <Row
-            label={
-              updatesCount > 0
-                ? `${updatesCount} programa${updatesCount > 1 ? "s" : ""} com atualização`
-                : "Tudo atualizado"
-            }
-            desc="Reconsulta o winget e a presença dos executáveis."
-          >
-            <button
-              onClick={() => refreshInstalled()}
-              disabled={checking}
-              className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20 disabled:opacity-50"
-            >
-              {checking ? "verificando…" : "Verificar agora"}
-            </button>
+          <Row label={`Forja v${APP_VERSION}`} desc={updateStatus()}>
+            {update?.hasUpdate ? (
+              <button
+                onClick={() => openExternal(update.url)}
+                className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20"
+              >
+                Baixar
+              </button>
+            ) : (
+              <button
+                onClick={check}
+                disabled={checking}
+                className="rounded-[9px] border border-white/15 px-4 py-2 text-[12.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text disabled:opacity-50"
+              >
+                {checking ? "verificando…" : "Verificar agora"}
+              </button>
+            )}
           </Row>
         </Section>
 
@@ -50,7 +78,7 @@ export default function Settings() {
         </Section>
 
         <Section title="Sobre">
-          <Row label={`Forja v${APP_VERSION}`} desc="Do zero ao pronto. Windows 10 / 11." />
+          <Row label="Forja — Do zero ao pronto." desc="Windows 10 / 11 · instalação via winget." />
         </Section>
       </div>
     </div>

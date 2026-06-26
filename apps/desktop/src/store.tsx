@@ -32,7 +32,6 @@ const TERMINAL: InstallStatus[] = ["done", "error", "skipped"];
 
 export type Screen =
   | "onboarding"
-  | "home"
   | "catalog"
   | "presets"
   | "install"

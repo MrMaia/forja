@@ -10,36 +10,103 @@
       "python",
       "windows-terminal",
       "github-desktop",
+      "github-cli",
       "dbeaver",
       "docker",
       "postman",
+      "dotnet-runtime",
+      "vcredist",
       "7zip",
       "powertoys",
+      "notepad-plus-plus",
       "chrome"
     ]
   },
   {
     "id": "gamer",
     "name": "Setup Gamer",
-    "description": "Lojas, launchers, voz e mídia.",
-    "programIds": ["steam", "epic-games", "discord", "obs", "chrome", "7zip", "spotify"]
+    "description": "Lojas, launchers, voz, mídia e o que os jogos exigem.",
+    "programIds": [
+      "steam",
+      "epic-games",
+      "gog-galaxy",
+      "ea-app",
+      "ubisoft-connect",
+      "battle-net",
+      "discord",
+      "obs",
+      "spotify",
+      "msi-afterburner",
+      "vcredist",
+      "qbittorrent",
+      "7zip",
+      "chrome"
+    ]
   },
   {
     "id": "office",
     "name": "Setup Office",
-    "description": "Documentos, planilhas e produtividade.",
-    "programIds": ["libreoffice", "chrome", "7zip", "spotify", "discord"]
+    "description": "Documentos, planilhas, PDF e reuniões.",
+    "programIds": [
+      "libreoffice",
+      "onlyoffice",
+      "onedrive",
+      "acrobat-reader",
+      "sumatrapdf",
+      "notion",
+      "zoom",
+      "teams",
+      "chrome",
+      "7zip"
+    ]
   },
   {
     "id": "streamer",
     "name": "Setup Streamer",
-    "description": "Captura, áudio, overlays e chat.",
-    "programIds": ["obs", "discord", "spotify", "chrome", "vlc"]
+    "description": "Captura, áudio, edição e chat.",
+    "programIds": [
+      "obs",
+      "discord",
+      "spotify",
+      "vlc",
+      "audacity",
+      "handbrake",
+      "sharex",
+      "chrome",
+      "7zip"
+    ]
   },
   {
     "id": "estudante",
     "name": "Setup Estudante",
     "description": "Notas, leitura, foco e videochamada.",
-    "programIds": ["chrome", "libreoffice", "spotify", "discord", "vlc"]
+    "programIds": [
+      "chrome",
+      "libreoffice",
+      "notion",
+      "obsidian",
+      "sumatrapdf",
+      "zoom",
+      "onedrive",
+      "spotify",
+      "vlc",
+      "anydesk"
+    ]
+  },
+  {
+    "id": "essencial",
+    "name": "Setup Essencial",
+    "description": "O básico que todo PC recém-formatado quer.",
+    "programIds": [
+      "chrome",
+      "7zip",
+      "vlc",
+      "notepad-plus-plus",
+      "powertoys",
+      "everything",
+      "qbittorrent",
+      "spotify",
+      "whatsapp"
+    ]
   }
 ]

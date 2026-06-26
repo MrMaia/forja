@@ -9,6 +9,7 @@ export type Category =
   | "Mídia"
   | "Produtividade"
   | "Desenvolvimento"
+  | "Linguagens"
   | "Games"
   | "Drivers"
   | "Segurança";
