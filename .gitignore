@@ -1,0 +1,17 @@
+# dependencies / build output
+node_modules/
+dist/
+target/
+
+# logs / OS cruft
+*.log
+.DS_Store
+Thumbs.db
+
+# local tooling / editor
+.claude/settings.local.json
+.vscode/
+.idea/
+
+# user profiles exported by the app
+*.forja

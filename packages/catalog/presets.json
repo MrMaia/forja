@@ -1,0 +1,45 @@
+[
+  {
+    "id": "dev",
+    "name": "Setup Dev",
+    "description": "Tudo pra codar, versionar e rodar projetos.",
+    "programIds": [
+      "vscode",
+      "git",
+      "nodejs",
+      "python",
+      "windows-terminal",
+      "github-desktop",
+      "dbeaver",
+      "docker",
+      "postman",
+      "7zip",
+      "powertoys",
+      "chrome"
+    ]
+  },
+  {
+    "id": "gamer",
+    "name": "Setup Gamer",
+    "description": "Lojas, launchers, voz e mídia.",
+    "programIds": ["steam", "epic-games", "discord", "obs", "chrome", "7zip", "spotify"]
+  },
+  {
+    "id": "office",
+    "name": "Setup Office",
+    "description": "Documentos, planilhas e produtividade.",
+    "programIds": ["libreoffice", "chrome", "7zip", "spotify", "discord"]
+  },
+  {
+    "id": "streamer",
+    "name": "Setup Streamer",
+    "description": "Captura, áudio, overlays e chat.",
+    "programIds": ["obs", "discord", "spotify", "chrome", "vlc"]
+  },
+  {
+    "id": "estudante",
+    "name": "Setup Estudante",
+    "description": "Notas, leitura, foco e videochamada.",
+    "programIds": ["chrome", "libreoffice", "spotify", "discord", "vlc"]
+  }
+]

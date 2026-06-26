@@ -1,0 +1,13 @@
+{
+  "name": "@forja/catalog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "schema.ts",
+  "types": "schema.ts",
+  "exports": {
+    ".": "./schema.ts",
+    "./catalog.json": "./catalog.json",
+    "./presets.json": "./presets.json"
+  }
+}

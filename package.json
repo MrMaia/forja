@@ -1,0 +1,13 @@
+{
+  "name": "forja-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "pnpm --filter @forja/desktop dev",
+    "build": "pnpm --filter @forja/desktop build",
+    "tauri": "pnpm --filter @forja/desktop tauri"
+  },
+  "engines": {
+    "pnpm": ">=9"
+  }
+}
