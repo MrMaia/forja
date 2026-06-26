@@ -140,6 +140,51 @@ export async function onInstallProgress(
   return () => mockListeners.delete(cb);
 }
 
+export type TweakState = Record<string, boolean>;
+
+/** Read current on/off state of all Windows tweaks. */
+export async function readTweaks(): Promise<TweakState> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    try {
+      return JSON.parse(await invoke<string>("read_tweaks")) as TweakState;
+    } catch {
+      return {};
+    }
+  }
+  return {}; // browser demo: all off
+}
+
+/** Apply a single HKCU tweak (no admin). */
+export async function applyUserTweak(key: string, on: boolean): Promise<void> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("apply_user_tweak", { key, on });
+    return;
+  }
+  await delay(150);
+}
+
+/** Apply admin tweaks in one elevated batch (one UAC prompt). */
+export async function applyAdminTweaks(items: { key: string; on: boolean }[]): Promise<void> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("apply_admin_tweaks", { items });
+    return;
+  }
+  await delay(400);
+}
+
+/** Restart Explorer so taskbar/explorer tweaks take effect. */
+export async function restartExplorer(): Promise<void> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("restart_explorer");
+    return;
+  }
+  await delay(150);
+}
+
 export interface NetAdapter {
   Name: string;
   NetConnectionStatus: number | null; // 2 = connected

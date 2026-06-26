@@ -146,6 +146,7 @@ export default function Catalog() {
             <SidebarLink label="Perfis prontos" onClick={() => go("presets")} />
             <SidebarLink label="Exportar / Importar" onClick={() => go("profiles")} />
             <SidebarLink label="Drivers de rede" onClick={() => go("drivers")} />
+            <SidebarLink label="Ajustes do Windows" onClick={() => go("tweaks")} />
             <SidebarLink label="Configurações" onClick={() => go("settings")} />
           </div>
         </aside>
