@@ -21,6 +21,7 @@ pub fn run() {
             pathtools::check_path_tools,
             pathtools::add_to_user_path,
             hardware::detect_network,
+            hardware::disk_free,
             tweaks::read_tweaks,
             tweaks::apply_user_tweak,
             tweaks::apply_admin_tweaks,

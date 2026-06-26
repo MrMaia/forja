@@ -4,7 +4,7 @@ import { TitleBar, AmberButton } from "../components/ui";
 const PRESET_CHIPS = ["Dev", "Gamer", "Office", "Streamer"];
 
 export default function Onboarding() {
-  const { go } = useForja();
+  const { go, t } = useForja();
 
   return (
     <div className="flex h-full flex-col">
@@ -53,27 +53,25 @@ export default function Onboarding() {
             Forja
           </div>
           <div className="mt-3.5 text-[21px] font-medium text-amber-light">
-            Do zero ao pronto.
+            {t("onboarding.tagline")}
           </div>
           <p className="mt-[18px] max-w-[540px] text-[15px] leading-[1.65] text-forge-muted">
-            Monte e instale seu ambiente inteiro de uma vez só. Você escolhe os
-            programas, a Forja baixa direto da fonte oficial e instala tudo
-            sozinha — em silêncio.
+            {t("onboarding.desc")}
           </p>
           <div className="mt-[34px] flex gap-3.5">
             <AmberButton className="px-7 py-3.5 text-[14.5px]" onClick={() => go("catalog")}>
-              Montar do zero
+              {t("onboarding.build")}
             </AmberButton>
             <button
               onClick={() => go("presets")}
               className="rounded-[11px] border border-white/[0.13] bg-white/[0.04] px-[26px] py-3.5 text-[14.5px] font-medium text-forge-text transition-colors hover:bg-white/[0.08]"
             >
-              Escolher um perfil pronto
+              {t("onboarding.choosePreset")}
             </button>
           </div>
           <div className="mt-11 flex items-center gap-2.5">
             <span className="font-mono text-[11px] text-forge-faint">
-              ou comece por um perfil
+              {t("onboarding.orProfile")}
             </span>
             <div className="flex gap-2">
               {PRESET_CHIPS.map((c) => (
@@ -89,7 +87,7 @@ export default function Onboarding() {
           </div>
         </div>
         <div className="absolute bottom-[26px] font-mono text-[11px] text-forge-dim">
-          fontes oficiais · instalação silenciosa · Windows 10 / 11
+          {t("onboarding.footer")}
         </div>
       </div>
     </div>

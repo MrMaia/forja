@@ -196,6 +196,19 @@ export interface NetworkInfo {
   missing: { Name: string }[]; // net devices without a working driver
 }
 
+/** Free disk space on the system drive, in bytes (0 if unknown). */
+export async function diskFree(): Promise<number> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    try {
+      return await invoke<number>("disk_free");
+    } catch {
+      return 0;
+    }
+  }
+  return 412 * 1024 * 1024 * 1024; // browser demo: ~412 GB
+}
+
 /** Detect network hardware (make/model + adapters) — works offline. */
 export async function detectNetwork(): Promise<NetworkInfo | null> {
   if (isTauri) {

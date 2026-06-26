@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useForja } from "../store";
 import { TitleBar } from "../components/ui";
+import { LANGS, type Lang } from "../i18n";
 import { checkForjaUpdate, installUpdate, openExternal, type ForjaUpdate } from "../tauri";
 
-const APP_VERSION = "0.1.2";
+const APP_VERSION = "0.1.3";
 
 export default function Settings() {
   const {
     settings,
     updateSetting,
     go,
+    t,
     updatesCount,
     upgradeAll,
     refreshInstalled,
@@ -18,6 +20,15 @@ export default function Settings() {
   const [update, setUpdate] = useState<ForjaUpdate | null>(null);
   const [checking, setChecking] = useState(false);
   const [updating, setUpdating] = useState(false);
+
+  const check = async () => {
+    setChecking(true);
+    try {
+      setUpdate(await checkForjaUpdate(APP_VERSION));
+    } finally {
+      setChecking(false);
+    }
+  };
 
   const runUpdate = async () => {
     if (!update) return;
@@ -30,41 +41,50 @@ export default function Settings() {
     }
   };
 
-  const check = async () => {
-    setChecking(true);
-    try {
-      setUpdate(await checkForjaUpdate(APP_VERSION));
-    } finally {
-      setChecking(false);
-    }
-  };
-
-  // auto-check Forja's own version on open, if enabled
   useEffect(() => {
     if (settings.autoUpdateCheck) void check();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateStatus = () => {
-    if (checking) return "verificando…";
-    if (!update) return "Toque em “Verificar agora”.";
-    if (update.hasUpdate) return `Nova versão ${update.latest} disponível!`;
-    if (update.latest) return `Você está na versão mais recente.`;
-    return "Não foi possível verificar agora (sem internet ou sem versão publicada).";
+    if (checking) return t("settings.checking");
+    if (!update) return t("settings.checkHint");
+    if (update.hasUpdate) return t("settings.newVersion", { v: update.latest ?? "" });
+    if (update.latest) return t("settings.upToDate");
+    return t("settings.checkFail");
   };
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
-      <TitleBar section="Configurações" onBack={() => go("catalog")} />
+      <TitleBar section={t("settings.title")} onBack={() => go("catalog")} />
       <div className="flex-1 overflow-y-auto px-9 py-8">
-        <h1 className="m-0 mb-7 text-[24px] font-bold tracking-[-0.02em]">
-          Configurações
-        </h1>
+        <h1 className="m-0 mb-7 text-[24px] font-bold tracking-[-0.02em]">{t("settings.title")}</h1>
 
-        <Section title="Atualizações da Forja">
+        <Section title={t("settings.language")}>
+          <Row label={t("settings.languageRow")} desc={t("settings.languageDesc")}>
+            <div className="flex gap-1.5">
+              {LANGS.map((l) => (
+                <button
+                  key={l.value}
+                  onClick={() => updateSetting("lang", l.value as Lang)}
+                  className={
+                    "rounded-[8px] border px-3 py-1.5 text-[12.5px] font-medium transition-colors " +
+                    (settings.lang === l.value
+                      ? "border-amber-glow/45 bg-amber-glow/[0.12] text-amber-soft"
+                      : "border-white/12 text-forge-muted hover:text-forge-text")
+                  }
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+          </Row>
+        </Section>
+
+        <Section title={t("settings.updates")}>
           <Toggle
-            label="Verificar atualizações ao abrir"
-            desc="Checa se há uma versão nova da Forja quando o app inicia."
+            label={t("settings.autoCheck")}
+            desc={t("settings.autoCheckDesc")}
             checked={settings.autoUpdateCheck}
             onChange={(v) => updateSetting("autoUpdateCheck", v)}
           />
@@ -75,7 +95,7 @@ export default function Settings() {
                 disabled={updating}
                 className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20 disabled:opacity-50"
               >
-                {updating ? "baixando…" : "Baixar e instalar"}
+                {updating ? t("settings.downloading") : t("settings.download")}
               </button>
             ) : (
               <button
@@ -83,20 +103,20 @@ export default function Settings() {
                 disabled={checking}
                 className="rounded-[9px] border border-white/15 px-4 py-2 text-[12.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text disabled:opacity-50"
               >
-                {checking ? "verificando…" : "Verificar agora"}
+                {checking ? t("settings.checking") : t("settings.checkNow")}
               </button>
             )}
           </Row>
         </Section>
 
-        <Section title="Programas instalados">
+        <Section title={t("settings.programs")}>
           <Row
             label={
               updatesCount > 0
-                ? `${updatesCount} programa${updatesCount > 1 ? "s" : ""} com atualização`
-                : "Tudo atualizado"
+                ? `${updatesCount} ${t("settings.withUpdate")}`
+                : t("settings.allUpdated")
             }
-            desc="Detectado via winget e presença dos executáveis."
+            desc={t("settings.detectDesc")}
           >
             <div className="flex items-center gap-2">
               <button
@@ -104,7 +124,7 @@ export default function Settings() {
                 disabled={scanningApps}
                 className="rounded-[9px] border border-white/15 px-3.5 py-2 text-[12.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text disabled:opacity-50"
               >
-                {scanningApps ? "verificando…" : "Verificar"}
+                {scanningApps ? t("settings.checking") : t("settings.verify")}
               </button>
               {updatesCount > 0 && (
                 <button
@@ -114,24 +134,24 @@ export default function Settings() {
                   }}
                   className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-3.5 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20"
                 >
-                  Atualizar tudo
+                  {t("settings.updateAll")}
                 </button>
               )}
             </div>
           </Row>
         </Section>
 
-        <Section title="Catálogo">
+        <Section title={t("settings.catalog")}>
           <Toggle
-            label="Ocultar programas já instalados"
-            desc="Mostra só o que ainda falta instalar."
+            label={t("settings.hideInstalled")}
+            desc={t("settings.hideInstalledDesc")}
             checked={settings.hideInstalled}
             onChange={(v) => updateSetting("hideInstalled", v)}
           />
         </Section>
 
-        <Section title="Sobre">
-          <Row label="Forja — Do zero ao pronto." desc="Windows 10 / 11 · instalação via winget." />
+        <Section title={t("settings.about")}>
+          <Row label="Forja — Do zero ao pronto." desc={t("settings.aboutDesc")} />
         </Section>
       </div>
     </div>

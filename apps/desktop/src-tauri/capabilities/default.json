@@ -89,6 +89,16 @@
           ]
         },
         {
+          "name": "disk-free",
+          "cmd": "powershell",
+          "args": [
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            "(Get-CimInstance Win32_LogicalDisk -Filter (\"DeviceID='\" + $env:SystemDrive + \"'\")).FreeSpace"
+          ]
+        },
+        {
           "name": "detect-network",
           "cmd": "powershell",
           "args": [

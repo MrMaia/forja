@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import type { InstallStatus, Program, Preset } from "@forja/catalog";
+import { detectLang, translate, type Lang } from "./i18n";
 import {
   getCatalog,
   getPresets,
@@ -43,10 +44,15 @@ export type Screen =
 export interface Settings {
   autoUpdateCheck: boolean; // check for app updates when Forja opens
   hideInstalled: boolean; // hide already-installed programs in the catalog
+  lang: Lang; // UI language
 }
 
 const SETTINGS_KEY = "forja.settings";
-const DEFAULT_SETTINGS: Settings = { autoUpdateCheck: true, hideInstalled: false };
+const DEFAULT_SETTINGS: Settings = {
+  autoUpdateCheck: true,
+  hideInstalled: false,
+  lang: detectLang(), // start in the OS/browser language
+};
 
 function loadSettings(): Settings {
   try {
@@ -79,6 +85,7 @@ interface ForjaContextValue {
   programsWithUpdates: () => Program[];
   settings: Settings;
   updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
+  t: (key: string, vars?: Record<string, string | number>) => string;
   // install progress (global, so the "Instalações" tab can show it any time)
   installQueue: Program[];
   installRows: Record<string, InstallRow>;
@@ -364,6 +371,7 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     upgradeAll,
     versionChoice,
     setVersion,
+    t: (key, vars) => translate(settings.lang, key, vars),
   };
 
   return <ForjaContext.Provider value={value}>{children}</ForjaContext.Provider>;

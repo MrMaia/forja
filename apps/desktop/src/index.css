@@ -57,6 +57,14 @@ body {
   }
 }
 
+/* hide scrollbar (used by the category chip strip, scrolled via arrows) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* thin custom scrollbar to match the dark UI */
 ::-webkit-scrollbar {
   width: 10px;

@@ -47,6 +47,9 @@ próxima formatação com um clique.
   oficial certo (essencial num PC recém-formatado, sem internet).
 - 🪛 **Ajustes do Windows** — tema escuro, extensões de arquivo, barra de tarefas,
   telemetria, plano de energia e mais (reversíveis).
+- 🗑️ **Desinstalar** programas instalados direto pelo card.
+- ⬆️ **Auto-update** — avisa quando há nova versão da Forja e baixa/instala com um clique.
+- 🌍 **Multi-idioma** (PT/EN) com detecção automática do idioma do sistema.
 - 📦 **Ícones e fontes empacotados** — funciona offline; ícone ausente vira monograma.
 
 <br/>
@@ -101,6 +104,9 @@ apps/desktop/
 
 ## 🗺️ Roadmap
 
+Já feito: **auto-update**, **desinstalar**, **seleção de versão**, **multi-idioma
+(PT/EN)**, **checagem de espaço em disco**, **drivers de rede (detecção)**.
+
 Próximas funcionalidades planejadas:
 
 - [ ] **Suporte a Linux e macOS** (quando possível) — hoje o foco é Windows.
@@ -111,8 +117,8 @@ Próximas funcionalidades planejadas:
 - [ ] **Mais ajustes do Windows** (e ajustes de Linux/macOS no futuro).
 - [ ] **`postInstall`** — rodar comandos após instalar (ex.: `corepack enable`,
       extensões do VS Code, configs).
-- [ ] **Tamanhos de download reais** + checagem de espaço em disco.
-- [ ] **Internacionalização (EN)** e **landing page** do projeto.
+- [ ] **Tamanho de download real** (o espaço em disco já é checado).
+- [ ] **Mais idiomas** (Espanhol, etc.) e **landing page** do projeto.
 
 <br/>
 

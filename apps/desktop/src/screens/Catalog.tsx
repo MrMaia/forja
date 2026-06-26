@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Program } from "@forja/catalog";
 import { useForja } from "../store";
 import { TitleBar, AppIcon, AmberButton, Chevron } from "../components/ui";
-import { openExternal, type InstalledInfo } from "../tauri";
+import { diskFree, openExternal, type InstalledInfo } from "../tauri";
 
 const CATEGORIES = [
   "Essenciais",
@@ -43,9 +43,17 @@ export default function Catalog() {
     startInstall,
     installing,
     settings,
+    t,
   } = useForja();
   const [active, setActive] = useState<string>("Desenvolvimento");
   const [query, setQuery] = useState("");
+  const chipsRef = useRef<HTMLDivElement>(null);
+  const scrollChips = (dir: -1 | 1) =>
+    chipsRef.current?.scrollBy({ left: dir * 260, behavior: "smooth" });
+  const [freeBytes, setFreeBytes] = useState(0);
+  useEffect(() => {
+    void diskFree().then(setFreeBytes);
+  }, []);
 
   const counts = useMemo(() => {
     const m = new Map<string, number>();
@@ -72,7 +80,7 @@ export default function Catalog() {
     ? baseList.filter((p) => !isInstalled(p.id))
     : baseList;
 
-  const heading = q ? `Resultados para "${query}"` : active;
+  const heading = q ? `${t("catalog.results")} "${query}"` : active;
 
   const selectAllVisible = () => {
     // only programs that aren't already installed can be selected
@@ -83,8 +91,11 @@ export default function Catalog() {
     });
   };
 
-  // ~size estimate is cosmetic: rough 0.17 GB per program.
-  const sizeGb = (selected.size * 0.17).toFixed(1).replace(".", ",");
+  // rough per-program estimate (winget não expõe o tamanho real de download)
+  const estGb = selected.size * 0.17;
+  const sizeGb = estGb.toFixed(1).replace(".", ",");
+  const freeGb = freeBytes / 1e9;
+  const lowSpace = freeBytes > 0 && estGb > freeGb;
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
@@ -93,21 +104,21 @@ export default function Catalog() {
         {/* sidebar — primary navigation */}
         <aside className="flex w-[228px] flex-shrink-0 flex-col gap-0.5 border-r border-white/5 bg-forge-inset px-3.5 py-[18px]">
           <div className="mb-3 px-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-forge-faint">
-            Navegação
+            {t("nav.title")}
           </div>
-          <SidebarLink label="Início" onClick={() => go("onboarding")} />
-          <SidebarLink label="Catálogo" active onClick={() => {}} />
+          <SidebarLink label={t("nav.home")} onClick={() => go("onboarding")} />
+          <SidebarLink label={t("nav.catalog")} active onClick={() => {}} />
           <SidebarLink
-            label="Instalações"
+            label={t("nav.installs")}
             onClick={() => go("install")}
             badge={installing ? "•" : undefined}
           />
-          <SidebarLink label="Perfis prontos" onClick={() => go("presets")} />
-          <SidebarLink label="Exportar / Importar" onClick={() => go("profiles")} />
+          <SidebarLink label={t("nav.presets")} onClick={() => go("presets")} />
+          <SidebarLink label={t("nav.export")} onClick={() => go("profiles")} />
           <div className="my-2 border-t border-white/[0.06]" />
-          <SidebarLink label="Drivers de rede" onClick={() => go("drivers")} />
-          <SidebarLink label="Ajustes do Windows" onClick={() => go("tweaks")} />
-          <SidebarLink label="Configurações" onClick={() => go("settings")} />
+          <SidebarLink label={t("nav.drivers")} onClick={() => go("drivers")} />
+          <SidebarLink label={t("nav.tweaks")} onClick={() => go("tweaks")} />
+          <SidebarLink label={t("nav.settings")} onClick={() => go("settings")} />
         </aside>
 
         {/* main */}
@@ -121,14 +132,25 @@ export default function Catalog() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar programas…"
+                placeholder={t("catalog.search")}
                 className="w-full bg-transparent text-[13.5px] text-forge-text outline-none placeholder:text-forge-faint"
               />
             </div>
           </div>
 
-          {/* category filter chips */}
-          <div className="flex flex-shrink-0 items-center gap-2 overflow-x-auto border-b border-white/5 px-6 py-[11px]">
+          {/* category filter chips, scrolled by arrows */}
+          <div className="flex flex-shrink-0 items-center border-b border-white/5 px-3">
+            <button
+              onClick={() => scrollChips(-1)}
+              aria-label="Categorias anteriores"
+              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[7px] text-forge-muted transition-colors hover:bg-white/[0.06] hover:text-forge-text"
+            >
+              <Chevron dir="left" size={16} />
+            </button>
+            <div
+              ref={chipsRef}
+              className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto px-1 py-[11px]"
+            >
             {CATEGORIES.map((cat) => {
               const isActive = !q && cat === active;
               return (
@@ -153,6 +175,14 @@ export default function Catalog() {
                 </button>
               );
             })}
+            </div>
+            <button
+              onClick={() => scrollChips(1)}
+              aria-label="Próximas categorias"
+              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[7px] text-forge-muted transition-colors hover:bg-white/[0.06] hover:text-forge-text"
+            >
+              <Chevron dir="right" size={16} />
+            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto px-6 py-5">
@@ -160,7 +190,7 @@ export default function Catalog() {
               <div className="flex items-baseline gap-[11px]">
                 <span className="text-[18px] font-semibold">{heading}</span>
                 <span className="font-mono text-[12px] text-forge-faint">
-                  {visible.length} programas
+                  {visible.length} {t("catalog.programs")}
                 </span>
               </div>
               {visible.length > 0 && (
@@ -168,7 +198,7 @@ export default function Catalog() {
                   onClick={selectAllVisible}
                   className="text-[12.5px] font-medium text-amber-light hover:underline"
                 >
-                  Selecionar todos
+                  {t("catalog.selectAll")}
                 </button>
               )}
             </div>
@@ -185,7 +215,7 @@ export default function Catalog() {
             </div>
             {visible.length === 0 && (
               <div className="mt-20 text-center font-mono text-sm text-forge-faint">
-                nenhum programa encontrado
+                {t("catalog.none")}
               </div>
             )}
           </div>
@@ -199,9 +229,18 @@ export default function Catalog() {
             {selected.size}
           </div>
           <div className="flex flex-col leading-[1.3]">
-            <span className="text-[13.5px] font-medium">itens selecionados</span>
+            <span className="text-[13.5px] font-medium">{t("catalog.selectedItems")}</span>
             <span className="font-mono text-[11.5px] text-forge-faint">
-              ~{sizeGb} GB para baixar
+              ~{sizeGb} {t("catalog.estimated")}
+              {freeBytes > 0 && (
+                <>
+                  {" · "}
+                  <span className={lowSpace ? "text-status-error" : "text-forge-faint"}>
+                    {freeGb.toFixed(0)} {t("catalog.free")}
+                    {lowSpace ? ` ${t("catalog.lowSpace")}` : ""}
+                  </span>
+                </>
+              )}
             </span>
           </div>
         </div>
@@ -211,7 +250,7 @@ export default function Catalog() {
             disabled={selected.size === 0}
             className="rounded-[10px] border border-white/10 px-[18px] py-3 text-[13.5px] text-forge-muted transition-colors hover:border-white/20 hover:text-forge-text disabled:opacity-40"
           >
-            Limpar seleção
+            {t("catalog.clear")}
           </button>
           <AmberButton
             className="flex items-center gap-2 px-6 py-3 text-[14px] shadow-[0_6px_18px_rgba(245,147,63,0.28)] disabled:opacity-50"
@@ -221,7 +260,7 @@ export default function Catalog() {
               go("install");
             }}
           >
-            Instalar selecionados
+            {t("catalog.install")}
           </AmberButton>
         </div>
       </div>
