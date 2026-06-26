@@ -5,6 +5,7 @@ import Presets from "./screens/Presets";
 import Install from "./screens/Install";
 import Profiles from "./screens/Profiles";
 import Settings from "./screens/Settings";
+import Drivers from "./screens/Drivers";
 
 export default function App() {
   const { screen, loading } = useForja();
@@ -30,5 +31,7 @@ export default function App() {
       return <Profiles />;
     case "settings":
       return <Settings />;
+    case "drivers":
+      return <Drivers />;
   }
 }

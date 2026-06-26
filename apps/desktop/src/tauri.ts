@@ -140,6 +140,48 @@ export async function onInstallProgress(
   return () => mockListeners.delete(cb);
 }
 
+export interface NetAdapter {
+  Name: string;
+  NetConnectionStatus: number | null; // 2 = connected
+}
+export interface NetworkInfo {
+  manufacturer: string;
+  model: string;
+  adapters: NetAdapter[];
+  missing: { Name: string }[]; // net devices without a working driver
+}
+
+/** Detect network hardware (make/model + adapters) — works offline. */
+export async function detectNetwork(): Promise<NetworkInfo | null> {
+  if (isTauri) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    try {
+      const raw = await invoke<string>("detect_network");
+      const o = JSON.parse(raw);
+      const arr = <T,>(v: T | T[] | undefined): T[] =>
+        Array.isArray(v) ? v : v ? [v] : [];
+      return {
+        manufacturer: String(o.manufacturer ?? "").trim(),
+        model: String(o.model ?? "").trim(),
+        adapters: arr<NetAdapter>(o.adapters),
+        missing: arr<{ Name: string }>(o.missing),
+      };
+    } catch {
+      return null;
+    }
+  }
+  // browser demo
+  return {
+    manufacturer: "Lenovo",
+    model: "ThinkPad X1 Carbon",
+    adapters: [
+      { Name: "Intel(R) Wi-Fi 6 AX201 160MHz", NetConnectionStatus: 2 },
+      { Name: "Realtek PCIe GbE Family Controller", NetConnectionStatus: null },
+    ],
+    missing: [],
+  };
+}
+
 export interface ForjaUpdate {
   current: string;
   latest: string | null; // null = couldn't determine / no releases yet

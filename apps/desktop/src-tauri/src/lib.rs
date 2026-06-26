@@ -1,5 +1,6 @@
 mod catalog;
 mod detect;
+mod hardware;
 mod install;
 mod pathtools;
 
@@ -17,6 +18,7 @@ pub fn run() {
             detect::check_installed,
             pathtools::check_path_tools,
             pathtools::add_to_user_path,
+            hardware::detect_network,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Forja");

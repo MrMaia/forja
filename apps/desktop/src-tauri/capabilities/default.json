@@ -75,6 +75,16 @@
             "-Command",
             "$d=$env:FORJA_PATH_DIR; if($d){ $p=[Environment]::GetEnvironmentVariable('Path','User'); if(-not $p){$p=''}; if(($p -split ';') -notcontains $d){ [Environment]::SetEnvironmentVariable('Path', ($p.TrimEnd(';')+';'+$d), 'User') } }"
           ]
+        },
+        {
+          "name": "detect-network",
+          "cmd": "powershell",
+          "args": [
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            "[Console]::OutputEncoding=[Text.Encoding]::UTF8; $cs=Get-CimInstance Win32_ComputerSystem; $ad=@(Get-CimInstance Win32_NetworkAdapter -Filter 'PhysicalAdapter=true' | Select-Object Name,NetConnectionStatus); $missing=@(Get-CimInstance Win32_PnPEntity -Filter 'ConfigManagerErrorCode<>0' | Where-Object { $_.PNPClass -eq 'Net' } | Select-Object Name); [pscustomobject]@{manufacturer=$cs.Manufacturer;model=$cs.Model;adapters=$ad;missing=$missing} | ConvertTo-Json -Depth 4 -Compress"
+          ]
         }
       ]
     }

@@ -36,7 +36,8 @@ export type Screen =
   | "presets"
   | "install"
   | "profiles"
-  | "settings";
+  | "settings"
+  | "drivers";
 
 export interface Settings {
   autoUpdateCheck: boolean; // check for app updates when Forja opens
