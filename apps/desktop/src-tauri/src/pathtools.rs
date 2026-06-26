@@ -3,7 +3,6 @@
 // (detect.rs): winget gives version/upgrade, this gives "is the binary here?"
 // and "is it on PATH?" — and the directory to add when it isn't.
 
-use std::ffi::OsStr;
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
@@ -116,27 +115,30 @@ fn dir_has_exe(dir: &std::path::Path, exes: &[String]) -> bool {
 }
 
 // Expand a candidate dir: substitute %VAR% (skip the candidate if any var is
-// missing). A trailing "*" component means "each immediate subdirectory" — used
-// for tools that install under a version folder (e.g. Python313).
+// missing). A single "*" component means "each immediate subdirectory" and may
+// appear anywhere — used for tools that install under a version folder, whether
+// it's the last segment (Python\Python313) or in the middle
+// (Eclipse Adoptium\jdk-21\bin).
 fn expand_candidate(cand: &str) -> Vec<PathBuf> {
     let Some(expanded) = expand_env(cand) else {
         return Vec::new();
     };
     let p = PathBuf::from(&expanded);
-    if p.file_name() == Some(OsStr::new("*")) {
-        let Some(base) = p.parent() else {
-            return Vec::new();
-        };
-        match std::fs::read_dir(base) {
-            Ok(entries) => entries
-                .flatten()
-                .map(|e| e.path())
-                .filter(|p| p.is_dir())
-                .collect(),
-            Err(_) => Vec::new(),
-        }
-    } else {
-        vec![p]
+    // components() keeps the drive/root, so the rebuilt base stays absolute
+    let comps: Vec<_> = p.components().collect();
+    let Some(star) = comps.iter().position(|c| c.as_os_str().to_str() == Some("*")) else {
+        return vec![p];
+    };
+    let base: PathBuf = comps[..star].iter().map(|c| c.as_os_str()).collect();
+    let suffix: PathBuf = comps[star + 1..].iter().map(|c| c.as_os_str()).collect();
+    match std::fs::read_dir(&base) {
+        Ok(entries) => entries
+            .flatten()
+            .map(|e| e.path())
+            .filter(|p| p.is_dir())
+            .map(|d| if suffix.as_os_str().is_empty() { d } else { d.join(&suffix) })
+            .collect(),
+        Err(_) => Vec::new(),
     }
 }
 
@@ -230,6 +232,25 @@ mod tests {
         let info = probe(&s, &[]);
         assert!(info.installed && !info.on_path);
         assert_eq!(info.path_dir.as_deref(), Some(sub.to_string_lossy().as_ref()));
+        let _ = fs::remove_dir_all(&base);
+    }
+
+    #[test]
+    fn glob_searches_mid_path_subdirectory() {
+        // base/jdk-21/bin/java.exe matched by "base\*\bin" (star in the middle)
+        let base = tmp("midglob");
+        let bin = base.join("jdk-21").join("bin");
+        fs::create_dir_all(&bin).unwrap();
+        fs::write(bin.join("java.exe"), b"").unwrap();
+        let cand = format!("{}\\*\\bin", base.to_string_lossy());
+        let s = PathSpec {
+            id: "java".into(),
+            exe: vec!["java.exe".into()],
+            install_dirs: vec![cand],
+        };
+        let info = probe(&s, &[]);
+        assert!(info.installed && !info.on_path);
+        assert_eq!(info.path_dir.as_deref(), Some(bin.to_string_lossy().as_ref()));
         let _ = fs::remove_dir_all(&base);
     }
 

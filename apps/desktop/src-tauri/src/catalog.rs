@@ -30,6 +30,8 @@ pub struct Program {
     pub exe: Vec<String>,
     #[serde(rename = "installDirs", default)]
     pub install_dirs: Vec<String>,
+    #[serde(rename = "pathTool", default)]
+    pub path_tool: bool,
     #[serde(rename = "fallbackUrl")]
     pub fallback_url: Option<String>,
     #[serde(rename = "postInstall", default)]

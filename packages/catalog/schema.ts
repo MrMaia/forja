@@ -35,10 +35,13 @@ export interface Program {
   // dev/CLI tools only: executable basenames used to detect the program by its
   // binary (covers installs winget misses) and to power the "add to PATH" flow.
   exe?: string[]; // e.g. ["git.exe"], ["python.exe","python3.exe"]
-  // candidate dirs where `exe` lives when installed, with %ENV% vars; a trailing
-  // "\\*" segment means "search each immediate subdirectory" (e.g. Python's
-  // version folders). Used to locate the dir to add to PATH.
+  // candidate dirs where `exe` lives when installed, with %ENV% vars; a "*"
+  // segment (anywhere) means "search each immediate subdirectory" (e.g. Python's
+  // or the JDK's version folders). Used to locate the dir to add to PATH.
   installDirs?: string[];
+  // true for command-line tools that belong on PATH — gates the "add to PATH"
+  // button so it never shows for GUI apps that merely happen to have an `exe`.
+  pathTool?: boolean;
   fallbackUrl: string | null; // official installer / deep-link when winget is null
   postInstall: string[]; // commands to run after install (reserved; not run in v1)
 }

@@ -20,6 +20,7 @@
     "winget": "Git.Git",
     "exe": ["git.exe"],
     "installDirs": ["%ProgramFiles%\\Git\\cmd", "%ProgramFiles(x86)%\\Git\\cmd"],
+    "pathTool": true,
     "fallbackUrl": "https://git-scm.com/download/win",
     "postInstall": []
   },
@@ -34,6 +35,7 @@
     "detect": ["OpenJS.NodeJS"],
     "exe": ["node.exe"],
     "installDirs": ["%ProgramFiles%\\nodejs"],
+    "pathTool": true,
     "fallbackUrl": "https://nodejs.org/en/download",
     "postInstall": []
   },
@@ -48,6 +50,7 @@
     "detect": ["Python.Python"],
     "exe": ["python.exe"],
     "installDirs": ["%LocalAppData%\\Programs\\Python\\*", "%ProgramFiles%\\Python\\*"],
+    "pathTool": true,
     "fallbackUrl": "https://www.python.org/downloads/windows/",
     "postInstall": []
   },
@@ -61,6 +64,7 @@
     "winget": "Docker.DockerDesktop",
     "exe": ["docker.exe"],
     "installDirs": ["%ProgramFiles%\\Docker\\Docker\\resources\\bin"],
+    "pathTool": true,
     "fallbackUrl": "https://www.docker.com/products/docker-desktop/",
     "postInstall": []
   },
@@ -877,6 +881,7 @@
     "winget": "GitHub.cli",
     "exe": ["gh.exe"],
     "installDirs": ["%ProgramFiles%\\GitHub CLI"],
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -888,6 +893,7 @@
     "icon": { "label": "LF", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/git-lfs.svg",
     "winget": "GitHub.GitLFS",
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -901,6 +907,7 @@
     "winget": "GoLang.Go",
     "exe": ["go.exe"],
     "installDirs": ["%ProgramFiles%\\Go\\bin"],
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -914,6 +921,7 @@
     "winget": "Rustlang.Rustup",
     "exe": ["cargo.exe"],
     "installDirs": ["%USERPROFILE%\\.cargo\\bin"],
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -927,6 +935,7 @@
     "winget": "Microsoft.DotNet.SDK.8",
     "exe": ["dotnet.exe"],
     "installDirs": ["%ProgramFiles%\\dotnet"],
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -938,6 +947,7 @@
     "icon": { "label": "Jv", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/java-temurin.svg",
     "winget": "EclipseAdoptium.Temurin.21.JDK",
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -949,6 +959,7 @@
     "icon": { "label": "Bu", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/bun.svg",
     "winget": "Oven-sh.Bun",
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -960,6 +971,7 @@
     "icon": { "label": "De", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/deno.svg",
     "winget": "DenoLand.Deno",
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -973,6 +985,7 @@
     "winget": "pnpm.pnpm",
     "exe": ["pnpm.exe", "pnpm.cmd"],
     "installDirs": ["%LocalAppData%\\pnpm", "%ProgramFiles%\\nodejs", "%AppData%\\npm"],
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -986,6 +999,7 @@
     "winget": "Yarn.Yarn",
     "exe": ["yarn.exe", "yarn.cmd"],
     "installDirs": ["%ProgramFiles%\\nodejs", "%AppData%\\npm"],
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -997,6 +1011,7 @@
     "icon": { "label": "OP", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": null,
     "winget": "JanDeDobbeleer.OhMyPosh",
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -1063,6 +1078,9 @@
     "icon": { "label": "CM", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/cmake.svg",
     "winget": "Kitware.CMake",
+    "exe": ["cmake.exe"],
+    "installDirs": ["%ProgramFiles%\\CMake\\bin"],
+    "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
   },

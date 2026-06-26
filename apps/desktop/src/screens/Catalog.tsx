@@ -262,8 +262,10 @@ function ProgramCard({
   const installed = !!info?.installed || !!pinfo?.installed;
   const outdated = !!info?.installed && !!info?.available && !busy;
   const current = installed && !info?.available && !busy && !failed;
-  // dev tool present but not on PATH → offer to add it
-  const offPath = !!pinfo?.installed && !pinfo.onPath && !!pinfo.pathDir;
+  // CLI tool present but not on PATH → offer to add it (only for pathTool apps,
+  // so GUI apps that merely have an `exe` never show the PATH button)
+  const offPath =
+    !!program.pathTool && !!pinfo?.installed && !pinfo.onPath && !!pinfo.pathDir;
 
   const [pathState, setPathState] = useState<"idle" | "adding" | "error">("idle");
   const doAddPath = async (e: React.MouseEvent) => {
