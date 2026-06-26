@@ -52,6 +52,7 @@ interface ForjaContextValue {
   selectedPrograms: () => Program[];
   installedOf: (id: string) => InstalledInfo | undefined;
   pathOf: (id: string) => PathToolInfo | undefined;
+  isErrorDismissed: (id: string) => boolean;
   addToPath: (programId: string, dir: string) => Promise<void>;
   refreshInstalled: () => void;
   // install progress (global, so the "Instalações" tab can show it any time)
@@ -75,6 +76,10 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
   const [installQueue, setInstallQueue] = useState<Program[]>([]);
   const [installRows, setInstallRows] = useState<Record<string, InstallRow>>({});
   const [installing, setInstalling] = useState(false);
+  // ids whose error has been auto-dismissed on the catalog card (kept globally so
+  // it survives navigating away and back; the Instalações tab still shows the log)
+  const [dismissedErrors, setDismissedErrors] = useState<Set<string>>(new Set());
+  const errTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
     Promise.all([getCatalog(), getPresets()])
@@ -102,8 +107,31 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
           [p.id]: { status: p.status, line: p.line, percent: p.percent, startedAt },
         };
       });
+
+      // any new status resets the card's error dismissal; an error (re)starts the
+      // 8s timer that hides it on the card. Timer is global, so it doesn't reset
+      // when the user switches tabs.
+      const timers = errTimers.current;
+      if (timers[p.id]) {
+        clearTimeout(timers[p.id]);
+        delete timers[p.id];
+      }
+      setDismissedErrors((prev) => {
+        if (!prev.has(p.id)) return prev;
+        const next = new Set(prev);
+        next.delete(p.id);
+        return next;
+      });
+      if (p.status === "error") {
+        timers[p.id] = setTimeout(() => {
+          setDismissedErrors((prev) => new Set(prev).add(p.id));
+        }, 8000);
+      }
     }).then((u) => (unlisten = u));
-    return () => unlisten?.();
+    return () => {
+      unlisten?.();
+      Object.values(errTimers.current).forEach(clearTimeout);
+    };
   }, []);
 
   // Query winget for install state of every program that has a winget id, and
@@ -230,6 +258,7 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
       [...selected].map((id) => index.get(id)).filter(Boolean) as Program[],
     installedOf: (id) => installed.get(id),
     pathOf: (id) => pathInfo.get(id),
+    isErrorDismissed: (id) => dismissedErrors.has(id),
     addToPath,
     refreshInstalled: () => void loadInstalled(catalog),
     installQueue,

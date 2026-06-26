@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Program } from "@forja/catalog";
 import { useForja } from "../store";
 import { TitleBar, AppIcon, AmberButton, Chevron } from "../components/ui";
@@ -239,24 +239,16 @@ function ProgramCard({
   info?: InstalledInfo;
 }) {
   // progress comes from the global install queue (shared with the Instalações tab)
-  const { installRows, startUpgrade, pathOf, addToPath } = useForja();
+  const { installRows, startUpgrade, pathOf, addToPath, isErrorDismissed } = useForja();
   const row = installRows[program.id];
   const status = row?.status;
   const busy =
     status === "queued" || status === "downloading" || status === "installing";
   // the error stays in the global queue (Instalações tab keeps the full log), but
-  // on the card it auto-dismisses after a few seconds so it doesn't pollute it —
-  // the card then falls back to its normal state (e.g. "Atualizar").
-  const [errHidden, setErrHidden] = useState(false);
-  useEffect(() => {
-    if (status !== "error") {
-      setErrHidden(false);
-      return;
-    }
-    const t = setTimeout(() => setErrHidden(true), 8000);
-    return () => clearTimeout(t);
-  }, [status]);
-  const failed = status === "error" && !errHidden;
+  // on the card it auto-dismisses after a few seconds (handled globally in the
+  // store, so it stays dismissed across tab switches) — the card then falls back
+  // to its normal state (e.g. "Atualizar").
+  const failed = status === "error" && !isErrorDismissed(program.id);
   // installed = detected by winget OR by executable (covers installs winget misses)
   const pinfo = pathOf(program.id);
   const installed = !!info?.installed || !!pinfo?.installed;
