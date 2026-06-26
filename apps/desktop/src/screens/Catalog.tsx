@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Program } from "@forja/catalog";
 import { useForja } from "../store";
 import { TitleBar, AppIcon, AmberButton, Chevron } from "../components/ui";
@@ -244,7 +244,19 @@ function ProgramCard({
   const status = row?.status;
   const busy =
     status === "queued" || status === "downloading" || status === "installing";
-  const failed = status === "error";
+  // the error stays in the global queue (Instalações tab keeps the full log), but
+  // on the card it auto-dismisses after a few seconds so it doesn't pollute it —
+  // the card then falls back to its normal state (e.g. "Atualizar").
+  const [errHidden, setErrHidden] = useState(false);
+  useEffect(() => {
+    if (status !== "error") {
+      setErrHidden(false);
+      return;
+    }
+    const t = setTimeout(() => setErrHidden(true), 8000);
+    return () => clearTimeout(t);
+  }, [status]);
+  const failed = status === "error" && !errHidden;
   // installed = detected by winget OR by executable (covers installs winget misses)
   const pinfo = pathOf(program.id);
   const installed = !!info?.installed || !!pinfo?.installed;

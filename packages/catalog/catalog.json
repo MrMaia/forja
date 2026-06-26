@@ -971,6 +971,8 @@
     "icon": { "label": "pn", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/pnpm.svg",
     "winget": "pnpm.pnpm",
+    "exe": ["pnpm.exe", "pnpm.cmd"],
+    "installDirs": ["%LocalAppData%\\pnpm", "%ProgramFiles%\\nodejs", "%AppData%\\npm"],
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -982,6 +984,8 @@
     "icon": { "label": "Yn", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/yarn.svg",
     "winget": "Yarn.Yarn",
+    "exe": ["yarn.exe", "yarn.cmd"],
+    "installDirs": ["%ProgramFiles%\\nodejs", "%AppData%\\npm"],
     "fallbackUrl": null,
     "postInstall": []
   },
