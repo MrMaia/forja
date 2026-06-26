@@ -170,7 +170,7 @@ export default function Catalog() {
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-3 items-start gap-3.5">
+            <div className="grid grid-cols-3 gap-3.5">
               {visible.map((p) => (
                 <ProgramCard
                   key={p.id}
