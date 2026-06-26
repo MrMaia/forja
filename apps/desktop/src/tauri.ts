@@ -10,6 +10,7 @@ export const isTauri =
 export interface InstallItem {
   id: string;
   winget: string | null;
+  npm?: string | null; // global npm package for CLIs not in winget
   fallbackUrl: string | null;
   action?: "install" | "upgrade";
 }
@@ -113,7 +114,7 @@ export async function installPrograms(items: InstallItem[]): Promise<void> {
   for (const item of items) emitMock({ id: item.id, status: "queued" });
   void (async () => {
     for (const item of items) {
-      if (!item.winget) {
+      if (!item.winget && !item.npm) {
         emitMock({ id: item.id, status: "skipped", line: item.fallbackUrl ?? undefined });
         continue;
       }

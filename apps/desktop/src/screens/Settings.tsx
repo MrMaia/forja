@@ -6,7 +6,15 @@ import { checkForjaUpdate, openExternal, type ForjaUpdate } from "../tauri";
 const APP_VERSION = "0.1.0";
 
 export default function Settings() {
-  const { settings, updateSetting, go } = useForja();
+  const {
+    settings,
+    updateSetting,
+    go,
+    updatesCount,
+    upgradeAll,
+    refreshInstalled,
+    checking: scanningApps,
+  } = useForja();
   const [update, setUpdate] = useState<ForjaUpdate | null>(null);
   const [checking, setChecking] = useState(false);
 
@@ -65,6 +73,38 @@ export default function Settings() {
                 {checking ? "verificando…" : "Verificar agora"}
               </button>
             )}
+          </Row>
+        </Section>
+
+        <Section title="Programas instalados">
+          <Row
+            label={
+              updatesCount > 0
+                ? `${updatesCount} programa${updatesCount > 1 ? "s" : ""} com atualização`
+                : "Tudo atualizado"
+            }
+            desc="Detectado via winget e presença dos executáveis."
+          >
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => refreshInstalled()}
+                disabled={scanningApps}
+                className="rounded-[9px] border border-white/15 px-3.5 py-2 text-[12.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text disabled:opacity-50"
+              >
+                {scanningApps ? "verificando…" : "Verificar"}
+              </button>
+              {updatesCount > 0 && (
+                <button
+                  onClick={() => {
+                    upgradeAll();
+                    go("install");
+                  }}
+                  className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-3.5 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20"
+                >
+                  Atualizar tudo
+                </button>
+              )}
+            </div>
           </Row>
         </Section>
 

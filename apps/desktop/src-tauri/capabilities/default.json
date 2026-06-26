@@ -42,6 +42,17 @@
             "--accept-package-agreements",
             "--accept-source-agreements"
           ]
+        },
+        {
+          "name": "npm-global-install",
+          "cmd": "cmd",
+          "args": [
+            "/c",
+            "npm",
+            "install",
+            "-g",
+            { "validator": "^[@A-Za-z0-9._/-]+$" }
+          ]
         }
       ]
     },

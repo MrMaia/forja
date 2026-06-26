@@ -83,6 +83,7 @@ interface ForjaContextValue {
   installing: boolean;
   startInstall: (programs: Program[]) => void;
   startUpgrade: (program: Program, wingetId: string) => void;
+  upgradeAll: () => void; // upgrade every installed program with a pending update
 }
 
 const ForjaContext = createContext<ForjaContextValue | null>(null);
@@ -224,7 +225,12 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     );
     setInstalling(true);
     installPrograms(
-      programs.map((p) => ({ id: p.id, winget: p.winget, fallbackUrl: p.fallbackUrl }))
+      programs.map((p) => ({
+        id: p.id,
+        winget: p.winget,
+        npm: p.npm,
+        fallbackUrl: p.fallbackUrl,
+      }))
     ).catch((e) => console.error("Falha na instalação:", e));
   }, []);
 
@@ -240,6 +246,16 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
       { id: program.id, winget: wingetId, fallbackUrl: program.fallbackUrl, action: "upgrade" },
     ]).catch((e) => console.error("Falha ao atualizar:", e));
   }, []);
+
+  // upgrade every installed program that has a pending update, in one go
+  const upgradeAll = useCallback(() => {
+    catalog
+      .filter((p) => installed.get(p.id)?.available)
+      .forEach((p) => {
+        const target = installed.get(p.id)?.wingetId ?? p.winget;
+        if (target) startUpgrade(p, target);
+      });
+  }, [catalog, installed, startUpgrade]);
 
   // When the whole queue reaches a terminal state, stop and re-detect versions.
   const refreshedRef = useRef(false);
@@ -321,6 +337,7 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     installing,
     startInstall,
     startUpgrade,
+    upgradeAll,
   };
 
   return <ForjaContext.Provider value={value}>{children}</ForjaContext.Provider>;

@@ -1426,5 +1426,35 @@
     "winget": null,
     "fallbackUrl": "https://www.amd.com/en/support/download/drivers.html",
     "postInstall": []
+  },
+  {
+    "id": "claude-cli",
+    "name": "Claude Code",
+    "category": "Desenvolvimento",
+    "description": "Agente de IA da Anthropic no terminal (via npm).",
+    "icon": { "label": "Cl", "bg": "#5a3a2e", "fg": "#f0d3c2" },
+    "iconUrl": null,
+    "winget": null,
+    "npm": "@anthropic-ai/claude-code",
+    "exe": ["claude.cmd", "claude.exe"],
+    "installDirs": ["%AppData%\\npm"],
+    "pathTool": true,
+    "fallbackUrl": "https://docs.anthropic.com/en/docs/claude-code/overview",
+    "postInstall": []
+  },
+  {
+    "id": "codex-cli",
+    "name": "Codex CLI",
+    "category": "Desenvolvimento",
+    "description": "Agente de codificação da OpenAI no terminal (via npm).",
+    "icon": { "label": "Cx", "bg": "#2d4257", "fg": "#dfe7ef" },
+    "iconUrl": null,
+    "winget": null,
+    "npm": "@openai/codex",
+    "exe": ["codex.cmd", "codex.exe"],
+    "installDirs": ["%AppData%\\npm"],
+    "pathTool": true,
+    "fallbackUrl": "https://github.com/openai/codex",
+    "postInstall": []
   }
 ]

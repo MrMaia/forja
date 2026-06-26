@@ -17,6 +17,8 @@ const PER_ITEM_TIMEOUT: Duration = Duration::from_secs(30 * 60);
 pub struct InstallItem {
     pub id: String,
     pub winget: Option<String>,
+    #[serde(default)]
+    pub npm: Option<String>, // global npm package for CLIs not in winget (Claude/Codex)
     #[serde(rename = "fallbackUrl")]
     pub fallback_url: Option<String>,
     #[serde(default)]
@@ -149,31 +151,34 @@ mod tests {
 }
 
 async fn install_one(app: &AppHandle, item: &InstallItem) {
-    let Some(winget_id) = item.winget.clone() else {
-        // ponytail: fallback installer download + UAC elevation (elevated-command)
-        // deferred — for now mark skipped so the UI can deep-link the official source.
-        // Add when: drivers / non-winget items need real silent install.
+    // winget is the default engine; CLIs absent from winget (Claude/Codex) install
+    // globally via npm; anything else falls back to a deep-link (skipped).
+    let cmd = if let Some(winget_id) = item.winget.clone() {
+        // "install" by default; "upgrade" updates an already-installed package.
+        let sub = if item.action.as_deref() == Some("upgrade") {
+            "upgrade"
+        } else {
+            "install"
+        };
+        app.shell().command("winget").args([
+            sub,
+            "--id",
+            &winget_id,
+            "-e",
+            "--silent",
+            "--accept-package-agreements",
+            "--accept-source-agreements",
+        ])
+    } else if let Some(pkg) = item.npm.clone() {
+        // npm is npm.cmd on Windows — go through cmd so it resolves
+        app.shell().command("cmd").args(["/c", "npm", "install", "-g", &pkg])
+    } else {
+        // drivers / non-winget items with no command: deep-link the official source
         emit(app, &item.id, "skipped", None, item.fallback_url.clone());
         return;
     };
 
     emit(app, &item.id, "installing", None, None);
-
-    // "install" by default; "upgrade" updates an already-installed package.
-    let sub = if item.action.as_deref() == Some("upgrade") {
-        "upgrade"
-    } else {
-        "install"
-    };
-    let cmd = app.shell().command("winget").args([
-        sub,
-        "--id",
-        &winget_id,
-        "-e",
-        "--silent",
-        "--accept-package-agreements",
-        "--accept-source-agreements",
-    ]);
 
     let (mut rx, child) = match cmd.spawn() {
         Ok(pair) => pair,

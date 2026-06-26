@@ -25,6 +25,8 @@ pub struct Program {
     pub icon_url: Option<String>,
     pub winget: Option<String>,
     #[serde(default)]
+    pub npm: Option<String>,
+    #[serde(default)]
     pub detect: Vec<String>,
     #[serde(default)]
     pub exe: Vec<String>,
