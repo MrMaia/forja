@@ -305,6 +305,48 @@ export async function openExternal(url: string): Promise<void> {
   window.open(url, "_blank", "noopener");
 }
 
+/**
+ * Detect the Windows release: "10", "11", or null (not Windows / unknown).
+ * Win11 reports as 10.0.22000+ — the build number is the real discriminator.
+ */
+export async function windowsRelease(): Promise<"10" | "11" | null> {
+  if (!isTauri) return "11"; // browser demo
+  const os = await import("@tauri-apps/plugin-os");
+  if (os.platform() !== "windows") return null;
+  const build = Number(os.version().split(".")[2] ?? 0);
+  if (build >= 22000) return "11";
+  if (build >= 10240) return "10";
+  return null;
+}
+
+/** Is Forja already running elevated (admin)? */
+export async function isAdmin(): Promise<boolean> {
+  if (!isTauri) return false;
+  const { invoke } = await import("@tauri-apps/api/core");
+  try {
+    return await invoke<boolean>("is_admin");
+  } catch {
+    return false;
+  }
+}
+
+/** Install the bundled Intel Wi-Fi driver (UAC-elevated). */
+export async function installWifiDriver(): Promise<void> {
+  if (!isTauri) {
+    await delay(1200); // browser demo
+    return;
+  }
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("install_wifi_driver");
+}
+
+/** Relaunch Forja with administrator privileges (UAC prompt), then close. */
+export async function relaunchAsAdmin(): Promise<void> {
+  if (!isTauri) return;
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("relaunch_as_admin");
+}
+
 // --- browser mock plumbing ---
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const mockListeners = new Set<(p: InstallProgress) => void>();

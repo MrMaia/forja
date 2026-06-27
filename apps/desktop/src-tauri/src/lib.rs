@@ -3,6 +3,7 @@ mod detect;
 mod hardware;
 mod install;
 mod pathtools;
+mod system;
 mod tweaks;
 mod updater;
 
@@ -27,6 +28,9 @@ pub fn run() {
             tweaks::apply_admin_tweaks,
             tweaks::restart_explorer,
             updater::install_update,
+            system::is_admin,
+            system::relaunch_as_admin,
+            system::install_wifi_driver,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Forja");

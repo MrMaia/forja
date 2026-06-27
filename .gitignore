@@ -16,5 +16,8 @@ Thumbs.db
 # user profiles exported by the app
 *.forja
 
+# bundled Intel Wi-Fi driver (47MB) — kept out of git history; use Git LFS to track
+apps/desktop/src-tauri/resources/wifi-intel.exe
+
 # Playwright MCP scratch
 .playwright-mcp/

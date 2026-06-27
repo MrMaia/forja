@@ -9,7 +9,13 @@ import {
   type ReactNode,
 } from "react";
 import type { InstallStatus, Program, Preset } from "@forja/catalog";
-import { detectLang, translate, type Lang } from "./i18n";
+import {
+  detectLang,
+  translate,
+  translateDesc,
+  translatePreset,
+  type Lang,
+} from "./i18n";
 import {
   getCatalog,
   getPresets,
@@ -86,6 +92,9 @@ interface ForjaContextValue {
   settings: Settings;
   updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
+  tCat: (category: string) => string;
+  tDesc: (id: string, fallback: string) => string;
+  tPreset: (id: string, name: string, description: string) => [string, string];
   // install progress (global, so the "Instalações" tab can show it any time)
   installQueue: Program[];
   installRows: Record<string, InstallRow>;
@@ -93,6 +102,7 @@ interface ForjaContextValue {
   startInstall: (programs: Program[]) => void;
   startUpgrade: (program: Program, wingetId: string) => void;
   startUninstall: (program: Program, wingetId: string) => void;
+  clearCompleted: () => void; // drop finished items from the install queue
   upgradeAll: () => void; // upgrade every installed program with a pending update
   versionChoice: Record<string, string>; // programId -> chosen winget id
   setVersion: (programId: string, winget: string) => void;
@@ -287,6 +297,18 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
       });
   }, [catalog, installed, startUpgrade]);
 
+  // Drop finished items (done/error/skipped) from the queue + rows; keep any
+  // still in progress so a clear can't orphan an active install.
+  const clearCompleted = useCallback(() => {
+    setInstallRows((prevRows) => {
+      const kept = Object.fromEntries(
+        Object.entries(prevRows).filter(([, r]) => !TERMINAL.includes(r.status))
+      );
+      setInstallQueue((prevQ) => prevQ.filter((p) => p.id in kept));
+      return kept;
+    });
+  }, []);
+
   // When the whole queue reaches a terminal state, stop and re-detect versions.
   const refreshedRef = useRef(false);
   useEffect(() => {
@@ -368,10 +390,15 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
     startInstall,
     startUpgrade,
     startUninstall,
+    clearCompleted,
     upgradeAll,
     versionChoice,
     setVersion,
     t: (key, vars) => translate(settings.lang, key, vars),
+    tCat: (category) => translate(settings.lang, `cat.${category}`),
+    tDesc: (id, fallback) => translateDesc(settings.lang, id, fallback),
+    tPreset: (id, name, description) =>
+      translatePreset(settings.lang, id, name, description),
   };
 
   return <ForjaContext.Provider value={value}>{children}</ForjaContext.Provider>;

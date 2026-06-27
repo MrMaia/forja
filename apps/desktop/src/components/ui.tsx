@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Program, ProgramIcon } from "@forja/catalog";
 import { isTauri } from "../tauri";
+import { useForja } from "../store";
 
 async function windowAction(action: "minimize" | "toggleMaximize" | "close") {
   if (!isTauri) return;
@@ -28,6 +29,7 @@ export function Diamond({ size = 13, glow = true }: { size?: number; glow?: bool
 // 44px window chrome: brand + optional section label + faux window controls.
 // `onBack`, when set, shows a back arrow at the top-left (where users expect it).
 export function TitleBar({ section, onBack }: { section?: string; onBack?: () => void }) {
+  const { t } = useForja();
   return (
     <div
       data-tauri-drag-region
@@ -37,8 +39,8 @@ export function TitleBar({ section, onBack }: { section?: string; onBack?: () =>
         {onBack && (
           <button
             onClick={onBack}
-            aria-label="Voltar"
-            title="Voltar"
+            aria-label={t("win.back")}
+            title={t("win.back")}
             className="-ml-1 flex h-7 w-7 items-center justify-center rounded-[7px] text-forge-muted transition-colors hover:bg-white/10 hover:text-forge-text"
           >
             <Chevron dir="left" size={16} />
@@ -51,13 +53,13 @@ export function TitleBar({ section, onBack }: { section?: string; onBack?: () =>
         </div>
       </div>
       <div className="flex items-center gap-1.5">
-        <WindowButton label="Minimizar" onClick={() => windowAction("minimize")}>
+        <WindowButton label={t("win.min")} onClick={() => windowAction("minimize")}>
           <span className="h-[1.5px] w-[11px] bg-current" />
         </WindowButton>
-        <WindowButton label="Maximizar" onClick={() => windowAction("toggleMaximize")}>
+        <WindowButton label={t("win.max")} onClick={() => windowAction("toggleMaximize")}>
           <span className="h-2.5 w-2.5 rounded-[2px] border-[1.5px] border-current" />
         </WindowButton>
-        <WindowButton label="Fechar" danger onClick={() => windowAction("close")}>
+        <WindowButton label={t("win.close")} danger onClick={() => windowAction("close")}>
           <span className="text-[13px] leading-none">✕</span>
         </WindowButton>
       </div>

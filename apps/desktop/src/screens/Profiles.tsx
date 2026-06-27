@@ -10,7 +10,7 @@ import {
 } from "../profile";
 
 export default function Profiles() {
-  const { selected, setSelection, go, byId } = useForja();
+  const { selected, setSelection, go, byId, t, tCat, settings } = useForja();
   const [name, setName] = useState("meu-setup");
   const [recents, setRecents] = useState<ForjaProfile[]>(() => getRecents());
 
@@ -39,13 +39,13 @@ export default function Profiles() {
       const profile = await importProfile();
       if (profile) applyAndGo(profile);
     } catch (e) {
-      alert(`Não foi possível importar: ${(e as Error).message}`);
+      alert(t("profiles.couldNotImport", { m: (e as Error).message }));
     }
   };
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
-      <TitleBar section="Perfis" onBack={() => go("catalog")} />
+      <TitleBar section={t("profiles.section")} onBack={() => go("catalog")} />
       <div className="flex min-h-0 flex-1 flex-col px-9 py-[30px]">
         {/* banner */}
         <div
@@ -58,12 +58,12 @@ export default function Profiles() {
           <Diamond size={30} />
           <div className="ml-1">
             <div className="text-[15px] font-semibold">
-              Salve uma vez, reuse em toda formatação
+              {t("profiles.bannerTitle")}
             </div>
             <div className="mt-[3px] text-[12.5px] text-[#bcb2a5]">
-              Sua seleção vira um arquivo{" "}
-              <span className="font-mono text-amber-soft">.forja</span> portátil —
-              leve no pen drive, na nuvem ou compartilhe com a equipe.
+              {t("profiles.banner1")}{" "}
+              <span className="font-mono text-amber-soft">.forja</span>{" "}
+              {t("profiles.banner2")}
             </div>
           </div>
         </div>
@@ -73,22 +73,22 @@ export default function Profiles() {
           <div className="flex flex-col rounded-[14px] border border-white/[0.07] bg-[#1a1613] p-6">
             <div className="mb-1.5 flex items-center gap-[11px]">
               <ArrowIcon dir="up" />
-              <span className="text-[17px] font-semibold">Exportar perfil</span>
+              <span className="text-[17px] font-semibold">{t("profiles.export")}</span>
             </div>
             <p className="mb-[18px] text-[13px] leading-[1.5] text-forge-muted">
-              Guarde sua seleção atual como um arquivo pra usar de novo depois.
+              {t("profiles.exportDesc")}
             </p>
 
             <div className="mb-4 rounded-[11px] border border-white/[0.06] bg-forge-bg p-[15px]">
               <div className="mb-2.5 font-mono text-[10.5px] uppercase tracking-[0.08em] text-forge-faint">
-                Seleção atual
+                {t("profiles.currentSel")}
               </div>
               <div className="mb-[13px] flex items-baseline gap-2">
                 <span className="font-mono text-[24px] font-bold text-amber-light">
                   {ids.length}
                 </span>
                 <span className="text-[13px] text-[#bcb2a5]">
-                  programas · {categories.length} categorias
+                  {t("profiles.catsSuffix", { n: categories.length })}
                 </span>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -97,7 +97,7 @@ export default function Profiles() {
                     key={c}
                     className="rounded-full border border-white/[0.07] bg-white/[0.04] px-2.5 py-[3px] text-[11px] text-[#bcb2a5]"
                   >
-                    {c}
+                    {tCat(c)}
                   </span>
                 ))}
                 {categories.length > 4 && (
@@ -109,7 +109,7 @@ export default function Profiles() {
             </div>
 
             <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.08em] text-forge-faint">
-              Nome do arquivo
+              {t("profiles.filename")}
             </div>
             <div className="flex items-center rounded-[10px] border border-white/10 bg-forge-bg px-3.5 py-3 font-mono text-[13.5px]">
               <input
@@ -124,7 +124,7 @@ export default function Profiles() {
               className="mt-auto flex items-center justify-center gap-2.5 py-3.5 text-[14px] shadow-[0_6px_18px_rgba(245,147,63,0.28)] disabled:opacity-50"
               onClick={onExport}
             >
-              <span className="-mt-px">↑</span> Exportar perfil
+              <span className="-mt-px">↑</span> {t("profiles.export")}
             </AmberButton>
           </div>
 
@@ -132,10 +132,10 @@ export default function Profiles() {
           <div className="flex flex-col rounded-[14px] border border-white/[0.07] bg-[#1a1613] p-6">
             <div className="mb-1.5 flex items-center gap-[11px]">
               <ArrowIcon dir="down" />
-              <span className="text-[17px] font-semibold">Importar perfil</span>
+              <span className="text-[17px] font-semibold">{t("profiles.import")}</span>
             </div>
             <p className="mb-[18px] text-[13px] leading-[1.5] text-forge-muted">
-              Tem um arquivo salvo? Carregue tudo de uma vez.
+              {t("profiles.importDesc")}
             </p>
 
             <button
@@ -146,21 +146,21 @@ export default function Profiles() {
                 <Diamond size={18} glow={false} />
               </div>
               <div className="text-[13.5px] font-medium">
-                Clique para escolher um arquivo{" "}
+                {t("profiles.clickChoose")}{" "}
                 <span className="font-mono text-amber-soft">.forja</span>
               </div>
               <div className="text-[12px] text-[#8e857a]">
-                ou arraste-o até aqui
+                {t("profiles.dragHere")}
               </div>
             </button>
 
             <div className="mb-2.5 font-mono text-[10.5px] uppercase tracking-[0.08em] text-forge-faint">
-              Perfis recentes
+              {t("profiles.recent")}
             </div>
             <div className="flex flex-col gap-2.5 overflow-y-auto">
               {recents.length === 0 && (
                 <div className="rounded-[11px] border border-white/[0.06] bg-forge-bg px-3.5 py-3 text-[12px] text-forge-faint">
-                  Nenhum perfil exportado ainda.
+                  {t("profiles.noneYet")}
                 </div>
               )}
               {recents.map((r) => (
@@ -176,15 +176,19 @@ export default function Profiles() {
                       {r.name}.forja
                     </div>
                     <div className="mt-0.5 text-[11.5px] text-[#8e857a]">
-                      {r.programIds.length} programas · exportado{" "}
-                      {new Date(r.exportedAt).toLocaleDateString("pt-BR")}
+                      {r.programIds.length}{" "}
+                      {t("profiles.exportedSuffix", {
+                        d: new Date(r.exportedAt).toLocaleDateString(
+                          settings.lang === "pt" ? "pt-BR" : "en-US"
+                        ),
+                      })}
                     </div>
                   </div>
                   <button
                     onClick={() => applyAndGo(r)}
                     className="flex-shrink-0 rounded-[8px] border border-white/[0.12] bg-white/[0.05] px-3.5 py-[7px] text-[12px] font-medium text-forge-text transition-colors hover:border-amber-glow/40 hover:bg-amber-glow/[0.14] hover:text-amber-soft"
                   >
-                    Importar
+                    {t("profiles.importBtn")}
                   </button>
                 </div>
               ))}

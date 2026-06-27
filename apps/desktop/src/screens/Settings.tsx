@@ -2,9 +2,16 @@ import { useEffect, useState } from "react";
 import { useForja } from "../store";
 import { TitleBar } from "../components/ui";
 import { LANGS, type Lang } from "../i18n";
-import { checkForjaUpdate, installUpdate, openExternal, type ForjaUpdate } from "../tauri";
+import {
+  checkForjaUpdate,
+  installUpdate,
+  openExternal,
+  isAdmin,
+  relaunchAsAdmin,
+  type ForjaUpdate,
+} from "../tauri";
 
-const APP_VERSION = "0.1.3";
+const APP_VERSION = "0.1.4";
 
 export default function Settings() {
   const {
@@ -20,6 +27,11 @@ export default function Settings() {
   const [update, setUpdate] = useState<ForjaUpdate | null>(null);
   const [checking, setChecking] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [admin, setAdmin] = useState(false);
+
+  useEffect(() => {
+    void isAdmin().then(setAdmin);
+  }, []);
 
   const check = async () => {
     setChecking(true);
@@ -148,6 +160,26 @@ export default function Settings() {
             checked={settings.hideInstalled}
             onChange={(v) => updateSetting("hideInstalled", v)}
           />
+        </Section>
+
+        <Section title={t("settings.access")}>
+          <Row label={t("settings.adminRow")} desc={t("settings.adminDesc")}>
+            {admin ? (
+              <span className="flex items-center gap-2 text-[12.5px] font-medium text-status-done">
+                <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-status-done/[0.16] text-[11px]">
+                  ✓
+                </span>
+                {t("settings.adminOn")}
+              </span>
+            ) : (
+              <button
+                onClick={() => void relaunchAsAdmin()}
+                className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20"
+              >
+                {t("settings.reopenAdmin")}
+              </button>
+            )}
+          </Row>
         </Section>
 
         <Section title={t("settings.about")}>

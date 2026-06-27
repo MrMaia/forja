@@ -44,6 +44,7 @@ export default function Catalog() {
     installing,
     settings,
     t,
+    tCat,
   } = useForja();
   const [active, setActive] = useState<string>("Desenvolvimento");
   const [query, setQuery] = useState("");
@@ -80,7 +81,7 @@ export default function Catalog() {
     ? baseList.filter((p) => !isInstalled(p.id))
     : baseList;
 
-  const heading = q ? `${t("catalog.results")} "${query}"` : active;
+  const heading = q ? `${t("catalog.results")} "${query}"` : tCat(active);
 
   const selectAllVisible = () => {
     // only programs that aren't already installed can be selected
@@ -99,7 +100,7 @@ export default function Catalog() {
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
-      <TitleBar section="Catálogo" />
+      <TitleBar section={t("nav.catalog")} />
       <div className="flex min-h-0 flex-1">
         {/* sidebar — primary navigation */}
         <aside className="flex w-[228px] flex-shrink-0 flex-col gap-0.5 border-r border-white/5 bg-forge-inset px-3.5 py-[18px]">
@@ -142,7 +143,7 @@ export default function Catalog() {
           <div className="flex flex-shrink-0 items-center border-b border-white/5 px-3">
             <button
               onClick={() => scrollChips(-1)}
-              aria-label="Categorias anteriores"
+              aria-label={t("catalog.prevCats")}
               className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[7px] text-forge-muted transition-colors hover:bg-white/[0.06] hover:text-forge-text"
             >
               <Chevron dir="left" size={16} />
@@ -168,7 +169,7 @@ export default function Catalog() {
                   }
                 >
                   <span className="h-2 w-2 rounded-[2px]" style={{ background: DOT[cat] }} />
-                  <span className={isActive ? "font-semibold" : ""}>{cat}</span>
+                  <span className={isActive ? "font-semibold" : ""}>{tCat(cat)}</span>
                   <span className="font-mono text-[10.5px] text-forge-faint">
                     {counts.get(cat) ?? 0}
                   </span>
@@ -178,7 +179,7 @@ export default function Catalog() {
             </div>
             <button
               onClick={() => scrollChips(1)}
-              aria-label="Próximas categorias"
+              aria-label={t("catalog.nextCats")}
               className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[7px] text-forge-muted transition-colors hover:bg-white/[0.06] hover:text-forge-text"
             >
               <Chevron dir="right" size={16} />
@@ -289,6 +290,8 @@ function ProgramCard({
     isErrorDismissed,
     versionChoice,
     setVersion,
+    t,
+    tDesc,
   } = useForja();
   const row = installRows[program.id];
   const status = row?.status;
@@ -374,7 +377,7 @@ function ProgramCard({
             ))}
         </div>
         <div className="mt-1 text-[12px] leading-[1.45] text-[#998f83]">
-          {program.description}
+          {tDesc(program.id, program.description)}
         </div>
 
         {/* version picker (PHP, Java, Python…) — only when selectable */}
@@ -390,7 +393,7 @@ function ProgramCard({
           >
             {program.versions.map((v) => (
               <option key={v.winget} value={v.winget}>
-                versão {v.label}
+                {t("card.version")} {v.label}
               </option>
             ))}
           </select>
@@ -404,10 +407,10 @@ function ProgramCard({
               style={{ animation: "forjaSpin 0.8s linear infinite" }}
             />
             {status === "downloading"
-              ? `baixando · ${Math.round(row?.percent ?? 0)}%`
+              ? `${t("card.downloading")} · ${Math.round(row?.percent ?? 0)}%`
               : status === "installing"
-                ? "instalando…"
-                : "na fila…"}
+                ? t("card.installingDots")
+                : t("card.queued")}
           </div>
         ) : failed ? (
           <div className="mt-2.5">
@@ -415,14 +418,14 @@ function ProgramCard({
               className="text-[11px] font-medium leading-[1.4] text-status-error"
               title={row?.line}
             >
-              {row?.line ?? "falha ao atualizar"}
+              {row?.line ?? t("card.failUpdate")}
             </div>
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={doUpgrade}
                 className="rounded-[7px] border border-white/15 px-2.5 py-1 text-[11.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text"
               >
-                Tentar de novo
+                {t("card.retry")}
               </button>
               {program.fallbackUrl && (
                 <button
@@ -432,7 +435,7 @@ function ProgramCard({
                   }}
                   className="rounded-[7px] border border-white/15 px-2.5 py-1 text-[11.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text"
                 >
-                  Abrir site oficial
+                  {t("card.openSite")}
                 </button>
               )}
             </div>
@@ -448,13 +451,13 @@ function ProgramCard({
               onClick={doUpgrade}
               className="rounded-[7px] border border-amber-glow/40 bg-amber-glow/[0.12] px-2.5 py-1 text-[11.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20"
             >
-              Atualizar
+              {t("card.update")}
             </button>
           </div>
         ) : current ? (
           <div className="mt-2.5 flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-status-done">
-              <span className="text-[12px]">✓</span> instalado
+              <span className="text-[12px]">✓</span> {t("card.installed")}
               {info?.installed && ` · v${info.installed}`}
             </span>
             {info?.wingetId && (
@@ -462,7 +465,7 @@ function ProgramCard({
                 onClick={doUninstall}
                 className="flex-shrink-0 rounded-[7px] border border-white/12 px-2.5 py-1 text-[11.5px] font-medium text-forge-muted transition-colors hover:border-status-error/50 hover:text-status-error"
               >
-                Desinstalar
+                {t("card.uninstall")}
               </button>
             )}
           </div>
@@ -473,16 +476,16 @@ function ProgramCard({
           <div className="mt-2 flex items-center justify-between gap-2">
             <span
               className="truncate text-[11px] font-medium text-amber-soft"
-              title={pathState === "error" ? "falha ao adicionar" : pinfo!.pathDir!}
+              title={pathState === "error" ? t("card.pathFail") : pinfo!.pathDir!}
             >
-              {pathState === "error" ? "falha — tente de novo" : "⚠ fora do PATH"}
+              {pathState === "error" ? t("card.pathFail") : t("card.offPath")}
             </span>
             <button
               onClick={doAddPath}
               disabled={pathState === "adding"}
               className="flex-shrink-0 rounded-[7px] border border-amber-glow/40 bg-amber-glow/[0.12] px-2.5 py-1 text-[11.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20 disabled:opacity-50"
             >
-              {pathState === "adding" ? "adicionando…" : "Adicionar ao PATH"}
+              {pathState === "adding" ? t("card.adding") : t("card.addPath")}
             </button>
           </div>
         )}

@@ -10,7 +10,7 @@ const ACCENT: Record<string, string> = {
 };
 
 export default function Presets() {
-  const { presets, setSelection, go, byId } = useForja();
+  const { presets, setSelection, go, byId, t } = useForja();
 
   const use = (preset: Preset) => {
     setSelection(preset.programIds);
@@ -19,23 +19,22 @@ export default function Presets() {
 
   return (
     <div className="flex h-full flex-col bg-forge-bg">
-      <TitleBar section="Perfis prontos" onBack={() => go("catalog")} />
+      <TitleBar section={t("presets.section")} onBack={() => go("catalog")} />
       <div className="flex min-h-0 flex-1 flex-col px-9 py-[34px]">
         <div className="mb-[26px] flex items-end justify-between">
           <div>
             <h2 className="m-0 text-[26px] font-bold tracking-[-0.02em]">
-              Perfis prontos
+              {t("presets.section")}
             </h2>
             <p className="mt-2 text-[14px] text-forge-muted">
-              Comece com um pacote pensado pra cada tipo de uso — e ajuste o que
-              quiser depois.
+              {t("presets.subtitle")}
             </p>
           </div>
           <button
             onClick={() => go("catalog")}
             className="text-[13px] font-medium text-amber-light hover:underline"
           >
-            ou monte do zero
+            {t("presets.orScratch")}
           </button>
         </div>
 
@@ -57,9 +56,9 @@ export default function Presets() {
             <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full border-[1.5px] border-white/20 text-[20px] font-light text-forge-muted">
               +
             </div>
-            <span className="text-[14.5px] font-semibold">Montar do zero</span>
+            <span className="text-[14.5px] font-semibold">{t("presets.buildScratch")}</span>
             <span className="max-w-[180px] text-[12px] leading-[1.45] text-[#8e857a]">
-              Escolha programa por programa no catálogo.
+              {t("presets.buildScratchDesc")}
             </span>
           </button>
         </div>
@@ -79,6 +78,8 @@ function PresetCard({
   byId: (id: string) => Program | undefined;
   onUse: () => void;
 }) {
+  const { t, tPreset } = useForja();
+  const [name, description] = tPreset(preset.id, preset.name, preset.description);
   const chips = preset.programIds.slice(0, 4);
   const extra = preset.programIds.length - chips.length;
   const accent = ACCENT[preset.id] ?? "#7d7368";
@@ -105,17 +106,17 @@ function PresetCard({
             </div>
           )}
           <span className={"text-[17px] font-semibold " + (featured ? "ml-1" : "")}>
-            {preset.name}
+            {name}
           </span>
         </div>
         {featured && (
           <span className="rounded-full bg-amber-glow/[0.18] px-2 py-[3px] text-[10px] font-semibold tracking-[0.08em] text-amber-soft">
-            POPULAR
+            {t("presets.popular")}
           </span>
         )}
       </div>
       <p className="mt-[13px] text-[12.5px] leading-[1.5] text-[#bcb2a5]">
-        {preset.description}
+        {description}
       </p>
       <div className="mt-4 flex gap-1.5">
         {chips.map((id) => {
@@ -132,18 +133,18 @@ function PresetCard({
       </div>
       <div className="mt-auto flex items-center justify-between pt-4">
         <span className="font-mono text-[12px] text-forge-muted">
-          {preset.programIds.length} programas
+          {preset.programIds.length} {t("catalog.programs")}
         </span>
         {featured ? (
           <AmberButton className="px-4 py-[9px] text-[12.5px] shadow-none" onClick={onUse}>
-            Usar este perfil
+            {t("presets.use")}
           </AmberButton>
         ) : (
           <button
             onClick={onUse}
             className="rounded-[9px] border border-white/[0.12] bg-white/[0.05] px-4 py-[9px] text-[12.5px] font-medium text-forge-text transition-colors hover:bg-white/10"
           >
-            Usar este perfil
+            {t("presets.use")}
           </button>
         )}
       </div>
