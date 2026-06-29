@@ -230,7 +230,7 @@
     "category": "Essenciais",
     "description": "Utilitários avançados para Windows.",
     "icon": { "label": "Pt", "bg": "#353038", "fg": "#ddd6e4" },
-    "iconUrl": null,
+    "iconUrl": "/icons/powertoys.svg",
     "winget": "Microsoft.PowerToys",
     "fallbackUrl": "https://aka.ms/installpowertoys",
     "postInstall": []
@@ -274,7 +274,7 @@
     "category": "Essenciais",
     "description": "Compactador de arquivos (RAR/ZIP).",
     "icon": { "label": "WR", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/winrar.svg",
     "winget": "RARLab.WinRAR",
     "fallbackUrl": null,
     "postInstall": []
@@ -285,7 +285,7 @@
     "category": "Essenciais",
     "description": "Busca instantânea de arquivos.",
     "icon": { "label": "Ev", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/everything.svg",
     "winget": "voidtools.Everything",
     "fallbackUrl": null,
     "postInstall": []
@@ -307,7 +307,7 @@
     "category": "Essenciais",
     "description": "Shell e linguagem de script moderna.",
     "icon": { "label": "P7", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/powershell.svg",
     "winget": "Microsoft.PowerShell",
     "fallbackUrl": null,
     "postInstall": []
@@ -318,7 +318,7 @@
     "category": "Essenciais",
     "description": "Cria pendrives bootáveis.",
     "icon": { "label": "Ru", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/rufus.png",
     "winget": "Rufus.Rufus",
     "fallbackUrl": null,
     "postInstall": []
@@ -329,7 +329,7 @@
     "category": "Essenciais",
     "description": "Remove programas sem deixar restos.",
     "icon": { "label": "Rv", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/revo-uninstaller.png",
     "winget": "RevoUninstaller.RevoUninstaller",
     "fallbackUrl": null,
     "postInstall": []
@@ -340,7 +340,7 @@
     "category": "Essenciais",
     "description": "Interface gráfica para o winget e outros.",
     "icon": { "label": "UG", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/unigetui.png",
     "winget": "MartiCliment.UniGetUI",
     "fallbackUrl": null,
     "postInstall": []
@@ -351,7 +351,7 @@
     "category": "Essenciais",
     "description": "Deixa a barra de tarefas transparente.",
     "icon": { "label": "TB", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/translucenttb.png",
     "winget": "CharlesMilette.TranslucentTB",
     "fallbackUrl": null,
     "postInstall": []
@@ -362,7 +362,7 @@
     "category": "Essenciais",
     "description": "Informações e sensores do hardware.",
     "icon": { "label": "HW", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/hwinfo.svg",
     "winget": "REALiX.HWiNFO",
     "fallbackUrl": null,
     "postInstall": []
@@ -373,7 +373,7 @@
     "category": "Essenciais",
     "description": "Saúde e temperatura dos discos.",
     "icon": { "label": "CD", "bg": "#3a352e", "fg": "#e6ddcf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/crystaldiskinfo.png",
     "winget": "CrystalDewWorld.CrystalDiskInfo",
     "fallbackUrl": null,
     "postInstall": []
@@ -384,7 +384,7 @@
     "category": "Navegadores",
     "description": "Navegador da Microsoft.",
     "icon": { "label": "Ed", "bg": "#2f3f4a", "fg": "#d3e0e8" },
-    "iconUrl": null,
+    "iconUrl": "/icons/edge.svg",
     "winget": "Microsoft.Edge",
     "fallbackUrl": null,
     "postInstall": []
@@ -483,7 +483,7 @@
     "category": "Comunicação",
     "description": "Comunicação para equipes.",
     "icon": { "label": "Sl", "bg": "#393346", "fg": "#ddd4e8" },
-    "iconUrl": null,
+    "iconUrl": "/icons/slack.svg",
     "winget": "SlackTechnologies.Slack",
     "fallbackUrl": null,
     "postInstall": []
@@ -505,7 +505,7 @@
     "category": "Comunicação",
     "description": "Reuniões e chat corporativo.",
     "icon": { "label": "Te", "bg": "#393346", "fg": "#ddd4e8" },
-    "iconUrl": null,
+    "iconUrl": "/icons/teams.svg",
     "winget": "Microsoft.Teams",
     "fallbackUrl": null,
     "postInstall": []
@@ -538,7 +538,7 @@
     "category": "Comunicação",
     "description": "Chamadas e mensagens.",
     "icon": { "label": "Sk", "bg": "#393346", "fg": "#ddd4e8" },
-    "iconUrl": null,
+    "iconUrl": "/icons/skype.svg",
     "winget": "Microsoft.Skype",
     "fallbackUrl": null,
     "postInstall": []
@@ -604,7 +604,7 @@
     "category": "Mídia",
     "description": "Conversor de vídeo.",
     "icon": { "label": "HB", "bg": "#4a352e", "fg": "#ecd8cf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/handbrake.png",
     "winget": "HandBrake.HandBrake",
     "fallbackUrl": null,
     "postInstall": []
@@ -626,7 +626,7 @@
     "category": "Mídia",
     "description": "Editor de imagens simples e rápido.",
     "icon": { "label": "PN", "bg": "#4a352e", "fg": "#ecd8cf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/paint-net.jpg",
     "winget": "dotPDN.PaintDotNet",
     "fallbackUrl": null,
     "postInstall": []
@@ -637,7 +637,7 @@
     "category": "Mídia",
     "description": "Visualizador de imagens leve.",
     "icon": { "label": "IV", "bg": "#4a352e", "fg": "#ecd8cf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/irfanview.svg",
     "winget": "IrfanSkiljan.IrfanView",
     "fallbackUrl": null,
     "postInstall": []
@@ -648,7 +648,7 @@
     "category": "Mídia",
     "description": "Player de áudio minimalista.",
     "icon": { "label": "fb", "bg": "#4a352e", "fg": "#ecd8cf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/foobar2000.svg",
     "winget": "PeterPawlowski.foobar2000",
     "fallbackUrl": null,
     "postInstall": []
@@ -659,7 +659,7 @@
     "category": "Mídia",
     "description": "Pacote de codecs de mídia.",
     "icon": { "label": "KL", "bg": "#4a352e", "fg": "#ecd8cf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/k-lite.png",
     "winget": "CodecGuide.K-LiteCodecPack.Standard",
     "fallbackUrl": null,
     "postInstall": []
@@ -681,7 +681,7 @@
     "category": "Produtividade",
     "description": "Word, Excel, PowerPoint e mais.",
     "icon": { "label": "Of", "bg": "#2f4a3a", "fg": "#cfe6d8" },
-    "iconUrl": null,
+    "iconUrl": "/icons/office.svg",
     "winget": "Microsoft.Office",
     "fallbackUrl": null,
     "postInstall": []
@@ -736,7 +736,7 @@
     "category": "Produtividade",
     "description": "Leitor de PDF da Adobe.",
     "icon": { "label": "AR", "bg": "#2f4a3a", "fg": "#cfe6d8" },
-    "iconUrl": null,
+    "iconUrl": "/icons/acrobat-reader.svg",
     "winget": "Adobe.Acrobat.Reader.64-bit",
     "fallbackUrl": null,
     "postInstall": []
@@ -747,7 +747,7 @@
     "category": "Produtividade",
     "description": "Leitor de PDF leve e rápido.",
     "icon": { "label": "Su", "bg": "#2f4a3a", "fg": "#cfe6d8" },
-    "iconUrl": null,
+    "iconUrl": "/icons/sumatrapdf.svg",
     "winget": "SumatraPDF.SumatraPDF",
     "fallbackUrl": null,
     "postInstall": []
@@ -802,7 +802,7 @@
     "category": "Desenvolvimento",
     "description": "IDE completa da Microsoft (Community).",
     "icon": { "label": "V2", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": null,
+    "iconUrl": "/icons/visual-studio-2022.svg",
     "winget": "Microsoft.VisualStudio.2022.Community",
     "fallbackUrl": null,
     "postInstall": []
@@ -909,6 +909,7 @@
     "winget": "GoLang.Go",
     "exe": ["go.exe"],
     "installDirs": ["%ProgramFiles%\\Go\\bin"],
+    "versionArg": "version",
     "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
@@ -950,6 +951,8 @@
     "icon": { "label": "Jv", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/java-temurin.svg",
     "winget": "EclipseAdoptium.Temurin.21.JDK",
+    "exe": ["java.exe"],
+    "installDirs": ["%ProgramFiles%\\Eclipse Adoptium\\*\\bin"],
     "pathTool": true,
     "versions": [{"label":"21 (LTS)","winget":"EclipseAdoptium.Temurin.21.JDK"},{"label":"17 (LTS)","winget":"EclipseAdoptium.Temurin.17.JDK"},{"label":"11 (LTS)","winget":"EclipseAdoptium.Temurin.11.JDK"},{"label":"8","winget":"EclipseAdoptium.Temurin.8.JDK"}],
     "fallbackUrl": null,
@@ -963,6 +966,8 @@
     "icon": { "label": "Bu", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/bun.svg",
     "winget": "Oven-sh.Bun",
+    "exe": ["bun.exe"],
+    "installDirs": ["%USERPROFILE%\\.bun\\bin"],
     "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
@@ -975,6 +980,8 @@
     "icon": { "label": "De", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/deno.svg",
     "winget": "DenoLand.Deno",
+    "exe": ["deno.exe"],
+    "installDirs": ["%USERPROFILE%\\.deno\\bin"],
     "pathTool": true,
     "fallbackUrl": null,
     "postInstall": []
@@ -1013,7 +1020,7 @@
     "category": "Desenvolvimento",
     "description": "Temas para o prompt do terminal.",
     "icon": { "label": "OP", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": null,
+    "iconUrl": "/icons/oh-my-posh.svg",
     "winget": "JanDeDobbeleer.OhMyPosh",
     "pathTool": true,
     "fallbackUrl": null,
@@ -1036,7 +1043,7 @@
     "category": "Desenvolvimento",
     "description": "Cliente leve de MySQL/MariaDB.",
     "icon": { "label": "Hd", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": null,
+    "iconUrl": "/icons/heidisql.png",
     "winget": "HeidiSQL.HeidiSQL",
     "fallbackUrl": null,
     "postInstall": []
@@ -1071,6 +1078,8 @@
     "icon": { "label": "Mc", "bg": "#2d4257", "fg": "#dfe7ef" },
     "iconUrl": "/icons/miniconda.svg",
     "winget": "Anaconda.Miniconda3",
+    "exe": ["conda.exe"],
+    "installDirs": ["%USERPROFILE%\\miniconda3\\Scripts", "%ProgramData%\\miniconda3\\Scripts"],
     "fallbackUrl": null,
     "postInstall": []
   },
@@ -1094,7 +1103,7 @@
     "category": "Desenvolvimento",
     "description": "Cliente SFTP/FTP.",
     "icon": { "label": "WS", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": null,
+    "iconUrl": "/icons/winscp.png",
     "winget": "WinSCP.WinSCP",
     "fallbackUrl": null,
     "postInstall": []
@@ -1105,7 +1114,7 @@
     "category": "Desenvolvimento",
     "description": "Cliente SSH/Telnet.",
     "icon": { "label": "Pu", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": null,
+    "iconUrl": "/icons/putty.svg",
     "winget": "PuTTY.PuTTY",
     "fallbackUrl": null,
     "postInstall": []
@@ -1116,7 +1125,7 @@
     "category": "Desenvolvimento",
     "description": "Ambiente e toolchain estilo Unix.",
     "icon": { "label": "M2", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": null,
+    "iconUrl": "/icons/msys2.png",
     "winget": "MSYS2.MSYS2",
     "fallbackUrl": null,
     "postInstall": []
@@ -1171,7 +1180,7 @@
     "category": "Games",
     "description": "Launcher para Epic e GOG.",
     "icon": { "label": "He", "bg": "#4a2e3a", "fg": "#f0cfdd" },
-    "iconUrl": null,
+    "iconUrl": "/icons/heroic.png",
     "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
     "fallbackUrl": null,
     "postInstall": []
@@ -1182,7 +1191,7 @@
     "category": "Games",
     "description": "Biblioteca unificada de jogos.",
     "icon": { "label": "Pl", "bg": "#4a2e3a", "fg": "#f0cfdd" },
-    "iconUrl": null,
+    "iconUrl": "/icons/playnite.png",
     "winget": "Playnite.Playnite",
     "fallbackUrl": null,
     "postInstall": []
@@ -1215,7 +1224,7 @@
     "category": "Drivers",
     "description": "Configura periféricos Logitech G.",
     "icon": { "label": "GH", "bg": "#3a3a2e", "fg": "#e6e6cf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/logitech-ghub.svg",
     "winget": "Logitech.GHUB",
     "fallbackUrl": null,
     "postInstall": []
@@ -1248,7 +1257,7 @@
     "category": "Drivers",
     "description": "Monitora e controla hardware NZXT.",
     "icon": { "label": "CA", "bg": "#3a3a2e", "fg": "#e6e6cf" },
-    "iconUrl": null,
+    "iconUrl": "/icons/nzxt-cam.svg",
     "winget": "NZXT.CAM",
     "fallbackUrl": null,
     "postInstall": []
@@ -1347,7 +1356,7 @@
     "category": "Produtividade",
     "description": "Armazenamento e sincronização da Microsoft.",
     "icon": { "label": "OD", "bg": "#2f4a3a", "fg": "#cfe6d8" },
-    "iconUrl": null,
+    "iconUrl": "/icons/onedrive.svg",
     "winget": "Microsoft.OneDrive",
     "fallbackUrl": null,
     "postInstall": []
@@ -1394,6 +1403,8 @@
     "iconUrl": "/icons/php.svg",
     "winget": "PHP.PHP.8.4",
     "detect": ["PHP.PHP"],
+    "exe": ["php.exe"],
+    "installDirs": ["%ProgramFiles%\\PHP", "C:\\php", "C:\\php\\*"],
     "versions": [{"label":"8.4","winget":"PHP.PHP.8.4"},{"label":"8.3","winget":"PHP.PHP.8.3"},{"label":"8.2","winget":"PHP.PHP.8.2"},{"label":"8.1","winget":"PHP.PHP.8.1"}],
     "fallbackUrl": "https://windows.php.net/download/",
     "postInstall": []
@@ -1404,7 +1415,7 @@
     "category": "Linguagens",
     "description": "Bibliotecas Visual C++ (x64) exigidas por muitos programas e jogos.",
     "icon": { "label": "VC", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": null,
+    "iconUrl": "/icons/vcredist.svg",
     "winget": "Microsoft.VCRedist.2015+.x64",
     "fallbackUrl": "https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist",
     "postInstall": []
@@ -1438,7 +1449,7 @@
     "category": "Desenvolvimento",
     "description": "Agente de IA da Anthropic no terminal (via npm).",
     "icon": { "label": "Cl", "bg": "#5a3a2e", "fg": "#f0d3c2" },
-    "iconUrl": null,
+    "iconUrl": "/icons/claude-cli.svg",
     "winget": null,
     "npm": "@anthropic-ai/claude-code",
     "exe": ["claude.cmd", "claude.exe"],
@@ -1453,7 +1464,7 @@
     "category": "Desenvolvimento",
     "description": "Agente de codificação da OpenAI no terminal (via npm).",
     "icon": { "label": "Cx", "bg": "#2d4257", "fg": "#dfe7ef" },
-    "iconUrl": null,
+    "iconUrl": "/icons/codex-cli.svg",
     "winget": null,
     "npm": "@openai/codex",
     "exe": ["codex.cmd", "codex.exe"],

@@ -44,6 +44,9 @@ export interface Program {
   // segment (anywhere) means "search each immediate subdirectory" (e.g. Python's
   // or the JDK's version folders). Used to locate the dir to add to PATH.
   installDirs?: string[];
+  // flag passed to the found binary to read its exact version (default
+  // "--version"). Override where the tool differs, e.g. go uses "version".
+  versionArg?: string;
   // true for command-line tools that belong on PATH — gates the "add to PATH"
   // button so it never shows for GUI apps that merely happen to have an `exe`.
   pathTool?: boolean;

@@ -33,6 +33,7 @@ export interface PathSpec {
   id: string;
   exe: string[];
   installDirs: string[];
+  versionArg?: string | null; // flag to read the version (default "--version")
 }
 
 export interface PathToolInfo {
@@ -40,6 +41,7 @@ export interface PathToolInfo {
   installed: boolean;
   onPath: boolean;
   pathDir: string | null; // dir to add to PATH when onPath is false
+  version: string | null; // exact version from `<exe> <versionArg>`, if readable
 }
 
 /** Detect dev tools by executable presence and whether they're on PATH. */
@@ -52,9 +54,9 @@ export async function checkPathTools(specs: PathSpec[]): Promise<PathToolInfo[]>
   // and Git installed and on PATH.
   return specs.map(({ id }) => {
     if (id === "python")
-      return { id, installed: true, onPath: false, pathDir: "C:\\Users\\demo\\Python313" };
-    if (id === "git") return { id, installed: true, onPath: true, pathDir: null };
-    return { id, installed: false, onPath: false, pathDir: null };
+      return { id, installed: true, onPath: false, pathDir: "C:\\Users\\demo\\Python313", version: "3.14.0" };
+    if (id === "git") return { id, installed: true, onPath: true, pathDir: null, version: "2.44.0" };
+    return { id, installed: false, onPath: false, pathDir: null, version: null };
   });
 }
 

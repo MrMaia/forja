@@ -215,7 +215,12 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
       }));
     const pathSpecs = programs
       .filter((p) => p.exe && p.exe.length > 0)
-      .map((p) => ({ id: p.id, exe: p.exe!, installDirs: p.installDirs ?? [] }));
+      .map((p) => ({
+        id: p.id,
+        exe: p.exe!,
+        installDirs: p.installDirs ?? [],
+        versionArg: p.versionArg ?? null,
+      }));
 
     if (specs.length > 0) {
       try {

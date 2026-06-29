@@ -458,7 +458,12 @@ function ProgramCard({
           <div className="mt-2.5 flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-status-done">
               <span className="text-[12px]">✓</span> {t("card.installed")}
-              {info?.installed && ` · v${info.installed}`}
+              {(() => {
+                // winget version wins; fall back to the version read from the
+                // binary itself (covers manual installs winget doesn't list).
+                const v = info?.installed ?? pinfo?.version;
+                return v && ` · v${v}`;
+              })()}
             </span>
             {info?.wingetId && (
               <button
