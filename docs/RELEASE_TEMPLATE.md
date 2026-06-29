@@ -3,6 +3,9 @@
 Use este modelo ao publicar uma release no GitHub. Copie o bloco abaixo,
 troque `X.Y.Z` pela versão e ajuste os bullets de novidades.
 
+- **Tag:** `vX.Y.Z` (ex.: `v0.1.6`)
+- **Título:** sempre `Forja vX.Y.Z` (ex.: `Forja v0.1.6`)
+
 ---
 
 ## Novidades da vX.Y.Z
