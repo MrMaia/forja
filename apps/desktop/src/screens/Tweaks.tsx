@@ -33,10 +33,10 @@ const NEEDS_EXPLORER = new Set([
 ]);
 
 export default function Tweaks() {
-  const { go, t } = useForja();
+  const { go, t, isElevated } = useForja();
   const [state, setState] = useState<TweakState>({});
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState<string | null>(null); // user tweak being applied
+  const [busy, setBusy] = useState<string | null>(null); // user/admin tweak being applied
   const [admin, setAdmin] = useState<Record<string, boolean>>({}); // desired admin state
   const [applyingAdmin, setApplyingAdmin] = useState(false);
   const [explorerDirty, setExplorerDirty] = useState(false);
@@ -59,6 +59,18 @@ export default function Tweaks() {
       await applyUserTweak(key, on);
       setState((p) => ({ ...p, [key]: on }));
       if (NEEDS_EXPLORER.has(key)) setExplorerDirty(true);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  // when already elevated, an admin tweak applies on the spot (no UAC, no batch)
+  const setAdminNow = async (key: string, on: boolean) => {
+    if (!!state[key] === on) return;
+    setBusy(key);
+    try {
+      await applyAdminTweaks([{ key, on }]);
+      setState((p) => ({ ...p, [key]: on }));
     } finally {
       setBusy(null);
     }
@@ -125,38 +137,57 @@ export default function Tweaks() {
               ))}
             </div>
 
-            <div className="mt-7 flex items-center justify-between">
+            <div className="mb-2.5 mt-7 flex items-center justify-between">
               <SectionTitle>{t("tweaks.needAdmin")}</SectionTitle>
-              <button
-                onClick={applyAdmin}
-                disabled={adminChanged.length === 0 || applyingAdmin}
-                className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20 disabled:opacity-40"
-              >
-                {applyingAdmin
-                  ? t("tweaks.applying")
-                  : adminChanged.length > 0
-                    ? t("tweaks.applyN", { n: adminChanged.length })
-                    : t("tweaks.apply")}
-              </button>
+              {!isElevated && (
+                <button
+                  onClick={applyAdmin}
+                  disabled={adminChanged.length === 0 || applyingAdmin}
+                  className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20 disabled:opacity-40"
+                >
+                  {applyingAdmin
+                    ? t("tweaks.applying")
+                    : adminChanged.length > 0
+                      ? t("tweaks.applyN", { n: adminChanged.length })
+                      : t("tweaks.apply")}
+                </button>
+              )}
             </div>
             <div className="overflow-hidden rounded-[13px] border border-white/[0.07] bg-[#1a1613]">
-              {ADMIN_TWEAKS.map((key) => (
-                <ButtonRow
-                  key={key}
-                  label={t(`tw.${key}.label`)}
-                  desc={t(`tw.${key}.desc`)}
-                  on={!!admin[key]}
-                  pending={admin[key] !== !!state[key]}
-                  pendingLabel={t("tweaks.pending")}
-                  enableLabel={t("tweaks.enable")}
-                  disableLabel={t("tweaks.disable")}
-                  applyingLabel={t("tweaks.applying")}
-                  onEnable={() => setAdmin((p) => ({ ...p, [key]: true }))}
-                  onDisable={() => setAdmin((p) => ({ ...p, [key]: false }))}
-                />
-              ))}
+              {ADMIN_TWEAKS.map((key) =>
+                isElevated ? (
+                  <ButtonRow
+                    key={key}
+                    label={t(`tw.${key}.label`)}
+                    desc={t(`tw.${key}.desc`)}
+                    on={!!state[key]}
+                    busy={busy === key}
+                    enableLabel={t("tweaks.enable")}
+                    disableLabel={t("tweaks.disable")}
+                    applyingLabel={t("tweaks.applying")}
+                    onEnable={() => setAdminNow(key, true)}
+                    onDisable={() => setAdminNow(key, false)}
+                  />
+                ) : (
+                  <ButtonRow
+                    key={key}
+                    label={t(`tw.${key}.label`)}
+                    desc={t(`tw.${key}.desc`)}
+                    on={!!admin[key]}
+                    pending={admin[key] !== !!state[key]}
+                    pendingLabel={t("tweaks.pending")}
+                    enableLabel={t("tweaks.enable")}
+                    disableLabel={t("tweaks.disable")}
+                    applyingLabel={t("tweaks.applying")}
+                    onEnable={() => setAdmin((p) => ({ ...p, [key]: true }))}
+                    onDisable={() => setAdmin((p) => ({ ...p, [key]: false }))}
+                  />
+                )
+              )}
             </div>
-            <p className="mt-2 text-[11.5px] text-forge-faint">{t("tweaks.adminNote")}</p>
+            <p className="mt-2 text-[11.5px] text-forge-faint">
+              {isElevated ? t("tweaks.adminNoteElevated") : t("tweaks.adminNote")}
+            </p>
           </>
         )}
       </div>

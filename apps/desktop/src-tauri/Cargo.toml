@@ -1,6 +1,6 @@
 [package]
 name = "forja"
-version = "0.1.5"
+version = "0.1.6"
 description = "Forja — do zero ao pronto"
 authors = ["Allan Maia"]
 edition = "2021"

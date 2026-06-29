@@ -1,17 +1,7 @@
-import { useEffect, useState } from "react";
 import { useForja } from "../store";
 import { TitleBar } from "../components/ui";
 import { LANGS, type Lang } from "../i18n";
-import {
-  checkForjaUpdate,
-  installUpdate,
-  openExternal,
-  isAdmin,
-  relaunchAsAdmin,
-  type ForjaUpdate,
-} from "../tauri";
-
-const APP_VERSION = "0.1.5";
+import { relaunchAsAdmin, APP_VERSION } from "../tauri";
 
 export default function Settings() {
   const {
@@ -23,40 +13,16 @@ export default function Settings() {
     upgradeAll,
     refreshInstalled,
     checking: scanningApps,
+    isElevated: admin,
+    forjaUpdate: update,
+    checkingForja: checking,
+    checkForjaNow,
+    installingUpdate: updating,
+    runForjaUpdate,
   } = useForja();
-  const [update, setUpdate] = useState<ForjaUpdate | null>(null);
-  const [checking, setChecking] = useState(false);
-  const [updating, setUpdating] = useState(false);
-  const [admin, setAdmin] = useState(false);
 
-  useEffect(() => {
-    void isAdmin().then(setAdmin);
-  }, []);
-
-  const check = async () => {
-    setChecking(true);
-    try {
-      setUpdate(await checkForjaUpdate(APP_VERSION));
-    } finally {
-      setChecking(false);
-    }
-  };
-
-  const runUpdate = async () => {
-    if (!update) return;
-    setUpdating(true);
-    try {
-      if (update.installUrl) await installUpdate(update.installUrl);
-      else await openExternal(update.url);
-    } finally {
-      setUpdating(false);
-    }
-  };
-
-  useEffect(() => {
-    if (settings.autoUpdateCheck) void check();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const check = () => checkForjaNow();
+  const runUpdate = () => runForjaUpdate();
 
   const updateStatus = () => {
     if (checking) return t("settings.checking");
@@ -164,22 +130,24 @@ export default function Settings() {
 
         <Section title={t("settings.access")}>
           <Row label={t("settings.adminRow")} desc={t("settings.adminDesc")}>
-            {admin ? (
+            {admin && (
               <span className="flex items-center gap-2 text-[12.5px] font-medium text-status-done">
                 <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-status-done/[0.16] text-[11px]">
                   ✓
                 </span>
                 {t("settings.adminOn")}
               </span>
-            ) : (
-              <button
-                onClick={() => void relaunchAsAdmin()}
-                className="rounded-[9px] border border-amber-glow/40 bg-amber-glow/[0.12] px-4 py-2 text-[12.5px] font-semibold text-amber-soft transition-colors hover:bg-amber-glow/20"
-              >
-                {t("settings.reopenAdmin")}
-              </button>
             )}
           </Row>
+          <Toggle
+            label={t("settings.alwaysAdmin")}
+            desc={t("settings.alwaysAdminDesc")}
+            checked={settings.alwaysAdmin}
+            onChange={(v) => {
+              updateSetting("alwaysAdmin", v);
+              if (v && !admin) void relaunchAsAdmin();
+            }}
+          />
         </Section>
 
         <Section title={t("settings.about")}>

@@ -9,6 +9,9 @@ mod updater;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Elevated relaunch (debug) gets a stray console window; close it early.
+    system::free_console_if_elevated();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_os::init())

@@ -73,6 +73,9 @@ const pt: Dict = {
     "Reabra a Forja como administrador para aplicar ajustes do Windows e instalar drivers sem pedir permissão a cada ação.",
   "settings.adminOn": "Ativo (administrador)",
   "settings.reopenAdmin": "Reabrir como admin",
+  "settings.alwaysAdmin": "Sempre abrir como administrador",
+  "settings.alwaysAdminDesc":
+    "Ao marcar, a Forja reabre como administrador agora e em toda inicialização.",
 
   // window chrome
   "win.min": "Minimizar",
@@ -138,6 +141,14 @@ const pt: Dict = {
   "presets.buildScratchDesc": "Escolha programa por programa no catálogo.",
   "presets.popular": "POPULAR",
   "presets.use": "Usar este perfil",
+  "presets.view": "Ver / editar",
+  "presets.previewSubtitle": "{n} programas pré-selecionados — desmarque o que não quiser.",
+  "presets.editInCatalog": "Editar no catálogo",
+  "presets.selectedN": "{n} selecionados",
+
+  // floating "update available" card
+  "update.available": "Atualização disponível",
+  "update.dismiss": "Agora não",
 
   // profiles (export / import)
   "profiles.section": "Perfis",
@@ -195,6 +206,8 @@ const pt: Dict = {
   "tweaks.applying": "aplicando…",
   "tweaks.adminNote":
     "Os ajustes de administrador são aplicados juntos, com um pedido de permissão (UAC).",
+  "tweaks.adminNoteElevated":
+    "A Forja já está como administrador — estes ajustes são aplicados na hora, sem pedir permissão.",
   "tweaks.enable": "HABILITAR",
   "tweaks.disable": "DESABILITAR",
   "tweaks.pending": "pendente",
@@ -287,6 +300,9 @@ const en: Dict = {
     "Reopen Forja as administrator to apply Windows tweaks and install drivers without asking permission on every action.",
   "settings.adminOn": "Active (administrator)",
   "settings.reopenAdmin": "Reopen as admin",
+  "settings.alwaysAdmin": "Always open as administrator",
+  "settings.alwaysAdminDesc":
+    "When on, Forja reopens as administrator now and on every launch.",
 
   // window chrome
   "win.min": "Minimize",
@@ -352,6 +368,14 @@ const en: Dict = {
   "presets.buildScratchDesc": "Pick program by program in the catalog.",
   "presets.popular": "POPULAR",
   "presets.use": "Use this profile",
+  "presets.view": "View / edit",
+  "presets.previewSubtitle": "{n} programs pre-selected — uncheck whatever you don't want.",
+  "presets.editInCatalog": "Edit in catalog",
+  "presets.selectedN": "{n} selected",
+
+  // floating "update available" card
+  "update.available": "Update available",
+  "update.dismiss": "Not now",
 
   // profiles (export / import)
   "profiles.section": "Profiles",
@@ -408,6 +432,8 @@ const en: Dict = {
   "tweaks.applying": "applying…",
   "tweaks.adminNote":
     "Admin tweaks are applied together, with a single permission prompt (UAC).",
+  "tweaks.adminNoteElevated":
+    "Forja is already running as administrator — these tweaks apply instantly, no prompt.",
   "tweaks.enable": "ENABLE",
   "tweaks.disable": "DISABLE",
   "tweaks.pending": "pending",

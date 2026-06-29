@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Preset, Program } from "@forja/catalog";
 import { useForja } from "../store";
 import { TitleBar, Diamond, AppIcon, AmberButton } from "../components/ui";
@@ -11,6 +12,7 @@ const ACCENT: Record<string, string> = {
 
 export default function Presets() {
   const { presets, setSelection, go, byId, t } = useForja();
+  const [preview, setPreview] = useState<Preset | null>(null);
 
   const use = (preset: Preset) => {
     setSelection(preset.programIds);
@@ -46,6 +48,7 @@ export default function Presets() {
               featured={i === 0}
               byId={byId}
               onUse={() => use(preset)}
+              onView={() => setPreview(preset)}
             />
           ))}
           {/* montar do zero */}
@@ -63,6 +66,117 @@ export default function Presets() {
           </button>
         </div>
       </div>
+
+      {preview && (
+        <PreviewModal
+          preset={preview}
+          byId={byId}
+          onClose={() => setPreview(null)}
+          onEdit={(ids) => {
+            setSelection(ids);
+            go("catalog");
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// View + trim a preset's pre-selection before jumping into the catalog to edit.
+function PreviewModal({
+  preset,
+  byId,
+  onClose,
+  onEdit,
+}: {
+  preset: Preset;
+  byId: (id: string) => Program | undefined;
+  onClose: () => void;
+  onEdit: (ids: string[]) => void;
+}) {
+  const { t, tPreset, tDesc } = useForja();
+  const [name] = tPreset(preset.id, preset.name, preset.description);
+  const [chosen, setChosen] = useState<Set<string>>(new Set(preset.programIds));
+  const toggle = (id: string) =>
+    setChosen((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-8"
+      onClick={onClose}
+    >
+      <div
+        className="flex max-h-full w-[460px] flex-col overflow-hidden rounded-[16px] border border-white/[0.1] bg-[#1a1613] shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between border-b border-white/[0.07] px-5 py-4">
+          <div className="flex items-center gap-2.5">
+            <Diamond size={26} />
+            <div>
+              <div className="text-[16px] font-semibold">{name}</div>
+              <div className="mt-0.5 text-[12px] text-forge-muted">
+                {t("presets.previewSubtitle", { n: preset.programIds.length })}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label={t("win.close")}
+            className="-mr-1 flex h-7 w-7 items-center justify-center rounded-[7px] text-forge-faint transition-colors hover:bg-white/10 hover:text-forge-text"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2">
+          {preset.programIds.map((id) => {
+            const p = byId(id);
+            if (!p) return null;
+            const on = chosen.has(id);
+            return (
+              <button
+                key={id}
+                onClick={() => toggle(id)}
+                className="flex w-full items-center gap-3 rounded-[10px] px-3 py-2 text-left transition-colors hover:bg-white/[0.04]"
+              >
+                <AppIcon program={p} size={32} radius={8} font={12} />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13.5px] font-medium">{p.name}</div>
+                  <div className="truncate text-[11.5px] text-forge-muted">
+                    {tDesc(p.id, p.description)}
+                  </div>
+                </div>
+                <span
+                  className={
+                    "flex h-[20px] w-[20px] flex-shrink-0 items-center justify-center rounded-[6px] border text-[11px] " +
+                    (on
+                      ? "border-amber-glow/50 bg-amber-glow/[0.18] text-amber-soft"
+                      : "border-white/15 text-transparent")
+                  }
+                >
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center justify-between border-t border-white/[0.07] px-5 py-3.5">
+          <span className="font-mono text-[12px] text-forge-muted">
+            {t("presets.selectedN", { n: chosen.size })}
+          </span>
+          <AmberButton
+            className="px-4 py-[9px] text-[12.5px] shadow-none"
+            onClick={() => onEdit([...chosen])}
+          >
+            {t("presets.editInCatalog")}
+          </AmberButton>
+        </div>
+      </div>
     </div>
   );
 }
@@ -72,11 +186,13 @@ function PresetCard({
   featured,
   byId,
   onUse,
+  onView,
 }: {
   preset: Preset;
   featured: boolean;
   byId: (id: string) => Program | undefined;
   onUse: () => void;
+  onView: () => void;
 }) {
   const { t, tPreset } = useForja();
   const [name, description] = tPreset(preset.id, preset.name, preset.description);
@@ -131,22 +247,30 @@ function PresetCard({
           </div>
         )}
       </div>
-      <div className="mt-auto flex items-center justify-between pt-4">
+      <div className="mt-auto flex items-center justify-between gap-2 pt-4">
         <span className="font-mono text-[12px] text-forge-muted">
           {preset.programIds.length} {t("catalog.programs")}
         </span>
-        {featured ? (
-          <AmberButton className="px-4 py-[9px] text-[12.5px] shadow-none" onClick={onUse}>
-            {t("presets.use")}
-          </AmberButton>
-        ) : (
+        <div className="flex items-center gap-2">
           <button
-            onClick={onUse}
-            className="rounded-[9px] border border-white/[0.12] bg-white/[0.05] px-4 py-[9px] text-[12.5px] font-medium text-forge-text transition-colors hover:bg-white/10"
+            onClick={onView}
+            className="rounded-[9px] border border-white/[0.12] px-3 py-[9px] text-[12.5px] font-medium text-forge-muted transition-colors hover:border-white/25 hover:text-forge-text"
           >
-            {t("presets.use")}
+            {t("presets.view")}
           </button>
-        )}
+          {featured ? (
+            <AmberButton className="px-4 py-[9px] text-[12.5px] shadow-none" onClick={onUse}>
+              {t("presets.use")}
+            </AmberButton>
+          ) : (
+            <button
+              onClick={onUse}
+              className="rounded-[9px] border border-white/[0.12] bg-white/[0.05] px-4 py-[9px] text-[12.5px] font-medium text-forge-text transition-colors hover:bg-white/10"
+            >
+              {t("presets.use")}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

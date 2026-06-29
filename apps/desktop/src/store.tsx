@@ -24,8 +24,15 @@ import {
   addToUserPath,
   installPrograms,
   onInstallProgress,
+  checkForjaUpdate,
+  installUpdate,
+  openExternal,
+  isAdmin,
+  relaunchAsAdmin,
+  APP_VERSION,
   type InstalledInfo,
   type PathToolInfo,
+  type ForjaUpdate,
 } from "./tauri";
 
 export interface InstallRow {
@@ -51,6 +58,7 @@ export interface Settings {
   autoUpdateCheck: boolean; // check for app updates when Forja opens
   hideInstalled: boolean; // hide already-installed programs in the catalog
   lang: Lang; // UI language
+  alwaysAdmin: boolean; // always relaunch elevated on open
 }
 
 const SETTINGS_KEY = "forja.settings";
@@ -58,6 +66,7 @@ const DEFAULT_SETTINGS: Settings = {
   autoUpdateCheck: true,
   hideInstalled: false,
   lang: detectLang(), // start in the OS/browser language
+  alwaysAdmin: false,
 };
 
 function loadSettings(): Settings {
@@ -91,6 +100,15 @@ interface ForjaContextValue {
   programsWithUpdates: () => Program[];
   settings: Settings;
   updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
+  // Forja self-update (checked once on open; surfaced as a floating card + Settings)
+  isElevated: boolean; // Forja is running as administrator
+  forjaUpdate: ForjaUpdate | null;
+  checkingForja: boolean;
+  checkForjaNow: () => void;
+  installingUpdate: boolean;
+  runForjaUpdate: () => void;
+  updateDismissed: boolean; // floating card dismissed for this session
+  dismissUpdate: () => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
   tCat: (category: string) => string;
   tDesc: (id: string, fallback: string) => string;
@@ -127,6 +145,11 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
   const errTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [checking, setChecking] = useState(false);
+  const [isElevated, setIsElevated] = useState(false);
+  const [forjaUpdate, setForjaUpdate] = useState<ForjaUpdate | null>(null);
+  const [checkingForja, setCheckingForja] = useState(false);
+  const [installingUpdate, setInstallingUpdate] = useState(false);
+  const [updateDismissed, setUpdateDismissed] = useState(false);
   const [versionChoice, setVersionChoice] = useState<Record<string, string>>({});
   const setVersion = useCallback(
     (programId: string, winget: string) =>
@@ -249,6 +272,39 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
       setChecking(false);
     }
   }
+
+  const checkForjaNow = useCallback(() => {
+    setCheckingForja(true);
+    checkForjaUpdate(APP_VERSION)
+      .then(setForjaUpdate)
+      .finally(() => setCheckingForja(false));
+  }, []);
+
+  const runForjaUpdate = useCallback(() => {
+    if (!forjaUpdate) return;
+    setInstallingUpdate(true);
+    (forjaUpdate.installUrl
+      ? installUpdate(forjaUpdate.installUrl)
+      : openExternal(forjaUpdate.url)
+    ).finally(() => setInstallingUpdate(false));
+  }, [forjaUpdate]);
+
+  const dismissUpdate = useCallback(() => setUpdateDismissed(true), []);
+
+  // On open: learn whether we're elevated, and auto-check for a Forja update
+  // (the floating card reads `forjaUpdate.hasUpdate`).
+  useEffect(() => {
+    void isAdmin().then((adm) => {
+      setIsElevated(adm);
+      // honor the "always open as admin" preference: relaunch elevated, but only
+      // once per process (a false-negative admin check must not loop relaunches).
+      if (!adm && loadSettings().alwaysAdmin && !sessionStorage.getItem("forja.relaunched")) {
+        sessionStorage.setItem("forja.relaunched", "1");
+        void relaunchAsAdmin();
+      }
+    });
+    if (loadSettings().autoUpdateCheck) checkForjaNow();
+  }, [checkForjaNow]);
 
   const startInstall = useCallback((programs: Program[]) => {
     if (programs.length === 0) return;
@@ -389,6 +445,14 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
       catalog.filter((p) => installed.get(p.id)?.available),
     settings,
     updateSetting,
+    isElevated,
+    forjaUpdate,
+    checkingForja,
+    checkForjaNow,
+    installingUpdate,
+    runForjaUpdate,
+    updateDismissed,
+    dismissUpdate,
     installQueue,
     installRows,
     installing,

@@ -8,11 +8,10 @@
 // processes (net session, elevated installers) and the relaunch path waits on UAC;
 // running those on the main thread freezes the WebView ("Não está respondendo").
 
-use std::process::Command;
-use tauri::{AppHandle, Manager};
-
 #[cfg(windows)]
 use std::os::windows::process::CommandExt;
+use std::process::Command;
+use tauri::{AppHandle, Manager};
 
 // Spawning a console subprocess (powershell, net) from this GUI app pops a black
 // console window. CREATE_NO_WINDOW suppresses it — without this, "Reabrir como
@@ -76,9 +75,33 @@ pub fn is_admin() -> bool {
 #[tauri::command(async)]
 pub fn relaunch_as_admin(app: AppHandle) -> Result<(), String> {
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
-    elevate(exe.to_str().ok_or("caminho do executável inválido")?, &[], false)?;
+    // Pass --elevated so the new instance frees its own console (the debug build
+    // gets one since it's launched detached); see free_console_if_elevated().
+    elevate(
+        exe.to_str().ok_or("caminho do executável inválido")?,
+        &["--elevated"],
+        false,
+    )?;
     app.exit(0);
     Ok(())
+}
+
+#[cfg(windows)]
+#[link(name = "kernel32")]
+extern "system" {
+    fn FreeConsole() -> i32;
+}
+
+/// When relaunched elevated (we pass --elevated), a detached debug build pops a
+/// fresh console window. Detach from it so it closes. No-op in release (no console)
+/// and on a normal launch (no flag), so dev logging is preserved.
+pub fn free_console_if_elevated() {
+    #[cfg(windows)]
+    if std::env::args().any(|a| a == "--elevated") {
+        unsafe {
+            FreeConsole();
+        }
+    }
 }
 
 /// Install the bundled Intel Wi-Fi driver (UAC-elevated).

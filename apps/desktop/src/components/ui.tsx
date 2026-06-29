@@ -190,7 +190,6 @@ export function AppIcon({
       <img
         src={program.iconUrl}
         alt=""
-        loading="lazy"
         width={Math.round(size * 0.62)}
         height={Math.round(size * 0.62)}
         onError={() => setFailed(true)}
