@@ -72,7 +72,6 @@ const pt: Dict = {
   "settings.adminDesc":
     "Reabra a Forja como administrador para aplicar ajustes do Windows e instalar drivers sem pedir permissão a cada ação.",
   "settings.adminOn": "Ativo (administrador)",
-  "settings.reopenAdmin": "Reabrir como admin",
   "settings.alwaysAdmin": "Sempre abrir como administrador",
   "settings.alwaysAdminDesc":
     "Ao marcar, a Forja reabre como administrador agora e em toda inicialização.",
@@ -299,7 +298,6 @@ const en: Dict = {
   "settings.adminDesc":
     "Reopen Forja as administrator to apply Windows tweaks and install drivers without asking permission on every action.",
   "settings.adminOn": "Active (administrator)",
-  "settings.reopenAdmin": "Reopen as admin",
   "settings.alwaysAdmin": "Always open as administrator",
   "settings.alwaysAdminDesc":
     "When on, Forja reopens as administrator now and on every launch.",

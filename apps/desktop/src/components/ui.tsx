@@ -114,27 +114,6 @@ export function Chevron({
   );
 }
 
-// Secondary "back" pill: left chevron that nudges on hover.
-export function BackLink({
-  children,
-  onClick,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="group inline-flex items-center gap-2 rounded-[10px] border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-[13px] font-medium text-forge-muted transition-colors hover:border-white/[0.16] hover:text-forge-text"
-    >
-      <span className="text-forge-faint transition-transform duration-150 group-hover:-translate-x-0.5 group-hover:text-amber-light">
-        <Chevron dir="left" />
-      </span>
-      {children}
-    </button>
-  );
-}
-
 // 2-letter monogram tile from a program's icon spec.
 export function Monogram({
   icon,
