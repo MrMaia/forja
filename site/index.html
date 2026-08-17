@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forja — Do zero ao pronto</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffbd7a'/%3E%3Cstop offset='1' stop-color='%23e8792b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='8' y='8' width='16' height='16' rx='4' transform='rotate(45 16 16)' fill='url(%23g)'/%3E%3C/svg%3E"
+    />
+    <meta
+      name="description"
+      content="Instalador desktop pós-formatação para Windows 10/11. Você escolhe os programas, a Forja baixa da fonte oficial e instala tudo em silêncio."
+      data-i18n="meta.desc"
+    />
+    <meta property="og:title" content="Forja — Do zero ao pronto" />
+    <meta
+      property="og:description"
+      content="Formatou o PC? A Forja monta o resto. Apps, drivers e ajustes do Windows em uma passada só."
+    />
+    <meta property="og:type" content="website" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              forge: {
+                bg: "#14110f",
+                panel: "#1a1613",
+                deep: "#0f0d0b",
+                text: "#f0ebe4",
+                muted: "#a39a8e",
+                faint: "#6f665c",
+                dim: "#5f564c",
+              },
+              amber: {
+                glow: "#f5933f",
+                light: "#f5a85e",
+                from: "#f9a455",
+                to: "#e8792b",
+              },
+            },
+            fontFamily: {
+              sans: ["'Space Grotesk'", "system-ui", "sans-serif"],
+              mono: ["'JetBrains Mono'", "ui-monospace", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: #14110f;
+        color: #f0ebe4;
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      ::selection {
+        background: rgba(245, 147, 63, 0.3);
+        color: #fff;
+      }
+
+      /* ember glow that pulses behind the hero — same heartbeat as the app */
+      @keyframes forjaPulse {
+        0%,
+        100% {
+          opacity: 0.55;
+          transform: translate(-50%, 0) scale(1);
+        }
+        50% {
+          opacity: 0.9;
+          transform: translate(-50%, 0) scale(1.08);
+        }
+      }
+      /* a highlight sweeping across the install bar — Forja's own signature */
+      @keyframes forjaIndeterminate {
+        0% {
+          transform: translateX(-110%);
+        }
+        100% {
+          transform: translateX(320%);
+        }
+      }
+      .ember {
+        animation: forjaPulse 4s ease-in-out infinite;
+      }
+      .sweep {
+        animation: forjaIndeterminate 2.1s ease-in-out infinite;
+      }
+
+      /* scroll reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(22px);
+        transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: none;
+      }
+
+      .grid-mask {
+        background-image: linear-gradient(
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        background-size: 40px 40px;
+        -webkit-mask-image: radial-gradient(
+          75% 60% at 50% 35%,
+          #000,
+          transparent 80%
+        );
+        mask-image: radial-gradient(75% 60% at 50% 35%, #000, transparent 80%);
+      }
+
+      .diamond {
+        background: linear-gradient(135deg, #ffbd7a, #e8792b);
+        box-shadow: 0 0 24px rgba(245, 147, 63, 0.5),
+          inset 0 2px 6px rgba(255, 255, 255, 0.35);
+      }
+
+      .app-ico {
+        filter: grayscale(1) opacity(0.5);
+        transition: filter 0.3s ease, transform 0.3s ease;
+      }
+      .app-ico:hover {
+        filter: grayscale(0) opacity(1);
+        transform: translateY(-3px);
+      }
+
+      /* ─── event-horizon hero: the app rising out of a band of light ─── */
+      .hviz {
+        position: relative;
+        padding-top: 96px;
+      }
+      @media (min-width: 640px) {
+        .hviz {
+          padding-top: 124px;
+        }
+      }
+      /* looping wormhole video as the hero's ambient background */
+      .hero-bg-video {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      /* darken + tint the video so the headline stays readable and the section
+         dissolves into the page color at the bottom */
+      .hero-bg-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: radial-gradient(
+            90% 60% at 50% 26%,
+            rgba(20, 17, 15, 0.25),
+            rgba(20, 17, 15, 0.82) 78%
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(20, 17, 15, 0.55) 0%,
+            rgba(20, 17, 15, 0.35) 38%,
+            rgba(20, 17, 15, 0.85) 88%,
+            #14110f 100%
+          );
+      }
+      .hglow {
+        position: absolute;
+        z-index: 0;
+        left: 50%;
+        top: -8px;
+        transform: translateX(-50%);
+        width: min(900px, 122vw);
+        height: 460px;
+        background: radial-gradient(
+          50% 60% at 50% 56%,
+          rgba(245, 147, 63, 0.5),
+          rgba(245, 147, 63, 0.08) 50%,
+          transparent 72%
+        );
+        filter: blur(32px);
+        pointer-events: none;
+      }
+      /* the bright curved horizon line — top arc of a wide, shallow ellipse */
+      .hline {
+        position: absolute;
+        z-index: 1;
+        left: 50%;
+        top: 86px;
+        transform: translateX(-50%);
+        width: min(640px, 82vw);
+        height: 150px;
+        border-radius: 50%;
+        border-top: 2px solid rgba(255, 236, 208, 0.92);
+        box-shadow: 0 -2px 64px 7px rgba(245, 147, 63, 0.6),
+          0 0 26px 2px rgba(245, 147, 63, 0.5);
+        pointer-events: none;
+      }
+      /* a faint starfield/arc texture fanning up from the horizon */
+      .harcs {
+        position: absolute;
+        z-index: 0;
+        left: 50%;
+        top: -40px;
+        transform: translateX(-50%);
+        width: min(940px, 124vw);
+        height: 320px;
+        background-image: radial-gradient(
+            circle at 50% 100%,
+            transparent 0,
+            transparent 38%,
+            rgba(245, 168, 94, 0.1) 38.4%,
+            transparent 39%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            transparent 0,
+            transparent 56%,
+            rgba(245, 168, 94, 0.07) 56.4%,
+            transparent 57%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            transparent 0,
+            transparent 74%,
+            rgba(245, 168, 94, 0.05) 74.4%,
+            transparent 75%
+          );
+        -webkit-mask-image: radial-gradient(
+          70% 100% at 50% 100%,
+          #000,
+          transparent 75%
+        );
+        mask-image: radial-gradient(70% 100% at 50% 100%, #000, transparent 75%);
+        pointer-events: none;
+      }
+      .hshot {
+        position: relative;
+        z-index: 5;
+        margin: 0 auto;
+        max-width: 1000px;
+        border-radius: 14px 14px 0 0;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-bottom: 0;
+        box-shadow: 0 -1px 0 rgba(255, 240, 220, 0.08),
+          0 40px 120px -28px rgba(0, 0, 0, 0.95);
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent);
+        mask-image: linear-gradient(to bottom, #000 80%, transparent);
+      }
+      .hshot img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      a,
+      button {
+        outline: none;
+      }
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid #f5a85e;
+        outline-offset: 3px;
+        border-radius: 8px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .ember,
+        .sweep {
+          animation: none;
+        }
+        .reveal {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen">
+    <!-- ───────────────────────── NAV ───────────────────────── -->
+    <header class="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
+      <nav
+        class="flex w-full max-w-5xl items-center gap-4 rounded-full border border-white/10 bg-[#16120f]/80 px-3 py-2 pl-4 backdrop-blur-xl sm:px-4 sm:pl-5"
+      >
+        <a href="#top" class="flex items-center gap-2.5">
+          <span class="diamond h-5 w-5 rotate-45 rounded-[5px]"></span>
+          <span class="text-[17px] font-bold tracking-[-0.02em]">Forja</span>
+        </a>
+
+        <div
+          class="ml-2 hidden items-center gap-6 text-[13.5px] text-forge-muted md:flex"
+        >
+          <a href="#recursos" class="transition-colors hover:text-forge-text" data-i18n="nav.features">Recursos</a>
+          <a href="#como" class="transition-colors hover:text-forge-text" data-i18n="nav.how">Como funciona</a>
+        </div>
+
+        <div class="ml-auto flex items-center gap-2">
+          <button
+            id="lang"
+            class="rounded-full border border-white/10 px-2.5 py-1 font-mono text-[11px] text-forge-muted transition-colors hover:border-amber-light/40 hover:text-amber-light"
+            aria-label="Trocar idioma / Switch language"
+          >
+            EN
+          </button>
+          <a
+            href="https://github.com/MrMaia/forja"
+            target="_blank"
+            rel="noopener"
+            class="hidden rounded-full border border-white/10 px-3.5 py-[7px] text-[13px] text-forge-text transition-colors hover:bg-white/[0.06] sm:inline-block"
+            >GitHub</a
+          >
+          <a
+            href="https://github.com/MrMaia/forja/releases/download/v0.1.6/Forja_0.1.6_x64-setup.exe"
+            class="js-dl rounded-full bg-gradient-to-br from-amber-from to-amber-to px-4 py-[7px] text-[13px] font-semibold text-[#1a0f06] shadow-[0_4px_18px_-4px_rgba(245,147,63,0.6)] transition-transform hover:scale-[1.03]"
+            data-i18n="nav.download"
+            >Baixar</a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <!-- ───────────────────────── HERO ──────────────────────── -->
+    <section id="top" class="relative overflow-hidden">
+      <video
+        class="hero-bg-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        aria-hidden="true"
+      >
+        <source src="assets/hero-bg.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-bg-overlay"></div>
+      <div class="pointer-events-none absolute inset-0 z-[2] grid-mask"></div>
+
+      <div
+        class="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 pt-40 text-center sm:pt-44"
+      >
+        <a
+          href="https://github.com/MrMaia/forja/releases/latest"
+          target="_blank"
+          rel="noopener"
+          class="mb-7 inline-flex items-center gap-2 rounded-full border border-amber-glow/25 bg-amber-glow/[0.06] px-3.5 py-1.5 text-[12.5px] text-amber-light transition-colors hover:border-amber-glow/45"
+        >
+          <span class="text-amber-soft">✦</span>
+          <span data-i18n="hero.badge"
+            >Novo · perfis com ver/editar e card de atualização</span
+          >
+        </a>
+
+        <h1
+          class="text-[clamp(2.6rem,8vw,5.2rem)] font-bold leading-[0.98] tracking-[-0.035em]"
+        >
+          <span data-i18n="hero.title1">Formatou o PC?</span><br />
+          <span
+            class="bg-gradient-to-br from-amber-light via-amber-glow to-amber-to bg-clip-text text-transparent"
+            data-i18n="hero.title2"
+            >A Forja monta o resto.</span
+          >
+        </h1>
+        <p
+          class="mt-6 max-w-xl text-[clamp(1rem,2.2vw,1.18rem)] leading-[1.6] text-forge-muted"
+          data-i18n="hero.sub"
+        >
+          Você escolhe os programas, drivers e ajustes. A Forja baixa direto da
+          fonte oficial e instala tudo sozinha — em silêncio.
+        </p>
+
+        <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row">
+          <a
+            href="https://github.com/MrMaia/forja/releases/download/v0.1.6/Forja_0.1.6_x64-setup.exe"
+            class="js-dl rounded-xl bg-gradient-to-br from-amber-from to-amber-to px-7 py-3.5 text-[15px] font-semibold text-[#1a0f06] shadow-[0_8px_30px_-6px_rgba(245,147,63,0.65)] transition-transform hover:scale-[1.03]"
+            data-i18n="hero.cta1"
+            >Baixar para Windows</a
+          >
+          <a
+            href="https://github.com/MrMaia/forja"
+            target="_blank"
+            rel="noopener"
+            class="rounded-xl border border-white/[0.13] bg-white/[0.04] px-6 py-3.5 text-[15px] font-medium text-forge-text transition-colors hover:bg-white/[0.08]"
+            data-i18n="hero.cta2"
+            >Ver no GitHub</a
+          >
+        </div>
+      </div>
+
+      <!-- the app rising out of a band of light (event-horizon) -->
+      <div class="hviz relative z-10 mx-auto max-w-[1040px] px-6">
+        <div class="harcs"></div>
+        <div class="ember hglow"></div>
+        <div class="hline"></div>
+        <div class="hshot">
+          <img
+            src="assets/forja-app.png"
+            alt="Forja — catálogo de programas"
+            loading="lazy"
+            width="1280"
+            height="820"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────── APP STRIP ──────────────────── -->
+    <section class="relative border-y border-white/[0.06] py-14">
+      <p
+        class="mb-8 text-center font-mono text-[11.5px] uppercase tracking-[0.18em] text-forge-faint"
+        data-i18n="apps.label"
+      >
+        Direto da fonte oficial — winget &amp; npm
+      </p>
+      <div
+        class="reveal mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-x-10 gap-y-7 px-6"
+        id="apps"
+      ></div>
+    </section>
+
+    <!-- ─────────────────── FEATURES ──────────────────── -->
+    <section id="recursos" class="mx-auto max-w-5xl px-6 py-28">
+      <h2
+        class="reveal max-w-2xl text-[clamp(1.9rem,5vw,3rem)] font-bold leading-[1.05] tracking-[-0.03em]"
+        data-i18n="feat.heading"
+      >
+        Tudo o que um PC recém-formatado pede.
+      </h2>
+      <p
+        class="reveal mt-4 max-w-xl text-[16px] leading-[1.6] text-forge-muted"
+        data-i18n="feat.subheading"
+      >
+        Um app só, sem catar instalador na internet nem clicar em “avançar” cem
+        vezes.
+      </p>
+
+      <div class="mt-14 grid gap-5 sm:grid-cols-2" id="features"></div>
+    </section>
+
+    <!-- ─────────────────── HOW IT WORKS ──────────────────── -->
+    <section id="como" class="relative border-t border-white/[0.06] py-28">
+      <div class="mx-auto max-w-5xl px-6">
+        <h2
+          class="reveal text-[clamp(1.9rem,5vw,3rem)] font-bold tracking-[-0.03em]"
+          data-i18n="how.heading"
+        >
+          Três passos, uma passada.
+        </h2>
+        <div class="mt-14 grid gap-10 md:grid-cols-3" id="steps"></div>
+      </div>
+    </section>
+
+    <!-- ─────────────────── FINAL CTA ──────────────────── -->
+    <section class="relative overflow-hidden py-32">
+      <div
+        class="ember pointer-events-none absolute left-1/2 top-1/2 h-[360px] w-[720px] -translate-y-1/2 rounded-full"
+        style="
+          background: radial-gradient(
+            closest-side,
+            rgba(245, 147, 63, 0.32),
+            transparent
+          );
+          filter: blur(50px);
+        "
+      ></div>
+      <div class="relative mx-auto max-w-2xl px-6 text-center">
+        <span class="diamond mx-auto mb-8 block h-12 w-12 rotate-45 rounded-[12px]"></span>
+        <h2
+          class="text-[clamp(2.1rem,6vw,3.6rem)] font-bold leading-[1.02] tracking-[-0.035em]"
+          data-i18n="cta.heading"
+        >
+          Do zero ao pronto.
+        </h2>
+        <p
+          class="mx-auto mt-5 max-w-md text-[16px] leading-[1.6] text-forge-muted"
+          data-i18n="cta.sub"
+        >
+          Gratuito e de código aberto. Baixe, escolha e deixe a Forja trabalhar.
+        </p>
+        <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <a
+            href="https://github.com/MrMaia/forja/releases/download/v0.1.6/Forja_0.1.6_x64-setup.exe"
+            class="js-dl rounded-xl bg-gradient-to-br from-amber-from to-amber-to px-7 py-3.5 text-[15px] font-semibold text-[#1a0f06] shadow-[0_8px_30px_-6px_rgba(245,147,63,0.65)] transition-transform hover:scale-[1.03]"
+            data-i18n="hero.cta1"
+            >Baixar para Windows</a
+          >
+          <a
+            href="https://github.com/MrMaia/forja"
+            target="_blank"
+            rel="noopener"
+            class="rounded-xl border border-white/[0.13] bg-white/[0.04] px-6 py-3.5 text-[15px] font-medium text-forge-text transition-colors hover:bg-white/[0.08]"
+            data-i18n="hero.cta2"
+            >Ver no GitHub</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────── FOOTER ──────────────────── -->
+    <footer class="border-t border-white/[0.06] py-10">
+      <div
+        class="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-6 sm:flex-row"
+      >
+        <div class="flex items-center gap-2.5">
+          <span class="diamond h-4 w-4 rotate-45 rounded-[4px]"></span>
+          <span class="font-bold tracking-[-0.02em]">Forja</span>
+          <span class="ml-2 font-mono text-[11px] text-forge-dim" data-i18n="footer.tag"
+            >software livre · Windows 10/11</span
+          >
+        </div>
+        <div class="flex items-center gap-6 text-[13px] text-forge-muted">
+          <a href="#recursos" class="transition-colors hover:text-forge-text" data-i18n="nav.features">Recursos</a>
+          <a href="#como" class="transition-colors hover:text-forge-text" data-i18n="nav.how">Como funciona</a>
+          <a
+            href="https://github.com/MrMaia/forja"
+            target="_blank"
+            rel="noopener"
+            class="transition-colors hover:text-forge-text"
+            >GitHub</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      /* ───── i18n dictionary ───── */
+      const I18N = {
+        pt: {
+          "meta.desc":
+            "Instalador desktop pós-formatação para Windows 10/11. Você escolhe os programas, a Forja baixa da fonte oficial e instala tudo em silêncio.",
+          "nav.features": "Recursos",
+          "nav.how": "Como funciona",
+          "nav.download": "Baixar",
+          "hero.badge": "Novo · perfis com ver/editar e card de atualização",
+          "hero.title1": "Formatou o PC?",
+          "hero.title2": "A Forja monta o resto.",
+          "hero.sub":
+            "Você escolhe os programas, drivers e ajustes. A Forja baixa direto da fonte oficial e instala tudo sozinha — em silêncio.",
+          "hero.cta1": "Baixar para Windows",
+          "hero.cta2": "Ver no GitHub",
+          "panel.installing": "instalando · silencioso",
+          "apps.label": "Direto da fonte oficial — winget & npm",
+          "feat.heading": "Tudo o que um PC recém-formatado pede.",
+          "feat.subheading":
+            "Um app só, sem catar instalador na internet nem clicar em “avançar” cem vezes.",
+          "how.heading": "Três passos, uma passada.",
+          "cta.heading": "Do zero ao pronto.",
+          "cta.sub":
+            "Gratuito e de código aberto. Baixe, escolha e deixe a Forja trabalhar.",
+          "footer.tag": "software livre · Windows 10/11",
+        },
+        en: {
+          "meta.desc":
+            "Post-format desktop installer for Windows 10/11. You pick the programs, Forja downloads them from the official source and installs everything silently.",
+          "nav.features": "Features",
+          "nav.how": "How it works",
+          "nav.download": "Download",
+          "hero.badge": "New · profiles with view/edit and an update card",
+          "hero.title1": "Just formatted?",
+          "hero.title2": "Forja sets up the rest.",
+          "hero.sub":
+            "You pick the programs, drivers and tweaks. Forja downloads them straight from the official source and installs everything on its own — silently.",
+          "hero.cta1": "Download for Windows",
+          "hero.cta2": "View on GitHub",
+          "panel.installing": "installing · silent",
+          "apps.label": "Straight from the official source — winget & npm",
+          "feat.heading": "Everything a freshly formatted PC asks for.",
+          "feat.subheading":
+            "One app, no hunting for installers online or clicking “next” a hundred times.",
+          "how.heading": "Three steps, one pass.",
+          "cta.heading": "From zero to ready.",
+          "cta.sub":
+            "Free and open source. Download, pick, and let Forja do the work.",
+          "footer.tag": "open source · Windows 10/11",
+        },
+      };
+
+      /* feature cards — rendered from data so PT/EN stay in lockstep */
+      const FEATURES = {
+        pt: [
+          {
+            t: "Catálogo de programas",
+            d: "Navegador, editor, jogos, ferramentas de dev — escolha por categoria e marque o que quiser de uma vez.",
+            i: "M4 6h16M4 12h16M4 18h10",
+          },
+          {
+            t: "Presets & perfis",
+            d: "Comece por Dev, Gamer, Office ou Streamer. Salve o seu, exporte e reuse na próxima máquina.",
+            i: "M12 4l2.5 5 5.5.8-4 3.9.9 5.5L12 22l-4.9-2.3.9-5.5-4-3.9 5.5-.8z",
+          },
+          {
+            t: "Drivers & ajustes do Windows",
+            d: "Driver de rede Intel e ajustes do sistema aplicados com um único prompt de UAC por ação.",
+            i: "M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4",
+          },
+          {
+            t: "Silencioso & oficial",
+            d: "Tudo vem de winget e npm. Nada de instalador de terceiros, nada de barra de “avançar” na sua frente.",
+            i: "M5 13l4 4L19 7",
+          },
+        ],
+        en: [
+          {
+            t: "Program catalog",
+            d: "Browser, editor, games, dev tools — pick by category and check off everything at once.",
+            i: "M4 6h16M4 12h16M4 18h10",
+          },
+          {
+            t: "Presets & profiles",
+            d: "Start from Dev, Gamer, Office or Streamer. Save your own, export it and reuse it on the next machine.",
+            i: "M12 4l2.5 5 5.5.8-4 3.9.9 5.5L12 22l-4.9-2.3.9-5.5-4-3.9 5.5-.8z",
+          },
+          {
+            t: "Windows drivers & tweaks",
+            d: "Intel network driver and system tweaks applied with a single UAC prompt per action.",
+            i: "M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4",
+          },
+          {
+            t: "Silent & official",
+            d: "Everything comes from winget and npm. No third-party installers, no “next” buttons in your face.",
+            i: "M5 13l4 4L19 7",
+          },
+        ],
+      };
+
+      const STEPS = {
+        pt: [
+          { t: "Escolha", d: "Marque os programas, drivers e ajustes — ou carregue um perfil pronto." },
+          { t: "A Forja baixa", d: "Tudo vem direto da fonte oficial via winget e npm, na versão certa." },
+          { t: "Instala sozinha", d: "Instalação silenciosa, em fila, enquanto você cuida de outra coisa." },
+        ],
+        en: [
+          { t: "Pick", d: "Check the programs, drivers and tweaks — or load a ready-made profile." },
+          { t: "Forja downloads", d: "Everything comes straight from the official source via winget and npm, the right version." },
+          { t: "It installs itself", d: "Silent, queued install while you go do something else." },
+        ],
+      };
+
+      /* app icons via simple-icons CDN (slug → tinted brand color) */
+      const APPS = [
+        ["googlechrome", "Chrome"],
+        ["brave", "Brave"],
+        ["discord", "Discord"],
+        ["steam", "Steam"],
+        ["spotify", "Spotify"],
+        ["vlcmediaplayer", "VLC"],
+        ["python", "Python"],
+        ["git", "Git"],
+        ["obsstudio", "OBS"],
+        ["docker", "Docker"],
+        ["firefoxbrowser", "Firefox"],
+        ["nodedotjs", "Node.js"],
+      ];
+
+      /* ───── render ───── */
+      function renderApps() {
+        document.getElementById("apps").innerHTML = APPS.map(
+          ([slug, name]) =>
+            `<img class="app-ico h-8 w-8" src="https://cdn.simpleicons.org/${slug}/f0ebe4" alt="${name}" title="${name}" loading="lazy" width="32" height="32" />`
+        ).join("");
+      }
+
+      function renderFeatures(lang) {
+        document.getElementById("features").innerHTML = FEATURES[lang]
+          .map(
+            (f) => `
+          <div class="reveal group rounded-2xl border border-white/[0.08] bg-forge-panel/50 p-7 transition-colors hover:border-amber-glow/30">
+            <div class="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-amber-glow/20 bg-amber-glow/[0.08]">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f5a85e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="${f.i}"/></svg>
+            </div>
+            <h3 class="text-[18px] font-semibold tracking-[-0.01em]">${f.t}</h3>
+            <p class="mt-2.5 text-[14.5px] leading-[1.6] text-forge-muted">${f.d}</p>
+          </div>`
+          )
+          .join("");
+        observeReveals();
+      }
+
+      function renderSteps(lang) {
+        document.getElementById("steps").innerHTML = STEPS[lang]
+          .map(
+            (s, idx) => `
+          <div class="reveal">
+            <div class="font-mono text-[13px] text-amber-glow">0${idx + 1}</div>
+            <div class="mt-3 h-px w-full bg-gradient-to-r from-amber-glow/40 to-transparent"></div>
+            <h3 class="mt-5 text-[19px] font-semibold tracking-[-0.01em]">${s.t}</h3>
+            <p class="mt-2.5 text-[14.5px] leading-[1.6] text-forge-muted">${s.d}</p>
+          </div>`
+          )
+          .join("");
+        observeReveals();
+      }
+
+      /* ───── reveal on scroll ───── */
+      let io;
+      function observeReveals() {
+        if (!io) {
+          io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((e) => {
+                if (e.isIntersecting) {
+                  e.target.classList.add("in");
+                  io.unobserve(e.target);
+                }
+              });
+            },
+            { threshold: 0.12 }
+          );
+        }
+        document
+          .querySelectorAll(".reveal:not(.in)")
+          .forEach((el) => io.observe(el));
+      }
+
+      /* ───── language ───── */
+      function applyLang(lang) {
+        document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const v = I18N[lang][el.getAttribute("data-i18n")];
+          if (v == null) return;
+          if (el.tagName === "META") el.setAttribute("content", v);
+          else el.textContent = v;
+        });
+        document.getElementById("lang").textContent = lang === "pt" ? "EN" : "PT";
+        renderFeatures(lang);
+        renderSteps(lang);
+        localStorage.setItem("forja-lang", lang);
+      }
+
+      let current = localStorage.getItem("forja-lang") || "pt";
+      renderApps();
+      applyLang(current);
+      observeReveals();
+
+      document.getElementById("lang").addEventListener("click", () => {
+        current = current === "pt" ? "en" : "pt";
+        applyLang(current);
+      });
+
+      /* ───── direct download ─────
+         The buttons already point straight at the v0.1.6 installer (a working
+         direct link). On load we ask the GitHub API for the newest release and
+         repoint every .js-dl link at its installer asset, so the download stays
+         direct AND always grabs the latest version without editing this file. */
+      fetch("https://api.github.com/repos/MrMaia/forja/releases/latest")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((rel) => {
+          const assets = rel && rel.assets;
+          if (!assets || !assets.length) return;
+          const exe =
+            assets.find((a) => /setup\.exe$/i.test(a.name)) ||
+            assets.find((a) => /\.exe$/i.test(a.name)) ||
+            assets.find((a) => /\.msi$/i.test(a.name));
+          if (!exe) return;
+          document
+            .querySelectorAll(".js-dl")
+            .forEach((a) => (a.href = exe.browser_download_url));
+        })
+        .catch(() => {
+          /* offline or rate-limited: keep the hardcoded direct v0.1.6 link */
+        });
+    </script>
+  </body>
+</html>
