@@ -21,6 +21,8 @@ export const pt: Dict = {
   "nav.drivers": "Drivers de rede",
   "nav.tweaks": "Ajustes do Windows",
   "nav.settings": "Configurações",
+  "nav.collapse": "Recolher menu",
+  "nav.expand": "Expandir menu",
 
   "onboarding.tagline": "Do zero ao pronto.",
   "onboarding.desc":
@@ -31,6 +33,8 @@ export const pt: Dict = {
   "onboarding.footer": "fontes oficiais · instalação silenciosa · Windows 10 / 11",
 
   "catalog.search": "Buscar programas…",
+  "catalog.categories": "Categorias",
+  "catalog.allCategory": "Todos",
   "catalog.programs": "programas",
   "catalog.selectAll": "Selecionar todos",
   "catalog.none": "nenhum programa encontrado",
@@ -96,8 +100,6 @@ export const pt: Dict = {
   "cat.Segurança": "Segurança",
 
   // catalog chips + cards
-  "catalog.prevCats": "Categorias anteriores",
-  "catalog.nextCats": "Próximas categorias",
   "card.downloading": "baixando",
   "card.installingDots": "instalando…",
   "card.queued": "na fila…",
@@ -199,18 +201,18 @@ export const pt: Dict = {
   "tweaks.reading": "lendo configurações…",
   "tweaks.explorerNote": "Alguns ajustes só aparecem após reiniciar o Explorer.",
   "tweaks.restartExplorer": "Reiniciar Explorer",
-  "tweaks.noAdmin": "Sem administrador",
-  "tweaks.needAdmin": "Requer administrador",
-  "tweaks.apply": "Aplicar (admin)",
   "tweaks.applyN": "Aplicar {n} (admin)",
   "tweaks.applying": "aplicando…",
   "tweaks.adminNote":
-    "Os ajustes de administrador são aplicados juntos, com um pedido de permissão (UAC).",
+    "Ajustes marcados como administrador são aplicados juntos, com um pedido de permissão (UAC).",
   "tweaks.adminNoteElevated":
     "A Forja já está como administrador — estes ajustes são aplicados na hora, sem pedir permissão.",
-  "tweaks.enable": "HABILITAR",
-  "tweaks.disable": "DESABILITAR",
   "tweaks.pending": "pendente",
+  "tweaks.needsAdminBadge": "admin",
+  "tweaks.group.appearance": "Aparência",
+  "tweaks.group.explorer": "Explorer",
+  "tweaks.group.privacy": "Privacidade",
+  "tweaks.group.power": "Energia",
   "tw.dark-theme.label": "Tema escuro",
   "tw.dark-theme.desc": "Apps e sistema no escuro.",
   "tw.file-ext.label": "Mostrar extensões de arquivos",
@@ -247,6 +249,8 @@ export const en: Dict = {
   "nav.drivers": "Network drivers",
   "nav.tweaks": "Windows tweaks",
   "nav.settings": "Settings",
+  "nav.collapse": "Collapse menu",
+  "nav.expand": "Expand menu",
 
   "onboarding.tagline": "From zero to ready.",
   "onboarding.desc":
@@ -257,6 +261,8 @@ export const en: Dict = {
   "onboarding.footer": "official sources · silent install · Windows 10 / 11",
 
   "catalog.search": "Search programs…",
+  "catalog.categories": "Categories",
+  "catalog.allCategory": "All",
   "catalog.programs": "programs",
   "catalog.selectAll": "Select all",
   "catalog.none": "no programs found",
@@ -322,8 +328,6 @@ export const en: Dict = {
   "cat.Segurança": "Security",
 
   // catalog chips + cards
-  "catalog.prevCats": "Previous categories",
-  "catalog.nextCats": "Next categories",
   "card.downloading": "downloading",
   "card.installingDots": "installing…",
   "card.queued": "queued…",
@@ -424,18 +428,18 @@ export const en: Dict = {
   "tweaks.reading": "reading settings…",
   "tweaks.explorerNote": "Some tweaks only show after restarting Explorer.",
   "tweaks.restartExplorer": "Restart Explorer",
-  "tweaks.noAdmin": "Without administrator",
-  "tweaks.needAdmin": "Requires administrator",
-  "tweaks.apply": "Apply (admin)",
   "tweaks.applyN": "Apply {n} (admin)",
   "tweaks.applying": "applying…",
   "tweaks.adminNote":
-    "Admin tweaks are applied together, with a single permission prompt (UAC).",
+    "Tweaks marked admin are applied together, with a single permission prompt (UAC).",
   "tweaks.adminNoteElevated":
     "Forja is already running as administrator — these tweaks apply instantly, no prompt.",
-  "tweaks.enable": "ENABLE",
-  "tweaks.disable": "DISABLE",
   "tweaks.pending": "pending",
+  "tweaks.needsAdminBadge": "admin",
+  "tweaks.group.appearance": "Appearance",
+  "tweaks.group.explorer": "Explorer",
+  "tweaks.group.privacy": "Privacy",
+  "tweaks.group.power": "Power",
   "tw.dark-theme.label": "Dark mode",
   "tw.dark-theme.desc": "Dark theme for apps and the system.",
   "tw.file-ext.label": "Show file extensions",

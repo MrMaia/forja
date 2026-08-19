@@ -59,6 +59,7 @@ export interface Settings {
   hideInstalled: boolean; // hide already-installed programs in the catalog
   lang: Lang; // UI language
   alwaysAdmin: boolean; // always relaunch elevated on open
+  sidebarCollapsed: boolean; // catalog sidebar shows icons only
 }
 
 const SETTINGS_KEY = "forja.settings";
@@ -67,6 +68,7 @@ const DEFAULT_SETTINGS: Settings = {
   hideInstalled: false,
   lang: detectLang(), // start in the OS/browser language
   alwaysAdmin: false,
+  sidebarCollapsed: false,
 };
 
 function loadSettings(): Settings {

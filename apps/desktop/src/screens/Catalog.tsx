@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Program } from "@forja/catalog";
 import { useForja } from "../store";
-import { TitleBar, AppIcon, AmberButton, Chevron } from "../components/ui";
+import { TitleBar, AppIcon, AmberButton, Chevron, Icon, type IconName } from "../components/ui";
 import { diskFree, openExternal, type InstalledInfo } from "../tauri";
+
+// sentinel for "no category filter" — not a real Category, so it's kept out
+// of packages/catalog's Category union and handled separately here.
+const ALL_CATEGORIES = "Todos";
 
 const CATEGORIES = [
   "Essenciais",
@@ -43,14 +47,12 @@ export default function Catalog() {
     startInstall,
     installing,
     settings,
+    updateSetting,
     t,
     tCat,
   } = useForja();
-  const [active, setActive] = useState<string>("Desenvolvimento");
+  const [active, setActive] = useState<string>(ALL_CATEGORIES);
   const [query, setQuery] = useState("");
-  const chipsRef = useRef<HTMLDivElement>(null);
-  const scrollChips = (dir: -1 | 1) =>
-    chipsRef.current?.scrollBy({ left: dir * 260, behavior: "smooth" });
   const [freeBytes, setFreeBytes] = useState(0);
   useEffect(() => {
     void diskFree().then(setFreeBytes);
@@ -71,6 +73,7 @@ export default function Catalog() {
           p.description.toLowerCase().includes(q)
       );
     }
+    if (active === ALL_CATEGORIES) return catalog;
     return catalog.filter((p) => p.category === active);
   }, [catalog, active, q]);
 
@@ -81,7 +84,11 @@ export default function Catalog() {
     ? baseList.filter((p) => !isInstalled(p.id))
     : baseList;
 
-  const heading = q ? `${t("catalog.results")} "${query}"` : tCat(active);
+  const heading = q
+    ? `${t("catalog.results")} "${query}"`
+    : active === ALL_CATEGORIES
+      ? t("catalog.allCategory")
+      : tCat(active);
 
   const selectAllVisible = () => {
     // only programs that aren't already installed can be selected
@@ -102,24 +109,82 @@ export default function Catalog() {
     <div className="flex h-full flex-col bg-forge-bg">
       <TitleBar section={t("nav.catalog")} />
       <div className="flex min-h-0 flex-1">
-        {/* sidebar — primary navigation */}
-        <aside className="flex w-[228px] flex-shrink-0 flex-col gap-0.5 border-r border-white/5 bg-forge-inset px-3.5 py-[18px]">
-          <div className="mb-3 px-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-forge-faint">
-            {t("nav.title")}
+        {/* sidebar — primary navigation + category filter, collapsible to icons-only */}
+        <aside
+          className={
+            "flex flex-shrink-0 flex-col overflow-y-auto border-r border-white/5 bg-forge-inset py-[14px] transition-[width] " +
+            (settings.sidebarCollapsed ? "w-[60px] items-center px-2" : "w-[228px] px-3.5")
+          }
+        >
+          <button
+            onClick={() => updateSetting("sidebarCollapsed", !settings.sidebarCollapsed)}
+            aria-label={t(settings.sidebarCollapsed ? "nav.expand" : "nav.collapse")}
+            title={t(settings.sidebarCollapsed ? "nav.expand" : "nav.collapse")}
+            className={
+              "mb-3 flex h-7 flex-shrink-0 items-center justify-center rounded-[7px] text-forge-dim transition-colors hover:bg-white/[0.06] hover:text-forge-text " +
+              (settings.sidebarCollapsed ? "w-7" : "w-7 self-end")
+            }
+          >
+            <Icon name="sidebarToggle" size={15} />
+          </button>
+
+          {!settings.sidebarCollapsed && (
+            <div className="mb-1.5 px-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-forge-faint">
+              {t("nav.title")}
+            </div>
+          )}
+          <div className="flex w-full flex-col gap-0.5">
+            <SidebarLink icon="home" label={t("nav.home")} collapsed={settings.sidebarCollapsed} onClick={() => go("onboarding")} />
+            <SidebarLink icon="catalog" label={t("nav.catalog")} collapsed={settings.sidebarCollapsed} active onClick={() => {}} />
+            <SidebarLink
+              icon="install"
+              label={t("nav.installs")}
+              collapsed={settings.sidebarCollapsed}
+              onClick={() => go("install")}
+              badge={installing ? "•" : undefined}
+            />
+            <SidebarLink icon="presets" label={t("nav.presets")} collapsed={settings.sidebarCollapsed} onClick={() => go("presets")} />
+            <SidebarLink icon="export" label={t("nav.export")} collapsed={settings.sidebarCollapsed} onClick={() => go("profiles")} />
+            <div className="my-2 border-t border-white/[0.06]" />
+            <SidebarLink icon="drivers" label={t("nav.drivers")} collapsed={settings.sidebarCollapsed} onClick={() => go("drivers")} />
+            <SidebarLink icon="tweaks" label={t("nav.tweaks")} collapsed={settings.sidebarCollapsed} onClick={() => go("tweaks")} />
+            <SidebarLink icon="settings" label={t("nav.settings")} collapsed={settings.sidebarCollapsed} onClick={() => go("settings")} />
           </div>
-          <SidebarLink label={t("nav.home")} onClick={() => go("onboarding")} />
-          <SidebarLink label={t("nav.catalog")} active onClick={() => {}} />
-          <SidebarLink
-            label={t("nav.installs")}
-            onClick={() => go("install")}
-            badge={installing ? "•" : undefined}
-          />
-          <SidebarLink label={t("nav.presets")} onClick={() => go("presets")} />
-          <SidebarLink label={t("nav.export")} onClick={() => go("profiles")} />
-          <div className="my-2 border-t border-white/[0.06]" />
-          <SidebarLink label={t("nav.drivers")} onClick={() => go("drivers")} />
-          <SidebarLink label={t("nav.tweaks")} onClick={() => go("tweaks")} />
-          <SidebarLink label={t("nav.settings")} onClick={() => go("settings")} />
+
+          <div className="my-3 w-full border-t border-white/[0.06]" />
+
+          {!settings.sidebarCollapsed && (
+            <div className="mb-1.5 px-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-forge-faint">
+              {t("catalog.categories")}
+            </div>
+          )}
+          <div className="flex w-full flex-col gap-0.5">
+            <CategoryLink
+              label={t("catalog.allCategory")}
+              dot="#f5933f"
+              count={catalog.length}
+              collapsed={settings.sidebarCollapsed}
+              active={!q && active === ALL_CATEGORIES}
+              onClick={() => {
+                setQuery("");
+                setActive(ALL_CATEGORIES);
+              }}
+            />
+            {CATEGORIES.map((cat) => (
+              <CategoryLink
+                key={cat}
+                label={tCat(cat)}
+                dot={DOT[cat]}
+                count={counts.get(cat) ?? 0}
+                collapsed={settings.sidebarCollapsed}
+                active={!q && cat === active}
+                onClick={() => {
+                  setQuery("");
+                  setActive(cat);
+                }}
+              />
+            ))}
+          </div>
         </aside>
 
         {/* main */}
@@ -137,53 +202,6 @@ export default function Catalog() {
                 className="w-full bg-transparent text-[13.5px] text-forge-text outline-none placeholder:text-forge-faint"
               />
             </div>
-          </div>
-
-          {/* category filter chips, scrolled by arrows */}
-          <div className="flex flex-shrink-0 items-center border-b border-white/5 px-3">
-            <button
-              onClick={() => scrollChips(-1)}
-              aria-label={t("catalog.prevCats")}
-              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[7px] text-forge-muted transition-colors hover:bg-white/[0.06] hover:text-forge-text"
-            >
-              <Chevron dir="left" size={16} />
-            </button>
-            <div
-              ref={chipsRef}
-              className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto px-1 py-[11px]"
-            >
-            {CATEGORIES.map((cat) => {
-              const isActive = !q && cat === active;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    setQuery("");
-                    setActive(cat);
-                  }}
-                  className={
-                    "flex flex-shrink-0 items-center gap-2 rounded-full border px-3 py-[6px] text-[12.5px] transition-colors " +
-                    (isActive
-                      ? "border-amber-glow/45 bg-amber-glow/[0.12] text-amber-light"
-                      : "border-white/[0.08] text-forge-muted hover:border-white/[0.18] hover:text-forge-text")
-                  }
-                >
-                  <span className="h-2 w-2 rounded-[2px]" style={{ background: DOT[cat] }} />
-                  <span className={isActive ? "font-semibold" : ""}>{tCat(cat)}</span>
-                  <span className="font-mono text-[10.5px] text-forge-faint">
-                    {counts.get(cat) ?? 0}
-                  </span>
-                </button>
-              );
-            })}
-            </div>
-            <button
-              onClick={() => scrollChips(1)}
-              aria-label={t("catalog.nextCats")}
-              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[7px] text-forge-muted transition-colors hover:bg-white/[0.06] hover:text-forge-text"
-            >
-              <Chevron dir="right" size={16} />
-            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto px-6 py-5">
@@ -500,44 +518,93 @@ function ProgramCard({
 }
 
 function SidebarLink({
+  icon,
   label,
   onClick,
   badge,
-  count,
   active = false,
+  collapsed = false,
 }: {
+  icon: IconName;
   label: string;
   onClick: () => void;
   badge?: string;
-  count?: number;
   active?: boolean;
+  collapsed?: boolean;
 }) {
   return (
     <button
       onClick={onClick}
+      title={collapsed ? label : undefined}
+      aria-label={label}
       className={
-        "group flex items-center gap-[11px] rounded-[9px] px-[11px] py-2 text-[12.5px] transition-colors " +
+        "group relative flex items-center rounded-[9px] text-[12.5px] transition-colors " +
+        (collapsed ? "h-9 w-9 justify-center" : "gap-[10px] px-[11px] py-2") +
+        " " +
+        (active
+          ? "bg-amber-glow/10 font-semibold text-amber-light"
+          : "text-[#8e857a] hover:bg-white/[0.04] hover:text-[#bcb2a5]")
+      }
+    >
+      <Icon name={icon} size={16} />
+      {badge && (
+        <span
+          className={
+            "absolute h-[6px] w-[6px] animate-pulse rounded-full bg-amber-glow " +
+            (collapsed ? "right-1 top-1" : "right-[9px] top-1/2 -translate-y-1/2")
+          }
+        />
+      )}
+      {!collapsed && (
+        <>
+          <span className="flex-1 text-left">{label}</span>
+          <span className="text-forge-dim transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-amber-light">
+            <Chevron dir="right" size={13} />
+          </span>
+        </>
+      )}
+    </button>
+  );
+}
+
+function CategoryLink({
+  label,
+  dot,
+  count,
+  onClick,
+  active = false,
+  collapsed = false,
+}: {
+  label: string;
+  dot: string;
+  count: number;
+  onClick: () => void;
+  active?: boolean;
+  collapsed?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={collapsed ? `${label} · ${count}` : undefined}
+      aria-label={label}
+      className={
+        "flex items-center rounded-[9px] text-[12.5px] transition-colors " +
+        (collapsed ? "h-8 w-9 justify-center" : "gap-[10px] px-[11px] py-[7px]") +
+        " " +
         (active
           ? "bg-amber-glow/10 font-semibold text-amber-light"
           : "text-[#8e857a] hover:bg-white/[0.04] hover:text-[#bcb2a5]")
       }
     >
       <span
-        className={
-          "h-[5px] w-[5px] rounded-full transition-colors group-hover:bg-amber-glow " +
-          (badge || active ? "bg-amber-glow" : "bg-forge-faint") +
-          (badge ? " animate-pulse" : "")
-        }
+        className="h-2 w-2 flex-shrink-0 rounded-[2px]"
+        style={{ background: dot, boxShadow: active ? `0 0 6px ${dot}` : undefined }}
       />
-      <span className="flex-1 text-left">{label}</span>
-      {count && count > 0 ? (
-        <span className="rounded-full bg-amber-glow/20 px-[7px] py-px font-mono text-[10.5px] font-semibold text-amber-soft">
-          {count}
-        </span>
-      ) : (
-        <span className="text-forge-dim transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-amber-light">
-          <Chevron dir="right" size={13} />
-        </span>
+      {!collapsed && (
+        <>
+          <span className="flex-1 text-left">{label}</span>
+          <span className="font-mono text-[10.5px] text-forge-faint">{count}</span>
+        </>
       )}
     </button>
   );
