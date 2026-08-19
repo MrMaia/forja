@@ -283,8 +283,8 @@ export function ForjaProvider({ children }: { children: ReactNode }) {
   const runForjaUpdate = useCallback(() => {
     if (!forjaUpdate) return;
     setInstallingUpdate(true);
-    (forjaUpdate.installUrl
-      ? installUpdate(forjaUpdate.installUrl)
+    (forjaUpdate.installUrl && forjaUpdate.sha256
+      ? installUpdate(forjaUpdate.installUrl, forjaUpdate.sha256)
       : openExternal(forjaUpdate.url)
     ).finally(() => setInstallingUpdate(false));
   }, [forjaUpdate]);
