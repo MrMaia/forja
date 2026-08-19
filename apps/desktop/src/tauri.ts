@@ -5,7 +5,7 @@
 import type { Program, Preset, InstallProgress } from "@forja/catalog";
 
 /** Current app version — single source, kept in sync with the Tauri/Cargo manifests. */
-export const APP_VERSION = "0.1.6";
+export const APP_VERSION = "0.1.7";
 
 export const isTauri =
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
