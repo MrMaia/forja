@@ -17,3 +17,4 @@ drivers e ajustes; a Forja baixa da fonte oficial (winget/npm) e instala em sil�
   - `pt` e `en` devem ter as MESMAS chaves. Esquecer o `en` é um bug.
 - Mantenha `packages/catalog/schema.ts` (TS) e `src-tauri/src/catalog.rs` (serde) em sincronia.
 - winget/npm é o caminho de instalação; ações elevadas vão por `system.rs`/`tweaks.rs` (um prompt UAC por ação).
+- **NUNCA edite direto na `main`.** Antes de qualquer mudança de código, crie/troque para uma branch (`git checkout -b feat/...`, `fix/...` etc.). Se perceber que já editou na `main` sem querer, mova o trabalho para uma branch antes de continuar.
