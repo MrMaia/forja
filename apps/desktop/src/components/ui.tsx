@@ -380,8 +380,8 @@ export function Toggle({
       }
     >
       <span
-        className="absolute top-[2px] h-[18px] w-[18px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.4)] transition-transform"
-        style={{ transform: on ? "translateX(18px)" : "translateX(2px)" }}
+        className="absolute left-[2px] top-[2px] h-[18px] w-[18px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.4)] transition-transform"
+        style={{ transform: on ? "translateX(16px)" : "translateX(0)" }}
       />
       {busy && (
         <span className="absolute inset-0 grid place-items-center">
