@@ -109,11 +109,11 @@ export default function Catalog() {
     <div className="flex h-full flex-col bg-forge-bg">
       <TitleBar section={t("nav.catalog")} />
       <div className="flex min-h-0 flex-1">
-        {/* sidebar — primary navigation + category filter, collapsible to icons-only */}
+        {/* sidebar — primary navigation, collapsible to icons-only */}
         <aside
           className={
             "flex flex-shrink-0 flex-col overflow-y-auto border-r border-white/5 bg-forge-inset py-[14px] transition-[width] " +
-            (settings.sidebarCollapsed ? "w-[60px] items-center px-2" : "w-[228px] px-3.5")
+            (settings.sidebarCollapsed ? "w-[60px] items-center px-2" : "w-[200px] px-3.5")
           }
         >
           <button
@@ -150,20 +150,18 @@ export default function Catalog() {
             <SidebarLink icon="tweaks" label={t("nav.tweaks")} collapsed={settings.sidebarCollapsed} onClick={() => go("tweaks")} />
             <SidebarLink icon="settings" label={t("nav.settings")} collapsed={settings.sidebarCollapsed} onClick={() => go("settings")} />
           </div>
+        </aside>
 
-          <div className="my-3 w-full border-t border-white/[0.06]" />
-
-          {!settings.sidebarCollapsed && (
-            <div className="mb-1.5 px-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-forge-faint">
-              {t("catalog.categories")}
-            </div>
-          )}
+        {/* categories — its own column, always expanded */}
+        <aside className="flex w-[196px] flex-shrink-0 flex-col overflow-y-auto border-r border-white/5 bg-forge-inset px-3.5 py-[18px]">
+          <div className="mb-1.5 px-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-forge-faint">
+            {t("catalog.categories")}
+          </div>
           <div className="flex w-full flex-col gap-0.5">
             <CategoryLink
               label={t("catalog.allCategory")}
               dot="#f5933f"
               count={catalog.length}
-              collapsed={settings.sidebarCollapsed}
               active={!q && active === ALL_CATEGORIES}
               onClick={() => {
                 setQuery("");
@@ -176,7 +174,6 @@ export default function Catalog() {
                 label={tCat(cat)}
                 dot={DOT[cat]}
                 count={counts.get(cat) ?? 0}
-                collapsed={settings.sidebarCollapsed}
                 active={!q && cat === active}
                 onClick={() => {
                   setQuery("");
