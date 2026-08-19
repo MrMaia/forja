@@ -10,7 +10,8 @@ export const LANGS: { value: Lang; label: string }[] = [
 
 type Dict = Record<string, string>;
 
-const pt: Dict = {
+// exported (not just for `translate`) so a test can assert pt/en key parity
+export const pt: Dict = {
   "nav.title": "Navegação",
   "nav.home": "Início",
   "nav.catalog": "Catálogo",
@@ -236,7 +237,7 @@ const pt: Dict = {
   "tw.hibernate-off.desc": "Libera espaço (apaga o hiberfil.sys).",
 };
 
-const en: Dict = {
+export const en: Dict = {
   "nav.title": "Navigation",
   "nav.home": "Home",
   "nav.catalog": "Catalog",

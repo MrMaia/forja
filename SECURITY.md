@@ -8,7 +8,11 @@ importa. Este documento descreve o modelo de ameaça e as decisões.
 - **Instala/atualiza via winget**, a partir das fontes oficiais. Não hospeda
   nem redistribui instaladores.
 - **Sem telemetria.** Não coleta nem envia dados de uso.
-- **Rede usada:** apenas o próprio `winget` (downloads das fontes oficiais).
+- **Rede usada:** o `winget` (downloads das fontes oficiais) e, para checar
+  atualizações da própria Forja, a API do GitHub (`api.github.com`) e os hosts
+  de asset de release (`github.com`, `objects.githubusercontent.com`,
+  `release-assets.githubusercontent.com`) — os únicos hosts liberados pela CSP
+  (`connect-src` em [tauri.conf.json](apps/desktop/src-tauri/tauri.conf.json)).
   Ícones e fontes são **empacotados localmente** (funcionam offline num PC
   recém-formatado). Nenhum servidor da Forja, nenhum CDN em runtime.
 
@@ -30,12 +34,25 @@ importa. Este documento descreve o modelo de ameaça e as decisões.
   apenas lê strings de `programIds`; **não** executa código nem caminhos. Um
   arquivo malicioso, no pior caso, pré-seleciona ids inexistentes (ignorados).
 
+## Autoupdate da própria Forja
+
+- O card de atualização baixa o `.exe` da release mais recente no GitHub e
+  roda ([updater.rs](apps/desktop/src-tauri/src/updater.rs)). Antes de
+  executar, o hash SHA256 do arquivo baixado é conferido contra um sidecar
+  `<asset>.exe.sha256` publicado junto do instalador na mesma release — se o
+  sidecar não existir ou o hash não bater, o instalador é apagado e a
+  instalação aborta (falha fechada). O front-end só habilita o botão de
+  atualização em 1 clique quando esse sidecar é encontrado
+  (`checkForjaUpdate` em [tauri.ts](apps/desktop/src/tauri.ts)); caso
+  contrário cai no link manual da página de releases.
+- **Processo de release**: como o hash é o único mecanismo de verificação,
+  toda release precisa subir o `.sha256` junto do instalador, com o mesmo
+  nome + `.sha256`. Ex. (PowerShell, na pasta com o instalador):
+  `(Get-FileHash .\Forja_x.y.z_x64-setup.exe -Algorithm SHA256).Hash > .\Forja_x.y.z_x64-setup.exe.sha256`
+  — depois subir os dois arquivos como assets da release no GitHub.
+
 ## Itens em aberto / hardening recomendado
 
-- **CSP**: hoje `csp: null` em [tauri.conf.json](apps/desktop/src-tauri/tauri.conf.json).
-  Superfície de XSS é baixa (a UI não renderiza HTML de terceiros; o import é
-  JSON). Como ícones e fontes agora são locais, a CSP pode ser bem estrita:
-  `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'`.
 - **Fallback/elevação (UAC)**: o caminho de instalação fora do winget
   (download do `fallbackUrl` + elevação) está **stub** e não roda. Quando for
   implementado, validar hash/assinatura do instalador antes de elevar.
