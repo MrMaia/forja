@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForja } from "../store";
-import { TitleBar, Chevron, AmberButton } from "../components/ui";
+import { TitleBar, AppSidebar, Chevron, AmberButton } from "../components/ui";
 import {
   detectNetwork,
   openExternal,
@@ -58,7 +58,9 @@ export default function Drivers() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-forge-bg">
+    <div className="flex h-full bg-forge-bg">
+      <AppSidebar />
+      <div className="flex min-h-0 flex-1 flex-col">
       <TitleBar section={t("nav.drivers")} onBack={() => go("catalog")} />
       <div className="flex-1 overflow-y-auto px-9 py-8">
         <h1 className="m-0 text-[24px] font-bold tracking-[-0.02em]">{t("nav.drivers")}</h1>
@@ -176,6 +178,7 @@ export default function Drivers() {
             </div>
           </>
         )}
+      </div>
       </div>
     </div>
   );

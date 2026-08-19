@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { InstallStatus, Program } from "@forja/catalog";
 import { useForja, type InstallRow } from "../store";
-import { TitleBar, AppIcon } from "../components/ui";
+import { TitleBar, AppSidebar, AppIcon } from "../components/ui";
 import { openExternal } from "../tauri";
 
 const TERMINAL: InstallStatus[] = ["done", "error", "skipped"];
@@ -52,17 +52,22 @@ export default function Install() {
 
   if (total === 0) {
     return (
-      <div className="flex h-full flex-col bg-forge-bg">
+      <div className="flex h-full bg-forge-bg">
+        <AppSidebar />
+        <div className="flex min-h-0 flex-1 flex-col">
         <TitleBar section={t("nav.installs")} onBack={() => go("catalog")} />
         <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
           <p className="font-mono text-sm text-forge-faint">{t("install.none")}</p>
+        </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col bg-forge-bg">
+    <div className="flex h-full bg-forge-bg">
+      <AppSidebar />
+      <div className="flex min-h-0 flex-1 flex-col">
       <TitleBar
         section={finished ? t("install.done") : t("install.installing")}
         onBack={() => go("catalog")}
@@ -113,6 +118,7 @@ export default function Install() {
             {t("install.clearCompleted")}
           </button>
         )}
+      </div>
       </div>
     </div>
   );

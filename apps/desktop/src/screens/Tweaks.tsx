@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForja } from "../store";
-import { TitleBar, Toggle, Icon, type IconName } from "../components/ui";
+import { TitleBar, AppSidebar, Toggle, Icon, type IconName } from "../components/ui";
 import {
   readTweaks,
   applyUserTweak,
@@ -95,7 +95,9 @@ export default function Tweaks() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-forge-bg">
+    <div className="flex h-full bg-forge-bg">
+      <AppSidebar />
+      <div className="flex min-h-0 flex-1 flex-col">
       <TitleBar section={t("nav.tweaks")} onBack={() => go("catalog")} />
       <div className="flex-1 overflow-y-auto px-9 py-8">
         <div className="flex items-start justify-between gap-4">
@@ -175,6 +177,7 @@ export default function Tweaks() {
         <p className="mt-5 text-[11.5px] text-forge-faint">
           {isElevated ? t("tweaks.adminNoteElevated") : t("tweaks.adminNote")}
         </p>
+      </div>
       </div>
     </div>
   );

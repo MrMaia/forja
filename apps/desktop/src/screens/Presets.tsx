@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Preset, Program } from "@forja/catalog";
 import { useForja } from "../store";
-import { TitleBar, Diamond, AppIcon, AmberButton } from "../components/ui";
+import { TitleBar, AppSidebar, Diamond, AppIcon, AmberButton } from "../components/ui";
 
 const ACCENT: Record<string, string> = {
   gamer: "#8a5b6a",
@@ -20,7 +20,9 @@ export default function Presets() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-forge-bg">
+    <div className="flex h-full bg-forge-bg">
+      <AppSidebar />
+      <div className="flex min-h-0 flex-1 flex-col">
       <TitleBar section={t("presets.section")} onBack={() => go("catalog")} />
       <div className="flex min-h-0 flex-1 flex-col px-9 py-[34px]">
         <div className="mb-[26px] flex items-end justify-between">
@@ -78,6 +80,7 @@ export default function Presets() {
           }}
         />
       )}
+      </div>
     </div>
   );
 }

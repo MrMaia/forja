@@ -96,6 +96,107 @@ function WindowButton({
   );
 }
 
+// Primary navigation, persistent across every screen (not just Catálogo).
+// Collapses to icons-only; state is a Setting so it's remembered across opens.
+export function AppSidebar() {
+  const { screen, go, t, installing, settings, updateSetting } = useForja();
+  const collapsed = settings.sidebarCollapsed;
+  return (
+    <aside
+      className={
+        "flex flex-shrink-0 flex-col overflow-y-auto border-r border-white/5 bg-forge-inset py-[14px] transition-[width] " +
+        (collapsed ? "w-[60px] items-center px-2" : "w-[200px] px-3.5")
+      }
+    >
+      <button
+        onClick={() => updateSetting("sidebarCollapsed", !collapsed)}
+        aria-label={t(collapsed ? "nav.expand" : "nav.collapse")}
+        title={t(collapsed ? "nav.expand" : "nav.collapse")}
+        className={
+          "mb-3 flex h-7 flex-shrink-0 items-center justify-center rounded-[7px] text-forge-dim transition-colors hover:bg-white/[0.06] hover:text-forge-text " +
+          (collapsed ? "w-7" : "w-7 self-end")
+        }
+      >
+        <Icon name="sidebarToggle" size={15} />
+      </button>
+
+      {!collapsed && (
+        <div className="mb-1.5 px-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-forge-faint">
+          {t("nav.title")}
+        </div>
+      )}
+      <div className="flex w-full flex-col gap-0.5">
+        <SidebarLink icon="home" label={t("nav.home")} collapsed={collapsed} active={screen === "onboarding"} onClick={() => go("onboarding")} />
+        <SidebarLink icon="catalog" label={t("nav.catalog")} collapsed={collapsed} active={screen === "catalog"} onClick={() => go("catalog")} />
+        <SidebarLink
+          icon="install"
+          label={t("nav.installs")}
+          collapsed={collapsed}
+          active={screen === "install"}
+          onClick={() => go("install")}
+          badge={installing ? "•" : undefined}
+        />
+        <SidebarLink icon="presets" label={t("nav.presets")} collapsed={collapsed} active={screen === "presets"} onClick={() => go("presets")} />
+        <SidebarLink icon="export" label={t("nav.export")} collapsed={collapsed} active={screen === "profiles"} onClick={() => go("profiles")} />
+        <div className="my-2 border-t border-white/[0.06]" />
+        <SidebarLink icon="drivers" label={t("nav.drivers")} collapsed={collapsed} active={screen === "drivers"} onClick={() => go("drivers")} />
+        <SidebarLink icon="tweaks" label={t("nav.tweaks")} collapsed={collapsed} active={screen === "tweaks"} onClick={() => go("tweaks")} />
+        <SidebarLink icon="settings" label={t("nav.settings")} collapsed={collapsed} active={screen === "settings"} onClick={() => go("settings")} />
+      </div>
+    </aside>
+  );
+}
+
+function SidebarLink({
+  icon,
+  label,
+  onClick,
+  badge,
+  active = false,
+  collapsed = false,
+}: {
+  icon: IconName;
+  label: string;
+  onClick: () => void;
+  badge?: string;
+  active?: boolean;
+  collapsed?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={collapsed ? label : undefined}
+      aria-label={label}
+      className={
+        "group relative flex items-center rounded-[9px] text-[12.5px] transition-colors " +
+        (collapsed ? "h-9 w-9 justify-center" : "gap-[10px] px-[11px] py-2") +
+        " " +
+        (active
+          ? "bg-amber-glow/10 font-semibold text-amber-light"
+          : "text-[#8e857a] hover:bg-white/[0.04] hover:text-[#bcb2a5]")
+      }
+    >
+      <Icon name={icon} size={16} />
+      {badge && (
+        <span
+          className={
+            "absolute h-[6px] w-[6px] animate-pulse rounded-full bg-amber-glow " +
+            (collapsed ? "right-1 top-1" : "right-[9px] top-1/2 -translate-y-1/2")
+          }
+        />
+      )}
+      {!collapsed && (
+        <>
+          <span className="flex-1 text-left">{label}</span>
+          <span className="text-forge-dim transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-amber-light">
+            <Chevron dir="right" size={13} />
+          </span>
+        </>
+      )}
+    </button>
+  );
+}
+
 // Thin directional chevron. Inherits color via currentColor.
 export function Chevron({
   dir = "right",
