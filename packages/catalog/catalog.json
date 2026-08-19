@@ -1368,7 +1368,7 @@
     "description": "Notas e organização.",
     "icon": { "label": "En", "bg": "#2f4a3a", "fg": "#cfe6d8" },
     "iconUrl": "/icons/evernote.svg",
-    "winget": "9WZDNCRFJ3MB",
+    "winget": "Evernote.Evernote",
     "fallbackUrl": "https://evernote.com/download",
     "postInstall": []
   },
