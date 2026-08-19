@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Program, ProgramIcon } from "@forja/catalog";
 import { isTauri } from "../tauri";
 import { useForja } from "../store";
+import logoUrl from "../assets/logo.png";
 
 async function windowAction(action: "minimize" | "toggleMaximize" | "close") {
   if (!isTauri) return;
@@ -9,17 +10,19 @@ async function windowAction(action: "minimize" | "toggleMaximize" | "close") {
   await getCurrentWindow()[action]();
 }
 
-// The rotated amber diamond used in the logo / brand marks.
+// The Forja logo mark, used in the brand spots across the app (TitleBar,
+// onboarding, Perfis, Presets).
 export function Diamond({ size = 13, glow = true }: { size?: number; glow?: boolean }) {
   return (
-    <div
+    <img
+      src={logoUrl}
+      alt=""
+      width={size}
+      height={size}
       style={{
         width: size,
         height: size,
-        borderRadius: size * 0.23,
-        transform: "rotate(45deg)",
-        background: "linear-gradient(135deg,#ffbd7a,#e8792b)",
-        boxShadow: glow ? `0 0 ${size * 0.7}px rgba(245,147,63,0.55)` : undefined,
+        filter: glow ? `drop-shadow(0 0 ${size * 0.35}px rgba(245,147,63,0.55))` : undefined,
         flexShrink: 0,
       }}
     />
