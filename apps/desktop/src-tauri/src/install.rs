@@ -78,16 +78,43 @@ fn parse_size(num: &str, unit: &str) -> Option<f64> {
     Some(n * mult)
 }
 
-/// Install a list of programs sequentially, streaming progress over the
-/// "install:progress" event. Each id transitions queued -> installing -> done/error.
+// Cap on simultaneous installs. winget holds a lock around its source/package
+// cache, so running everything unbounded trips "another instance of winget is
+// already running" errors — a small pool gets the speedup without that.
+const MAX_CONCURRENT: usize = 3;
+
+/// Run `f` over `items` with at most `limit` futures in flight at once.
+async fn run_bounded<T, F, Fut>(items: Vec<T>, limit: usize, mut f: F)
+where
+    T: Send + 'static,
+    F: FnMut(T) -> Fut,
+    Fut: std::future::Future<Output = ()> + Send + 'static,
+{
+    let mut running = tokio::task::JoinSet::new();
+    for item in items {
+        if running.len() >= limit {
+            running.join_next().await;
+        }
+        running.spawn(f(item));
+    }
+    while running.join_next().await.is_some() {}
+}
+
+/// Install a list of programs with up to MAX_CONCURRENT running at once,
+/// streaming progress over the "install:progress" event. Each id transitions
+/// queued -> installing -> done/error independently of the others.
 #[tauri::command]
 pub async fn install_programs(app: AppHandle, items: Vec<InstallItem>) -> Result<(), String> {
     for item in &items {
         emit(&app, &item.id, "queued", None, None);
     }
-    for item in items {
-        install_one(&app, &item).await;
-    }
+
+    run_bounded(items, MAX_CONCURRENT, |item| {
+        let app = app.clone();
+        async move { install_one(&app, &item).await }
+    })
+    .await;
+
     Ok(())
 }
 
@@ -147,6 +174,44 @@ mod tests {
             bytes.extend_from_slice(&u.to_le_bytes());
         }
         assert!(decode_log(&bytes).contains("1603"));
+    }
+
+    #[tokio::test]
+    async fn run_bounded_never_exceeds_limit() {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        use std::sync::Arc;
+
+        let current = Arc::new(AtomicUsize::new(0));
+        let peak = Arc::new(AtomicUsize::new(0));
+        let items: Vec<u32> = (0..7).collect();
+
+        run_bounded(items, 3, |_| {
+            let current = current.clone();
+            let peak = peak.clone();
+            async move {
+                let now = current.fetch_add(1, Ordering::SeqCst) + 1;
+                peak.fetch_max(now, Ordering::SeqCst);
+                tokio::time::sleep(Duration::from_millis(20)).await;
+                current.fetch_sub(1, Ordering::SeqCst);
+            }
+        })
+        .await;
+
+        assert_eq!(peak.load(Ordering::SeqCst), 3, "should cap at the concurrency limit");
+    }
+
+    #[tokio::test]
+    async fn run_bounded_runs_faster_than_sequential() {
+        let items: Vec<u32> = (0..6).collect();
+        let start = std::time::Instant::now();
+
+        run_bounded(items, 3, |_| async move {
+            tokio::time::sleep(Duration::from_millis(30)).await;
+        })
+        .await;
+
+        // Sequential would take 6 * 30ms = 180ms; bounded-3 should take ~60ms.
+        assert!(start.elapsed() < Duration::from_millis(150), "expected parallel speedup");
     }
 }
 

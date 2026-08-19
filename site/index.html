@@ -4,10 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Forja — Do zero ao pronto</title>
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffbd7a'/%3E%3Cstop offset='1' stop-color='%23e8792b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='8' y='8' width='16' height='16' rx='4' transform='rotate(45 16 16)' fill='url(%23g)'/%3E%3C/svg%3E"
-    />
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
     <meta
       name="description"
       content="Instalador desktop pós-formatação para Windows 10/11. Você escolhe os programas, a Forja baixa da fonte oficial e instala tudo em silêncio."
@@ -337,7 +334,7 @@
             >GitHub</a
           >
           <a
-            href="https://github.com/MrMaia/forja/releases/download/v0.1.6/Forja_0.1.6_x64-setup.exe"
+            href="https://github.com/MrMaia/forja/releases/download/v0.1.7/Forja_0.1.7_x64-setup.exe"
             class="js-dl rounded-full bg-gradient-to-br from-amber-from to-amber-to px-4 py-[7px] text-[13px] font-semibold text-[#1a0f06] shadow-[0_4px_18px_-4px_rgba(245,147,63,0.6)] transition-transform hover:scale-[1.03]"
             data-i18n="nav.download"
             >Baixar</a
@@ -396,7 +393,7 @@
 
         <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row">
           <a
-            href="https://github.com/MrMaia/forja/releases/download/v0.1.6/Forja_0.1.6_x64-setup.exe"
+            href="https://github.com/MrMaia/forja/releases/download/v0.1.7/Forja_0.1.7_x64-setup.exe"
             class="js-dl rounded-xl bg-gradient-to-br from-amber-from to-amber-to px-7 py-3.5 text-[15px] font-semibold text-[#1a0f06] shadow-[0_8px_30px_-6px_rgba(245,147,63,0.65)] transition-transform hover:scale-[1.03]"
             data-i18n="hero.cta1"
             >Baixar para Windows</a
@@ -504,7 +501,7 @@
         </p>
         <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a
-            href="https://github.com/MrMaia/forja/releases/download/v0.1.6/Forja_0.1.6_x64-setup.exe"
+            href="https://github.com/MrMaia/forja/releases/download/v0.1.7/Forja_0.1.7_x64-setup.exe"
             class="js-dl rounded-xl bg-gradient-to-br from-amber-from to-amber-to px-7 py-3.5 text-[15px] font-semibold text-[#1a0f06] shadow-[0_8px_30px_-6px_rgba(245,147,63,0.65)] transition-transform hover:scale-[1.03]"
             data-i18n="hero.cta1"
             >Baixar para Windows</a
@@ -763,7 +760,7 @@
       });
 
       /* ───── direct download ─────
-         The buttons already point straight at the v0.1.6 installer (a working
+         The buttons already point straight at the v0.1.7 installer (a working
          direct link). On load we ask the GitHub API for the newest release and
          repoint every .js-dl link at its installer asset, so the download stays
          direct AND always grabs the latest version without editing this file. */
@@ -782,7 +779,7 @@
             .forEach((a) => (a.href = exe.browser_download_url));
         })
         .catch(() => {
-          /* offline or rate-limited: keep the hardcoded direct v0.1.6 link */
+          /* offline or rate-limited: keep the hardcoded direct v0.1.7 link */
         });
     </script>
   </body>

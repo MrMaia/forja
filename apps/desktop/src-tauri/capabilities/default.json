@@ -155,7 +155,7 @@
             "-NoProfile",
             "-NonInteractive",
             "-Command",
-            "$ProgressPreference='SilentlyContinue'; $u=$env:FORJA_UPDATE_URL; $o=Join-Path $env:TEMP 'Forja-update-setup.exe'; Invoke-WebRequest -Uri $u -OutFile $o; Start-Process -FilePath $o"
+            "$ProgressPreference='SilentlyContinue'; $u=$env:FORJA_UPDATE_URL; $h=$env:FORJA_UPDATE_SHA256; $o=Join-Path $env:TEMP 'Forja-update-setup.exe'; Invoke-WebRequest -Uri $u -OutFile $o; $a=(Get-FileHash -Path $o -Algorithm SHA256).Hash; if ($a -ne $h.ToUpper()) { Remove-Item $o -Force; Write-Error \"hash mismatch: expected $h got $a\"; exit 1 }; Start-Process -FilePath $o"
           ]
         }
       ]

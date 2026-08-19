@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { ForjaProfile } from "@forja/catalog";
 import { useForja } from "../store";
-import { TitleBar, Diamond, AmberButton } from "../components/ui";
+import { TitleBar, AppSidebar, Diamond, AmberButton } from "../components/ui";
 import {
   buildProfile,
   exportProfile,
@@ -44,7 +44,9 @@ export default function Profiles() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-forge-bg">
+    <div className="flex h-full bg-forge-bg">
+      <AppSidebar />
+      <div className="flex min-h-0 flex-1 flex-col">
       <TitleBar section={t("profiles.section")} onBack={() => go("catalog")} />
       <div className="flex min-h-0 flex-1 flex-col px-9 py-[30px]">
         {/* banner */}
@@ -195,6 +197,7 @@ export default function Profiles() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

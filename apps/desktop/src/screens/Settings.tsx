@@ -1,5 +1,5 @@
 import { useForja } from "../store";
-import { TitleBar } from "../components/ui";
+import { TitleBar, AppSidebar } from "../components/ui";
 import { LANGS, type Lang } from "../i18n";
 import { relaunchAsAdmin, APP_VERSION } from "../tauri";
 
@@ -33,7 +33,9 @@ export default function Settings() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-forge-bg">
+    <div className="flex h-full bg-forge-bg">
+      <AppSidebar />
+      <div className="flex min-h-0 flex-1 flex-col">
       <TitleBar section={t("settings.title")} onBack={() => go("catalog")} />
       <div className="flex-1 overflow-y-auto px-9 py-8">
         <h1 className="m-0 mb-7 text-[24px] font-bold tracking-[-0.02em]">{t("settings.title")}</h1>
@@ -153,6 +155,7 @@ export default function Settings() {
         <Section title={t("settings.about")}>
           <Row label="Forja — Do zero ao pronto." desc={t("settings.aboutDesc")} />
         </Section>
+      </div>
       </div>
     </div>
   );

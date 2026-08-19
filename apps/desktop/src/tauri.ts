@@ -5,7 +5,7 @@
 import type { Program, Preset, InstallProgress } from "@forja/catalog";
 
 /** Current app version — single source, kept in sync with the Tauri/Cargo manifests. */
-export const APP_VERSION = "0.1.6";
+export const APP_VERSION = "0.1.7";
 
 export const isTauri =
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -251,6 +251,7 @@ export interface ForjaUpdate {
   hasUpdate: boolean;
   url: string; // releases page
   installUrl: string | null; // direct .exe asset, for one-click update
+  sha256: string | null; // expected hash of installUrl, from the `<asset>.sha256` sidecar
 }
 
 // naive semver compare: returns >0 if a is newer than b
@@ -263,38 +264,70 @@ function cmpVersions(a: string, b: string): number {
   return 0;
 }
 
+/**
+ * Fetch the SHA256 sidecar published alongside a release asset (a
+ * `<asset-name>.sha256` text file containing the hex hash, optionally
+ * followed by " *filename" like `sha256sum` produces). Returns null if the
+ * sidecar doesn't exist — the one-click install is disabled in that case,
+ * since there's nothing to verify the download against.
+ */
+async function fetchSidecarHash(sidecarUrl: string): Promise<string | null> {
+  try {
+    const res = await fetch(sidecarUrl);
+    if (!res.ok) return null;
+    const text = (await res.text()).trim();
+    const hash = text.split(/\s+/)[0]?.toLowerCase() ?? "";
+    return /^[0-9a-f]{64}$/.test(hash) ? hash : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Check GitHub Releases for a newer Forja version. */
 export async function checkForjaUpdate(current: string): Promise<ForjaUpdate> {
   const releasesUrl = "https://github.com/MrMaia/forja/releases";
+  const empty = (latest: string | null = null, url = releasesUrl): ForjaUpdate => ({
+    current,
+    latest,
+    hasUpdate: false,
+    url,
+    installUrl: null,
+    sha256: null,
+  });
   try {
     const res = await fetch(
       "https://api.github.com/repos/MrMaia/forja/releases/latest",
       { headers: { Accept: "application/vnd.github+json" } }
     );
-    if (!res.ok)
-      return { current, latest: null, hasUpdate: false, url: releasesUrl, installUrl: null };
+    if (!res.ok) return empty();
     const data = await res.json();
     const latest = String(data.tag_name ?? "").replace(/^v/, "");
-    const exe = (data.assets ?? []).find((a: { name?: string }) =>
-      String(a.name ?? "").toLowerCase().endsWith(".exe")
-    );
+    const assets: { name?: string; browser_download_url?: string }[] = data.assets ?? [];
+    const exe = assets.find((a) => String(a.name ?? "").toLowerCase().endsWith(".exe"));
+    const sidecar = exe && assets.find((a) => a.name === `${exe.name}.sha256`);
+    const sha256 = sidecar?.browser_download_url
+      ? await fetchSidecarHash(sidecar.browser_download_url)
+      : null;
+
     return {
       current,
       latest: latest || null,
       hasUpdate: !!latest && cmpVersions(latest, current) > 0,
       url: data.html_url ?? releasesUrl,
-      installUrl: exe?.browser_download_url ?? null,
+      // only offer the one-click install when we have a hash to verify it against
+      installUrl: sha256 ? exe?.browser_download_url ?? null : null,
+      sha256,
     };
   } catch {
-    return { current, latest: null, hasUpdate: false, url: releasesUrl, installUrl: null };
+    return empty();
   }
 }
 
 /** Download the release installer and launch it (one-click update). */
-export async function installUpdate(url: string): Promise<void> {
+export async function installUpdate(url: string, sha256: string): Promise<void> {
   if (isTauri) {
     const { invoke } = await import("@tauri-apps/api/core");
-    await invoke("install_update", { url });
+    await invoke("install_update", { url, sha256 });
     return;
   }
   window.open(url, "_blank", "noopener");
