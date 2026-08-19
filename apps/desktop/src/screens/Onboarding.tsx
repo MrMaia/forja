@@ -1,5 +1,5 @@
 import { useForja } from "../store";
-import { TitleBar, AmberButton } from "../components/ui";
+import { TitleBar, AmberButton, Diamond } from "../components/ui";
 
 const PRESET_CHIPS = ["Dev", "Gamer", "Office", "Streamer"];
 
@@ -40,15 +40,9 @@ export default function Onboarding() {
         />
 
         <div className="relative flex flex-col items-center px-10 text-center">
-          <div
-            className="mb-[34px] h-[62px] w-[62px] rounded-[15px]"
-            style={{
-              transform: "rotate(45deg)",
-              background: "linear-gradient(135deg,#ffbd7a,#e8792b)",
-              boxShadow:
-                "0 0 36px rgba(245,147,63,0.5),inset 0 2px 8px rgba(255,255,255,0.35)",
-            }}
-          />
+          <div className="mb-[34px]">
+            <Diamond size={62} />
+          </div>
           <div className="text-[58px] font-bold leading-none tracking-[-0.03em]">
             Forja
           </div>
